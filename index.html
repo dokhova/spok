@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potok — Home</title>
+  <link rel="stylesheet" href="globals.css" />
+  <link rel="stylesheet" href="styleguide.css" />
+  <style>
+    :root {
+      --main: #121212;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .home {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      padding-bottom: 96px;
+    }
+
+    .logo {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      height: 33px;
+      padding: 0 24px;
+      box-sizing: border-box;
+      z-index: 1000;
+    }
+
+    .header {
+      max-width: 327px;
+      width: 100%;
+      margin: 80px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .text-welcome {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      color: var(--text-2);
+    }
+
+    .text-title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .button-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      width: 158px;
+      height: 40px;
+      padding: 15px 16px;
+      background-color: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--white);
+      box-sizing: border-box;
+      margin-left: 24px;
+      transition: background-color 0.2s;
+    }
+
+    .button-primary:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .arrow {
+      width: 5px;
+      height: 10px;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 327px;
+      height: 80px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding-right: 16px;
+      transition: background-color 0.2s;
+    }
+
+    .card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .card img:first-child {
+      width: 118px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px 0 0 8px;
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--white);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 16px;
+    }
+
+    .card .arrow {
+      width: 5px;
+      height: 10px;
+      margin-left: 16px;
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="home">
+    <a href="index.html" class="logo">
+      <img src="img/logo.svg" alt="Potok logo">
+    </a>
+
+    <div class="header">
+      <div class="text-welcome">Добро пожаловать!</div>
+      <div class="text-title">С чего хочешь начать?</div>
+    </div>
+
+    <a href="pause.html" class="button-primary">
+      <span style="font-size:14px; line-height:20px; font-weight:600;">Практика дня</span>
+      <img class="arrow" src="img/arrow.svg" alt="arrow">
+    </a>
+
+    <div class="cards">
+      <a href="pond.html" class="card">
+        <img src="img/mind.jpg" alt="Успокоить мысли">
+        <div class="card-content">
+          <div class="card-title">Успокоить мысли</div>
+          <div class="card-subtitle">Медитация</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+      <a href="478.html" class="card">
+        <img src="img/breathing.jpg" alt="Снизить стресс">
+        <div class="card-content">
+          <div class="card-title">Снизить стресс</div>
+          <div class="card-subtitle">Дыхание</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+      <a href="stars.html" class="card">
+        <img src="img/sleep.jpg" alt="Улучшить сон">
+        <div class="card-content">
+          <div class="card-title">Улучшить сон</div>
+          <div class="card-subtitle">Сон</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+    </div>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab active">
+      <img src="img/home.svg" alt="Сегодня">
+      <div>Сегодня</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Практики">
+      <div>Практики</div>
+    </a>
+    <a href="journal.html" class="tab">
+      <img src="img/journal.svg" alt="Журнал">
+      <div>Журнал</div>
+    </a>
+  </footer>
+</body>
+</html>
