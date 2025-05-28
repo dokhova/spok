@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potok — 4-7-8</title>
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      height: 100vh;
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 24px;
+      padding-bottom: 96px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      z-index: 10;
+    }
+
+    .logo {
+      height: 33px;
+    }
+
+    .close-btn {
+      width: 24px;
+      height: 24px;
+      background: none;
+      border: none;
+      color: var(--text-2);
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .close-btn:hover {
+      color: var(--white);
+    }
+
+    .practice-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .practice-header {
+      text-align: left;
+      margin-bottom: 48px;
+    }
+
+    .tags {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      font-size: 10px;
+      line-height: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
+
+    .tag-separator {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--text-2);
+    }
+
+    .practice-title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 16px;
+    }
+
+    .practice-subtitle {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 48px;
+    }
+
+    .breathing-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-top: -40px;
+    }
+
+    .breathing-controls {
+      align-self: flex-start;
+      width: 100%;
+      text-align: left;
+    }
+
+    .breathing-circle-container {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 32px 0;
+    }
+
+    .breathing-circle {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(52, 168, 83, 0.3) 0%, rgba(52, 168, 83, 0.1) 50%, rgba(52, 168, 83, 0.05) 100%);
+      border: 2px solid rgba(52, 168, 83, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 4s cubic-bezier(0.4, 0, 0.6, 1);
+      transform-origin: center;
+    }
+
+    .breathing-circle.inhale {
+      transform: scale(1.4);
+      background: radial-gradient(circle, rgba(52, 168, 83, 0.4) 0%, rgba(52, 168, 83, 0.2) 50%, rgba(52, 168, 83, 0.1) 100%);
+      border-color: rgba(52, 168, 83, 0.8);
+    }
+
+    .breathing-circle.hold {
+      transform: scale(1.4);
+      background: radial-gradient(circle, rgba(52, 168, 83, 0.4) 0%, rgba(52, 168, 83, 0.2) 50%, rgba(52, 168, 83, 0.1) 100%);
+      border-color: rgba(52, 168, 83, 0.8);
+      animation: gentle-sway 2s ease-in-out infinite;
+    }
+
+    .breathing-circle.exhale {
+      transform: scale(0.7);
+      background: radial-gradient(circle, rgba(52, 168, 83, 0.2) 0%, rgba(52, 168, 83, 0.05) 50%, rgba(52, 168, 83, 0.02) 100%);
+      border-color: rgba(52, 168, 83, 0.3);
+    }
+
+    .inner-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background-color: var(--green);
+      opacity: 0.6;
+      transition: all 4s cubic-bezier(0.4, 0, 0.6, 1);
+    }
+
+    .breathing-circle.inhale .inner-circle {
+      opacity: 0.8;
+      transform: scale(1.3);
+    }
+
+    .breathing-circle.hold .inner-circle {
+      opacity: 0.8;
+      transform: scale(1.3);
+    }
+
+    .breathing-circle.exhale .inner-circle {
+      opacity: 0.4;
+      transform: scale(0.7);
+    }
+
+    .instruction-text {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 500;
+      color: var(--white);
+      margin-bottom: 4px;
+      min-height: 20px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+    }
+
+    .instruction-text.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .counter {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 24px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 16px;
+      margin-top: 16px;
+      margin-bottom: 48px;
+    }
+
+    .start-btn, .pause-btn {
+      width: 120px;
+      height: 36px;
+      background-color: var(--green);
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .start-btn:hover, .pause-btn:hover {
+      background-color: rgba(52, 168, 83, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .start-btn:active, .pause-btn:active {
+      transform: translateY(0);
+    }
+
+    .pause-btn {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .pause-btn:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      cursor: pointer;
+      padding: 8px;
+      transition: color 0.2s;
+    }
+
+    .reset-btn:hover {
+      color: var(--white);
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+
+    @keyframes gentle-sway {
+      0%, 100% { 
+        transform: scale(1.4) translateY(0px);
+      }
+      25% { 
+        transform: scale(1.4) translateY(-2px);
+      }
+      75% { 
+        transform: scale(1.4) translateY(2px);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { 
+        box-shadow: 0 0 0 0 rgba(52, 168, 83, 0.4);
+      }
+      50% { 
+        box-shadow: 0 0 0 20px rgba(52, 168, 83, 0);
+      }
+    }
+
+    .breathing-circle.active {
+      animation: pulse 8s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="img/logo.svg" alt="Potok logo" class="logo">
+      <button class="close-btn" onclick="window.history.back()">×</button>
+    </div>
+
+    <div class="practice-content">
+      <div class="practice-header">
+        <div class="tags">
+          <span class="tag">Дыхание</span>
+          <div class="tag-separator"></div>
+          <span class="tag">Напряжение</span>
+        </div>
+
+        <h1 class="practice-title">Дыхание: 4-7-8</h1>
+        <div class="practice-subtitle">Успокойте ум и тело с помощью замедленного дыхания</div>
+      </div>
+
+      <div class="breathing-section">
+        <div class="breathing-circle-container">
+          <div class="breathing-circle" id="breathingCircle">
+            <div class="inner-circle"></div>
+          </div>
+        </div>
+
+        <div class="breathing-controls">
+          <div class="instruction-text" id="instructionText">Нажмите "Начать" для старта практики</div>
+          <div class="counter" id="counter">Цикл 0 из 5</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="start-btn" id="startBtn" onclick="startPractice()">Начать</button>
+      <button class="pause-btn" id="pauseBtn" onclick="pausePractice()" style="display: none;">Пауза</button>
+      <button class="reset-btn" id="resetBtn" onclick="resetPractice()" style="display: none;">Сначала</button>
+    </div>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Сегодня">
+      <div>Сегодня</div>
+    </a>
+    <a href="practices.html" class="tab active">
+      <img src="img/practices-active.svg" alt="Практики">
+      <div>Практики</div>
+    </a>
+    <a href="journal.html" class="tab">
+      <img src="img/journal.svg" alt="Журнал">
+      <div>Журнал</div>
+    </a>
+  </footer>
+
+  <script>
+    let isRunning = false;
+    let isPaused = false;
+    let currentCycle = 0;
+    let totalCycles = 5;
+    let currentPhase = 0; // 0: inhale, 1: hold, 2: exhale
+    let phaseTimer;
+    let phases = [
+      { name: 'Вдох', duration: 4000, action: 'inhale' },
+      { name: 'Задержка', duration: 7000, action: 'hold' },
+      { name: 'Выдох', duration: 8000, action: 'exhale' }
+    ];
+
+    const breathingCircle = document.getElementById('breathingCircle');
+    const instructionText = document.getElementById('instructionText');
+    const counter = document.getElementById('counter');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function updateInstruction(text) {
+      instructionText.classList.remove('show');
+      setTimeout(() => {
+        instructionText.textContent = text;
+        instructionText.classList.add('show');
+      }, 250);
+    }
+
+    function updateCounter() {
+      counter.textContent = `Цикл ${currentCycle} из ${totalCycles}`;
+    }
+
+    function startPractice() {
+      if (isPaused) {
+        isPaused = false;
+        continuePhase();
+      } else {
+        isRunning = true;
+        currentCycle = 0;
+        currentPhase = 0;
+        runPhase();
+      }
+      
+      startBtn.style.display = 'none';
+      pauseBtn.style.display = 'flex';
+      resetBtn.style.display = 'block';
+      breathingCircle.classList.add('active');
+    }
+
+    function pausePractice() {
+      isPaused = true;
+      isRunning = false;
+      clearTimeout(phaseTimer);
+      
+      startBtn.style.display = 'flex';
+      pauseBtn.style.display = 'none';
+      startBtn.textContent = 'Продолжить';
+      
+      updateInstruction('Практика приостановлена');
+      breathingCircle.classList.remove('active');
+    }
+
+    function resetPractice() {
+      isRunning = false;
+      isPaused = false;
+      currentCycle = 0;
+      currentPhase = 0;
+      clearTimeout(phaseTimer);
+      
+      breathingCircle.className = 'breathing-circle';
+      updateInstruction('Нажмите "Начать" для старта практики');
+      updateCounter();
+      
+      startBtn.style.display = 'flex';
+      pauseBtn.style.display = 'none';
+      resetBtn.style.display = 'none';
+      startBtn.textContent = 'Начать';
+    }
+
+    function runPhase() {
+      if (!isRunning || currentCycle >= totalCycles) {
+        if (currentCycle >= totalCycles) {
+          completePractice();
+        }
+        return;
+      }
+
+      const phase = phases[currentPhase];
+      updateInstruction(phase.name);
+      
+      // Apply visual changes
+      breathingCircle.classList.remove('inhale', 'hold', 'exhale');
+      if (phase.action === 'inhale') {
+        breathingCircle.classList.add('inhale');
+      } else if (phase.action === 'hold') {
+        breathingCircle.classList.add('hold');
+      } else if (phase.action === 'exhale') {
+        breathingCircle.classList.add('exhale');
+      }
+
+      phaseTimer = setTimeout(() => {
+        currentPhase++;
+        if (currentPhase >= phases.length) {
+          currentPhase = 0;
+          currentCycle++;
+          updateCounter();
+        }
+        runPhase();
+      }, phase.duration);
+    }
+
+    function continuePhase() {
+      isRunning = true;
+      runPhase();
+    }
+
+    function completePractice() {
+      isRunning = false;
+      breathingCircle.classList.remove('active', 'inhale', 'hold', 'exhale');
+      updateInstruction('Практика завершена');
+      
+      startBtn.textContent = 'Начать заново';
+      startBtn.style.display = 'flex';
+      pauseBtn.style.display = 'none';
+      resetBtn.style.display = 'none';
+    }
+
+    // Initialize
+    updateCounter();
+  </script>
+</body>
+</html>
