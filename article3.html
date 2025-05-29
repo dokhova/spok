@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potok — Внимание на цвет по пути</title>
+  <link rel="stylesheet" href="globals.css" />
+  <link rel="stylesheet" href="styleguide.css" />
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 96px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+
+    .logo {
+      display: block;
+    }
+
+    .logo img {
+      height: 33px;
+      width: auto;
+      display: block;
+    }
+
+    .close-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .close-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+      position: relative;
+    }
+
+    .close-icon::before,
+    .close-icon::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 1.5px;
+      background-color: var(--green);
+      transform-origin: center;
+    }
+
+    .close-icon::before {
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .close-icon::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .article-header {
+      margin-bottom: 48px;
+    }
+
+    .article-tags {
+      font-size: 10px;
+      line-height: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .article-title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .article-subtitle {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--text-2);
+    }
+
+    .article-image {
+      width: 100%;
+      max-width: 327px;
+      height: 207px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 48px;
+    }
+
+    .article-content {
+      color: var(--text-2);
+    }
+
+    .article-content h2 {
+      font-size: 18px;
+      line-height: 28px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 48px 0 16px 0;
+    }
+
+    .article-content p {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 16px;
+    }
+
+    .article-content p.large-break {
+      margin-bottom: 48px;
+    }
+
+    .quote-text {
+      font-size: 18px;
+      line-height: 28px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 48px 0 16px 0;
+      text-align: left;
+    }
+
+    .other-articles {
+      margin-top: 48px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 24px;
+    }
+
+    .article-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 327px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      transition: background-color 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .article-card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .article-card img {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .article-card-content {
+      padding: 24px 16px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .article-card-tags {
+      font-size: 10px;
+      line-height: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .article-card-title {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .article-card-description {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 16px;
+    }
+
+    .read-more {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--green);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .read-more img {
+      width: 5px;
+      height: 10px;
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="logo">
+        <img src="img/logo.svg" alt="Potok logo">
+      </a>
+      
+      <a href="journal.html" class="close-button">
+        <div class="close-icon"></div>
+      </a>
+    </div>
+
+    <div class="article-header">
+      <div class="article-tags">
+        <span>СТАТЬЯ</span>
+        <span>•</span>
+        <span>УПРАЖНЕНИЕ</span>
+      </div>
+      <h1 class="article-title">Внимание на цвет по пути</h1>
+      <div class="article-subtitle">Упражнение для прогулки — фокус на цвет вместо мыслей</div>
+    </div>
+
+    <img src="img/article3.jpg" alt="Внимание на цвет по пути" class="article-image">
+
+    <div class="article-content">
+      <p class="large-break">Когда внутри перегруз, не всегда хочется что-то понимать. Или решать. Или садиться с блокнотом и "искать причину". Иногда хочется просто выйти на улицу и смотреть по сторонам, не включаясь в происходящее.</p>
+
+      <h2>Что такое Color Walk?</h2>
+      
+      <p>Color Walk — это прогулка, в которой всё внимание уходит в один цвет.</p>
+      
+      <p>Например, зелёный. Ты идёшь и отслеживаешь его: в одежде, вывесках, растениях, номерах машин, упаковках на полу.</p>
+      
+      <p class="large-break">Можно идти без цели. Можно — до магазина. Можно — просто выйти, постоять и вернуться. Никто не проверяет.</p>
+
+      <div class="quote-text">Фокус на цвет переключает внимание без усилия.</div>
+
+      <p>Не нужно ничего анализировать или «работать с собой». Это не про развитие внимательности, не про самонаблюдение. Скорее, про паузу. Про настройку. Про то, чтобы в потоке окружающего найти что-то одно, за что можно зацепиться взглядом — и не развалиться.</p>
+      
+      <p>Это упражнение не требует ничего — ни времени, ни приложения, ни мотивации. Оно просто даёт возможность сделать шаг в сторону от внутреннего шума.</p>
+      
+      <p class="large-break">Можно делать его хоть каждый день. А можно один раз.</p>
+
+      <h2>Заключение</h2>
+      
+      <p>Не обязательно чувствовать облегчение. Но часто, после десяти минут такой прогулки, возвращаешься домой и вдруг замечаешь, что мысли разложились по полкам. Сами.</p>
+    </div>
+
+    <div class="other-articles">
+      <div class="section-title">Другие статьи</div>
+      
+      <a href="article1.html" class="article-card">
+        <img src="img/article1.jpg" alt="Почему отдых не всегда работает">
+        <div class="article-card-content">
+          <div class="article-card-tags">
+            <span>СТАТЬЯ</span>
+            <span>•</span>
+            <span>РАЗБОР</span>
+          </div>
+          <div class="article-card-title">Почему отдых не всегда работает</div>
+          <div class="article-card-description">Иногда два дня — это всего лишь пауза и даже она даётся не сразу</div>
+          <div class="read-more">
+            Перейти 
+            <img src="img/arrow.svg" alt="arrow">
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Сегодня">
+      <div>Сегодня</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Практики">
+      <div>Практики</div>
+    </a>
+    <a href="journal.html" class="tab active">
+      <img src="img/journal-active.svg" alt="Журнал">
+      <div>Журнал</div>
+    </a>
+  </footer>
+</body>
+</html>
