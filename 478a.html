@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Potok Breathing Animation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    
+    :root {
+      --green: #34A853;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--green);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .breathing-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--white);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .cycle-counter {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .completion-message {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      display: none;
+    }
+
+    .completion-text {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .completion-praise {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .back-button {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      z-index: 20;
+      transition: background-color 0.2s;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <audio id="breathingAudio" preload="auto" loop>
+      <source src="478.MP3" type="audio/mpeg">
+    </audio>
+
+    <a href="478.html" class="back-button">
+      <svg class="close-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </a>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+      <!-- Stars -->
+      <path d="M15 20 L15.3 20.6 L15.9 20.65 L15.6 21 L15.7 21.6 L15 21.3 L14.3 21.6 L14.4 21 L14.1 20.65 L14.7 20.6 Z" fill="white" opacity="0.6">
+        <animate 
+          attributeName="opacity" 
+          values="0.6;0.9;0.6;0.3;0.6" 
+          dur="4s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M85 25 L85.3 25.6 L85.9 25.65 L85.6 26 L85.7 26.6 L85 26.3 L84.3 26.6 L84.4 26 L84.1 25.65 L84.7 25.6 Z" fill="white" opacity="0.5">
+        <animate 
+          attributeName="opacity" 
+          values="0.5;0.2;0.5;0.8;0.5" 
+          dur="5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M80 75 L80.3 75.6 L80.9 75.65 L80.6 76 L80.7 76.6 L80 76.3 L79.3 76.6 L79.4 76 L79.1 75.65 L79.7 75.6 Z" fill="white" opacity="0.7">
+        <animate 
+          attributeName="opacity" 
+          values="0.7;0.4;0.7;1;0.7" 
+          dur="6s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M20 75 L20.3 75.6 L20.9 75.65 L20.6 76 L20.7 76.6 L20 76.3 L19.3 76.6 L19.4 76 L19.1 75.65 L19.7 75.6 Z" fill="white" opacity="0.4">
+        <animate 
+          attributeName="opacity" 
+          values="0.4;0.7;0.4;0.1;0.4" 
+          dur="4.5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M50 15 L50.2 15.5 L50.6 15.55 L50.4 15.8 L50.5 16.2 L50 16 L49.5 16.2 L49.6 15.8 L49.4 15.55 L49.8 15.5 Z" fill="white" opacity="0.5">
+        <animate 
+          attributeName="opacity" 
+          values="0.5;0.8;0.5;0.2;0.5" 
+          dur="3.5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <!-- Breathing circles -->
+      <circle cx="50" cy="50" r="15" fill="rgba(255, 255, 255, 0.15)">
+        <animate 
+          attributeName="r" 
+          values="15;25;25;15" 
+          dur="19s" 
+          repeatCount="indefinite" 
+          keyTimes="0;0.21;0.58;1"
+        />
+      </circle>
+      
+      <circle cx="50" cy="50" r="12" fill="rgba(255, 255, 255, 0.2)">
+        <animate 
+          attributeName="r" 
+          values="12;20;20;12" 
+          dur="19s" 
+          repeatCount="indefinite" 
+          keyTimes="0;0.21;0.58;1"
+        />
+      </circle>
+      
+      <circle cx="50" cy="50" r="9" fill="#34A853" stroke="rgba(255, 255, 255, 0.8)" stroke-width="0.5">
+        <animate 
+          attributeName="r" 
+          values="9;15;15;9" 
+          dur="19s" 
+          repeatCount="indefinite" 
+          keyTimes="0;0.21;0.58;1"
+        />
+      </circle>
+    </svg>
+    
+    <div class="breathing-text" id="breathingText">Вдох</div>
+    <div class="cycle-counter" id="cycleCounter">Цикл 1 из 5</div>
+    <div class="completion-message" id="completionMessage">
+      <div class="completion-text">Практика закончилась</div>
+      <div class="completion-praise">Отличная работа!</div>
+    </div>
+  </div>
+
+  <script>
+    let startTime = Date.now();
+    let currentCycle = 1;
+    let isCompleted = false;
+    
+    function updateBreathingText() {
+      if (isCompleted) return;
+      
+      const cycleDuration = 19000;
+      const totalElapsed = Date.now() - startTime;
+      const elapsed = totalElapsed % cycleDuration;
+      const progress = elapsed / cycleDuration;
+      
+      const textElement = document.getElementById('breathingText');
+      const cycleElement = document.getElementById('cycleCounter');
+      
+      const newCycle = Math.floor(totalElapsed / cycleDuration) + 1;
+      
+      if (newCycle !== currentCycle && newCycle <= 5) {
+        currentCycle = newCycle;
+        cycleElement.textContent = `Цикл ${currentCycle} из 5`;
+      }
+      
+      if (totalElapsed >= cycleDuration * 5) {
+        if (!isCompleted) {
+          isCompleted = true;
+          textElement.textContent = '';
+          cycleElement.style.display = 'none';
+          document.getElementById('completionMessage').style.display = 'block';
+          
+          const circles = document.querySelectorAll('circle');
+          circles.forEach(circle => {
+            const animations = circle.querySelectorAll('animate');
+            animations.forEach(anim => {
+              anim.setAttribute('repeatCount', '0');
+              anim.endElement();
+            });
+          });
+        }
+        return;
+      }
+      
+      if (progress <= 0.21) {
+        textElement.textContent = 'Вдох';
+      } else if (progress <= 0.58) {
+        textElement.textContent = 'Пауза';
+      } else {
+        textElement.textContent = 'Выдох';
+      }
+    }
+
+    updateBreathingText();
+    setInterval(updateBreathingText, 100);
+
+    // Audio management
+    const audio = document.getElementById('breathingAudio');
+    let audioStarted = false;
+    let userInteracted = false;
+
+    // Check if audio file exists
+    audio.addEventListener('loadeddata', () => {
+      console.log('Audio file loaded successfully');
+    });
+
+    audio.addEventListener('error', (e) => {
+      console.log('Audio file error:', e);
+    });
+
+    function tryStartAudio() {
+      if (!audioStarted && userInteracted) {
+        console.log('Attempting to start audio...');
+        
+        // Reset audio to beginning
+        audio.currentTime = 0;
+        
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            audioStarted = true;
+            console.log('Audio started successfully');
+          }).catch(error => {
+            console.log('Audio play failed:', error);
+          });
+        }
+      }
+    }
+
+    // Mark user interaction and try to start audio
+    function handleUserInteraction() {
+      if (!userInteracted) {
+        userInteracted = true;
+        console.log('User interaction detected');
+        setTimeout(tryStartAudio, 100);
+      }
+    }
+
+    // Multiple interaction listeners
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+    document.addEventListener('touchend', handleUserInteraction);
+    document.addEventListener('mousedown', handleUserInteraction);
+
+    // Try to start audio when page loads
+    window.addEventListener('load', () => {
+      console.log('Page loaded');
+      // Small delay to ensure everything is ready
+      setTimeout(() => {
+        if (userInteracted) {
+          tryStartAudio();
+        }
+      }, 500);
+    });
+
+    // Fallback: try to start audio periodically if user has interacted
+    setInterval(() => {
+      if (userInteracted && !audioStarted && !isCompleted) {
+        tryStartAudio();
+      }
+    }, 2000);
+  </script>
+</body>
+</html>
