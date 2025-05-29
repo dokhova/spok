@@ -39,9 +39,16 @@
     }
 
     .logo {
-      display: block;
-      width: fit-content;
-    }
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: block;
+  width: fit-content;
+  background-color: var(--main);
+  padding: 8px 0;
+}
 
     .logo img {
       height: 33px;
