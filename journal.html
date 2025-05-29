@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potok — Journal</title>
+  <link rel="stylesheet" href="globals.css" />
+  <link rel="stylesheet" href="styleguide.css" />
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .home {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 61px 24px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 96px;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 375px;
+      width: 100%;
+      z-index: 100;
+      display: block;
+      background-color: var(--main);
+      padding: 24px 24px 4px 24px;
+      box-sizing: border-box;
+    }
+
+    .logo img {
+      height: 33px;
+      width: auto;
+      display: block;
+    }
+
+    .section-title {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 24px;
+    }
+
+    .article-card {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: 327px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      transition: background-color 0.2s;
+    }
+
+    .article-card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .article-card img {
+      width: 100%;
+      height: 80px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .article-card:not(:last-child) {
+      margin-bottom: 24px;
+    }
+    
+    .article-card:last-child {
+      margin-bottom: 24px;
+    }
+
+    .article-content {
+      padding: 24px 16px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .article-tags {
+      font-size: 10px;
+      line-height: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .article-title {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .article-description {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 16px;
+    }
+
+    .read-more {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--green);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .read-more img {
+      width: 5px;
+      height: 10px;
+      fill: var(--white);
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="home">
+    <a href="index.html" class="logo">
+      <img src="img/logo.svg" alt="Potok logo">
+    </a>
+
+    <div class="section-title">Статьи</div>
+
+    <a href="article1.html" class="article-card">
+      <img src="img/article1.jpg" alt="Почему отдых не всегда работает">
+      <div class="article-content">
+        <div class="article-tags">
+          <span>СТАТЬЯ</span>
+          <span>•</span>
+          <span>РАЗБОР</span>
+        </div>
+        <div class="article-title">Почему отдых не всегда работает</div>
+        <div class="article-description">Иногда два дня — это всего лишь пауза и даже она даётся не сразу</div>
+        <div class="read-more">
+          Перейти 
+          <img src="img/arrow.svg" alt="arrow">
+        </div>
+      </div>
+    </a>
+
+    <a href="article2.html" class="article-card">
+      <img src="img/article2.jpg" alt="10 треков без кульминаций">
+      <div class="article-content">
+        <div class="article-tags">
+          <span>МУЗЫКА</span>
+          <span>•</span>
+          <span>ПОДБОРКА</span>
+        </div>
+        <div class="article-title">10 треков без кульминаций</div>
+        <div class="article-description">Мягкий фон, в котором просто можно побыть</div>
+        <div class="read-more">
+          Перейти 
+          <img src="img/arrow.svg" alt="arrow">
+        </div>
+      </div>
+    </a>
+
+    <a href="article3.html" class="article-card">
+      <img src="img/article3.jpg" alt="Внимание на цвет по пути">
+      <div class="article-content">
+        <div class="article-tags">
+          <span>СТАТЬЯ</span>
+          <span>•</span>
+          <span>УПРАЖНЕНИЕ</span>
+        </div>
+        <div class="article-title">Внимание на цвет по пути</div>
+        <div class="article-description">Упражнение для прогулки — фокус на цвет вместо мыслей</div>
+        <div class="read-more">
+          Перейти 
+          <img src="img/arrow.svg" alt="arrow">
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Сегодня">
+      <div>Сегодня</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Практики">
+      <div>Практики</div>
+    </a>
+    <a href="journal.html" class="tab active">
+      <img src="img/journal-active.svg" alt="Журнал">
+      <div>Журнал</div>
+    </a>
+  </footer>
+</body>
+</html>
