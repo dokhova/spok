@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Potok Breathing Animation</title>
+  
+  <!-- Google tag (gtag.js) - ОБЯЗАТЕЛЬНО ПЕРВЫМ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBWRD903C5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NBWRD903C5', {
+      enhanced_measurement: true
+    });
+
+    // Функции для отслеживания дыхательной практики
+    function trackPracticeFullscreenStart() {
+      console.log('Полноэкранная дыхательная практика началась:', '5-0-5');
+      gtag('event', 'fullscreen_practice_start', {
+        event_category: 'breathing_practice',
+        event_label: '5-0-5_fullscreen',
+        practice_type: 'breathing',
+        value: 1
+      });
+    }
+
+    function trackPracticeActualStart() {
+      console.log('Пользователь нажал "Начать"');
+      gtag('event', 'practice_actual_start', {
+        event_category: 'breathing_engagement',
+        event_label: '5-0-5_button_start',
+        practice_type: 'breathing',
+        value: 1
+      });
+    }
+
+    function trackCycleCompletion(cycleNumber) {
+      console.log('Цикл завершен:', cycleNumber);
+      gtag('event', 'breathing_cycle_complete', {
+        event_category: 'breathing_progress',
+        event_label: 'cycle_' + cycleNumber,
+        practice_type: 'breathing',
+        value: cycleNumber
+      });
+    }
+
+    function trackPracticeCompletion() {
+      console.log('Практика 5-0-5 полностью завершена');
+      gtag('event', 'practice_completed', {
+        event_category: 'breathing_success',
+        event_label: '5-0-5_full_completion',
+        practice_type: 'breathing',
+        value: 5 // 5 циклов
+      });
+    }
+
+    function trackPracticeExit(exitMethod) {
+      console.log('Выход из практики:', exitMethod);
+      gtag('event', 'practice_exit', {
+        event_category: 'breathing_behavior',
+        event_label: exitMethod,
+        practice_type: 'breathing',
+        value: 1
+      });
+    }
+
+    function trackAudioEvent(eventType) {
+      console.log('Аудио событие:', eventType);
+      gtag('event', 'audio_' + eventType, {
+        event_category: 'breathing_audio',
+        event_label: '5-0-5_audio_' + eventType,
+        practice_type: 'breathing',
+        value: 1
+      });
+    }
+
+    function trackBreathingPhase(phase, cycleNumber) {
+      // Отслеживаем только ключевые фазы, чтобы не спамить
+      if (phase === 'Вдох' && cycleNumber <= 3) {
+        console.log('Фаза дыхания:', phase, 'Цикл:', cycleNumber);
+        gtag('event', 'breathing_phase', {
+          event_category: 'breathing_detail',
+          event_label: phase + '_cycle_' + cycleNumber,
+          practice_type: 'breathing',
+          value: 1
+        });
+      }
+    }
+
+    function trackPracticeEngagement(seconds) {
+      console.log('Время в практике:', seconds, 'секунд');
+      gtag('event', 'practice_engagement_time', {
+        event_category: 'breathing_engagement',
+        event_label: seconds + '_seconds',
+        practice_type: 'breathing',
+        value: seconds
+      });
+    }
+
+    // Глобальные переменные для отслеживания
+    let practiceStartTime = Date.now();
+    let engagementTracked = {
+      30: false,
+      60: false,
+      120: false
+    };
+    let lastTrackedCycle = 0;
+  </script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    
+    :root {
+      --yellow: #FFD527;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--yellow);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .breathing-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--white);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .cycle-counter {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .completion-message {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      display: none;
+    }
+
+    .completion-text {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .completion-praise {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .back-button {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      z-index: 20;
+      transition: background-color 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+
+    .start-prompt {
+      position: absolute;
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .start-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .start-button:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .start-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Несколько форматов для лучшей совместимости -->
+    <audio id="breathingAudio" preload="auto" loop>
+      <source src="mp3/505.mp3" type="audio/mpeg">
+      <source src="mp3/505.MP3" type="audio/mpeg">
+    </audio>
+
+    <a href="#" class="back-button" onclick="handleBackButton(); return false;">
+      <svg class="close-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </a>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+      <!-- Stars -->
+      <path d="M15 20 L15.3 20.6 L15.9 20.65 L15.6 21 L15.7 21.6 L15 21.3 L14.3 21.6 L14.4 21 L14.1 20.65 L14.7 20.6 Z" fill="white" opacity="0.6">
+        <animate 
+          attributeName="opacity" 
+          values="0.6;0.9;0.6;0.3;0.6" 
+          dur="4s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M85 25 L85.3 25.6 L85.9 25.65 L85.6 26 L85.7 26.6 L85 26.3 L84.3 26.6 L84.4 26 L84.1 25.65 L84.7 25.6 Z" fill="white" opacity="0.5">
+        <animate 
+          attributeName="opacity" 
+          values="0.5;0.2;0.5;0.8;0.5" 
+          dur="5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M80 75 L80.3 75.6 L80.9 75.65 L80.6 76 L80.7 76.6 L80 76.3 L79.3 76.6 L79.4 76 L79.1 75.65 L79.7 75.6 Z" fill="white" opacity="0.7">
+        <animate 
+          attributeName="opacity" 
+          values="0.7;0.4;0.7;1;0.7" 
+          dur="6s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M20 75 L20.3 75.6 L20.9 75.65 L20.6 76 L20.7 76.6 L20 76.3 L19.3 76.6 L19.4 76 L19.1 75.65 L19.7 75.6 Z" fill="white" opacity="0.4">
+        <animate 
+          attributeName="opacity" 
+          values="0.4;0.7;0.4;0.1;0.4" 
+          dur="4.5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M50 15 L50.2 15.5 L50.6 15.55 L50.4 15.8 L50.5 16.2 L50 16 L49.5 16.2 L49.6 15.8 L49.4 15.55 L49.8 15.5 Z" fill="white" opacity="0.5">
+        <animate 
+          attributeName="opacity" 
+          values="0.5;0.8;0.5;0.2;0.5" 
+          dur="3.5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <!-- Breathing circles для 5-0-5 (5 вдох, 5 выдох) -->
+      <circle cx="50" cy="50" r="15" fill="rgba(255, 255, 255, 0.15)" id="circle1">
+        <animate 
+          id="anim1"
+          attributeName="r" 
+          values="15;25;15" 
+          dur="10s" 
+          repeatCount="indefinite" 
+          keyTimes="0;0.5;1"
+          begin="indefinite"
+        />
+      </circle>
+      
+      <circle cx="50" cy="50" r="12" fill="rgba(255, 255, 255, 0.2)" id="circle2">
+        <animate 
+          id="anim2"
+          attributeName="r" 
+          values="12;20;12" 
+          dur="10s" 
+          repeatCount="indefinite" 
+          keyTimes="0;0.5;1"
+          begin="indefinite"
+        />
+      </circle>
+      
+      <circle cx="50" cy="50" r="9" fill="#FFD527" stroke="rgba(255, 255, 255, 0.8)" stroke-width="0.5" id="circle3">
+        <animate 
+          id="anim3"
+          attributeName="r" 
+          values="9;15;9" 
+          dur="10s" 
+          repeatCount="indefinite" 
+          keyTimes="0;0.5;1"
+          begin="indefinite"
+        />
+      </circle>
+    </svg>
+    
+    <div class="start-prompt" id="startPrompt">
+      <button class="start-button" id="startButton">Начать</button>
+    </div>
+    
+    <div class="breathing-text" id="breathingText" style="display: none;">Вдох</div>
+    <div class="cycle-counter" id="cycleCounter" style="display: none;">Цикл 1 из 5</div>
+    <div class="completion-message" id="completionMessage">
+      <div class="completion-text">Практика закончилась</div>
+      <div class="completion-praise">Отличная работа!</div>
+    </div>
+  </div>
+
+  <script>
+    let startTime = null;
+    let currentCycle = 1;
+    let isCompleted = false;
+    let isStarted = false;
+    let audioStarted = false;
+    
+    const audio = document.getElementById('breathingAudio');
+    const startPrompt = document.getElementById('startPrompt');
+    const breathingText = document.getElementById('breathingText');
+    const cycleCounter = document.getElementById('cycleCounter');
+    const completionMessage = document.getElementById('completionMessage');
+
+    // Обработчик кнопки "Назад"
+    function handleBackButton() {
+      const exitMethod = isStarted ? (isCompleted ? 'after_completion' : 'during_practice') : 'before_start';
+      trackPracticeExit(exitMethod);
+      
+      // Остановить аудио
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      
+      window.history.back();
+    }
+
+    // Проверка загрузки аудио с аналитикой
+    audio.addEventListener('loadeddata', () => {
+      console.log('Аудио файл загружен успешно');
+      trackAudioEvent('loaded');
+    });
+
+    audio.addEventListener('canplaythrough', () => {
+      console.log('Аудио готово к воспроизведению');
+      trackAudioEvent('ready');
+    });
+
+    audio.addEventListener('error', (e) => {
+      console.error('Ошибка загрузки аудио:', e);
+      trackAudioEvent('error');
+    });
+
+    audio.addEventListener('play', () => {
+      console.log('Аудио начало воспроизведение');
+      audioStarted = true;
+      trackAudioEvent('started');
+    });
+
+    audio.addEventListener('pause', () => {
+      console.log('Аудио поставлено на паузу');
+      trackAudioEvent('paused');
+    });
+
+    function startPractice() {
+      if (isStarted) return;
+      
+      isStarted = true;
+      startTime = Date.now();
+      
+      // Аналитика
+      trackPracticeActualStart();
+      
+      // Скрыть приглашение к началу
+      startPrompt.style.display = 'none';
+      
+      // Показать элементы практики
+      breathingText.style.display = 'block';
+      cycleCounter.style.display = 'block';
+      
+      // Запустить анимацию кругов синхронно
+      const anim1 = document.getElementById('anim1');
+      const anim2 = document.getElementById('anim2');
+      const anim3 = document.getElementById('anim3');
+      
+      if (anim1) anim1.beginElement();
+      if (anim2) anim2.beginElement();
+      if (anim3) anim3.beginElement();
+      
+      // Попробовать запустить аудио
+      tryStartAudio();
+      
+      console.log('Практика началась');
+    }
+
+    function tryStartAudio() {
+      if (audioStarted) return;
+      
+      console.log('Попытка запустить аудио...');
+      
+      // Reset audio to beginning
+      audio.currentTime = 0;
+      
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Аудио запущено успешно');
+        }).catch(error => {
+          console.error('Не удалось запустить аудио:', error);
+        });
+      }
+    }
+
+    // Отслеживание времени вовлеченности
+    function trackEngagementTime() {
+      if (!isStarted || isCompleted) return;
+      
+      const timeSpent = Math.round((Date.now() - practiceStartTime) / 1000);
+      
+      Object.keys(engagementTracked).forEach(seconds => {
+        if (timeSpent >= seconds && !engagementTracked[seconds]) {
+          engagementTracked[seconds] = true;
+          trackPracticeEngagement(parseInt(seconds));
+        }
+      });
+    }
+    
+    function updateBreathingText() {
+      if (!isStarted || isCompleted) return;
+      
+      const cycleDuration = 10000; // 10 секунд для 5-0-5 (5 вдох + 5 выдох)
+      const totalElapsed = Date.now() - startTime;
+      const elapsed = totalElapsed % cycleDuration;
+      
+      const newCycle = Math.floor(totalElapsed / cycleDuration) + 1;
+      
+      // Отслеживание завершения циклов
+      if (newCycle !== currentCycle && newCycle <= 5) {
+        if (currentCycle > lastTrackedCycle) {
+          trackCycleCompletion(currentCycle);
+          lastTrackedCycle = currentCycle;
+        }
+        currentCycle = newCycle;
+        cycleCounter.textContent = `Цикл ${currentCycle} из 5`;
+      }
+      
+      if (totalElapsed >= cycleDuration * 5) {
+        if (!isCompleted) {
+          isCompleted = true;
+          
+          // Отследить завершение последнего цикла и всей практики
+          if (currentCycle > lastTrackedCycle) {
+            trackCycleCompletion(5);
+          }
+          trackPracticeCompletion();
+          
+          breathingText.style.display = 'none';
+          cycleCounter.style.display = 'none';
+          completionMessage.style.display = 'block';
+          
+          // Остановить аудио
+          audio.pause();
+          audio.currentTime = 0;
+          
+          // Остановить анимацию
+          const anim1 = document.getElementById('anim1');
+          const anim2 = document.getElementById('anim2');
+          const anim3 = document.getElementById('anim3');
+          
+          if (anim1) anim1.endElement();
+          if (anim2) anim2.endElement();
+          if (anim3) anim3.endElement();
+        }
+        return;
+      }
+      
+      // Правильная синхронизация 5-0-5 с аналитикой фаз
+      let currentPhase = '';
+      if (elapsed <= 5000) { // 0-5 секунд
+        currentPhase = 'Вдох';
+        breathingText.textContent = 'Вдох';
+      } else { // 5-10 секунд
+        currentPhase = 'Выдох';
+        breathingText.textContent = 'Выдох';
+      }
+      
+      // Отслеживаем фазы дыхания для первых циклов
+      if (currentPhase === 'Вдох' && elapsed < 1000) { // Начало вдоха
+        trackBreathingPhase(currentPhase, currentCycle);
+      }
+    }
+
+    // Обработчики событий для начала практики
+    function handleUserInteraction(event) {
+      if (!isStarted) {
+        event.preventDefault();
+        startPractice();
+      }
+    }
+
+    // Обработчик для кнопки "Начать"
+    const startButton = document.getElementById('startButton');
+    if (startButton) {
+      startButton.addEventListener('click', handleUserInteraction);
+      startButton.addEventListener('touchstart', handleUserInteraction);
+    }
+
+    // Дополнительные обработчики для клавиатуры
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        handleUserInteraction(e);
+      }
+    });
+
+    // Основной цикл обновления
+    function gameLoop() {
+      updateBreathingText();
+      trackEngagementTime();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Запуск после загрузки страницы
+    window.addEventListener('load', () => {
+      console.log('Полноэкранная страница дыхательной практики загружена');
+      
+      // Отслеживание загрузки полноэкранной практики
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает на полноэкранной практике!');
+        trackPracticeFullscreenStart();
+      }
+      
+      gameLoop();
+      
+      // Скрыть сообщение о завершении изначально
+      completionMessage.style.display = 'none';
+      
+      // Предварительная загрузка аудио
+      audio.load();
+    });
+
+    // Отслеживание ухода со страницы
+    window.addEventListener('beforeunload', () => {
+      if (isStarted && !isCompleted) {
+        trackPracticeExit('page_unload');
+      }
+    });
+
+    // Предотвращение автоматического скролла на мобильных устройствах
+    document.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
+</body>
+</html>
