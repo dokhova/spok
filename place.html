@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potok — Уютное место</title>
+  
+  <!-- Google tag (gtag.js) - ОБЯЗАТЕЛЬНО ПЕРВЫМ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBWRD903C5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NBWRD903C5', {
+      enhanced_measurement: true
+    });
+
+    // Функции для отслеживания событий дыхательной практики
+    function trackPracticeOpened() {
+      console.log('Практика сна открыта:', 'Уютное место');
+      gtag('event', 'practice_opened', {
+        event_category: 'sleep_practice',
+        event_label: 'Уютное место',
+        practice_type: 'sleep',
+        value: 1
+      });
+    }
+
+    function trackPracticeStarted() {
+      console.log('Практика сна начата:', 'Уютное место');
+      gtag('event', 'practice_started', {
+        event_category: 'sleep_engagement',
+        event_label: 'Уютное место',
+        practice_type: 'sleep',
+        value: 1
+      });
+    }
+
+    function trackPreviewAnimationView() {
+      console.log('Просмотр превью анимации сна');
+      gtag('event', 'preview_animation_view', {
+        event_category: 'practice_preview',
+        event_label: 'place_sleep_preview',
+        value: 1
+      });
+    }
+
+    function trackPracticeTypeView(practiceType) {
+      console.log('Просмотр типа практики:', practiceType);
+      gtag('event', 'practice_type_view', {
+        event_category: 'practice_discovery',
+        event_label: practiceType,
+        value: 1
+      });
+    }
+
+    function trackRelatedPracticeClick(practiceName) {
+      console.log('Клик по связанной практике:', practiceName);
+      gtag('event', 'related_practice_click', {
+        event_category: 'practice_navigation',
+        event_label: practiceName,
+        practice_type: 'sleep',
+        value: 1
+      });
+    }
+
+    function trackNavigation(navItem) {
+      console.log('Навигация:', navItem);
+      gtag('event', 'navigation', {
+        event_category: 'tab_bar',
+        event_label: navItem,
+        value: 1
+      });
+    }
+
+    function trackCloseButton() {
+      console.log('Закрытие практики');
+      gtag('event', 'practice_close', {
+        event_category: 'practice_action',
+        event_label: 'close_button',
+        practice_type: 'sleep',
+        value: 1
+      });
+    }
+
+    function trackPracticeEngagement() {
+      console.log('Длительное взаимодействие с практикой');
+      gtag('event', 'practice_engagement', {
+        event_category: 'sleep_engagement',
+        event_label: 'stayed_30_seconds',
+        practice_type: 'sleep',
+        value: 30
+      });
+    }
+
+    function trackPracticeReadiness() {
+      console.log('Готовность к практике (1+ минута на странице)');
+      gtag('event', 'practice_readiness', {
+        event_category: 'sleep_preparation',
+        event_label: 'preparation_time_1_minute',
+        practice_type: 'sleep',
+        value: 60
+      });
+    }
+
+    // Отслеживание взаимодействия с превью
+    function trackPreviewInteraction() {
+      console.log('Взаимодействие с превью сна');
+      gtag('event', 'preview_interaction', {
+        event_category: 'practice_preview',
+        event_label: 'sleep_preview_click',
+        value: 1
+      });
+    }
+
+    // Отслеживание времени подготовки к практике
+    let practiceStartTime = Date.now();
+    let engagementTracked = {
+      30: false,   // 30 секунд
+      60: false,   // 1 минута
+      120: false,  // 2 минуты
+    };
+
+    function trackPracticePreparationTime() {
+      const timeSpent = Math.round((Date.now() - practiceStartTime) / 1000);
+      
+      Object.keys(engagementTracked).forEach(seconds => {
+        if (timeSpent >= seconds && !engagementTracked[seconds]) {
+          engagementTracked[seconds] = true;
+          console.log('Время подготовки к практике:', seconds + ' секунд');
+          gtag('event', 'practice_preparation_time', {
+            event_category: 'sleep_preparation',
+            event_label: seconds + '_seconds',
+            practice_type: 'sleep',
+            value: parseInt(seconds)
+          });
+        }
+      });
+    }
+
+    // Отслеживание просмотра связанных практик
+    let relatedPracticesViewed = new Set();
+    
+    function trackRelatedPracticesView() {
+      const practiceCards = document.querySelectorAll('.practice-card');
+      practiceCards.forEach(function(card) {
+        const rect = card.getBoundingClientRect();
+        const practiceName = card.querySelector('.practice-card-title')?.textContent || 'Unknown Practice';
+        
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          if (!relatedPracticesViewed.has(practiceName)) {
+            relatedPracticesViewed.add(practiceName);
+            console.log('Просмотр связанной практики:', practiceName);
+            gtag('event', 'related_practice_view', {
+              event_category: 'practice_discovery',
+              event_label: practiceName,
+              value: 1
+            });
+          }
+        }
+      });
+    }
+
+    // Инициализация отслеживания
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Google Analytics загружается на практике сна...');
+      
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает на практике сна!');
+        trackPracticeOpened();
+      } else {
+        console.log('❌ Google Analytics НЕ работает!');
+      }
+
+      // Отслеживание кнопки закрытия
+      const closeButton = document.querySelector('.close-button');
+      if (closeButton) {
+        closeButton.addEventListener('click', trackCloseButton);
+      }
+
+      // Отслеживание превью анимации
+      const previewContainer = document.querySelector('.preview-container');
+      if (previewContainer) {
+        // Просмотр превью
+        setTimeout(trackPreviewAnimationView, 2000);
+        
+        // Клик по превью (начало практики)
+        previewContainer.addEventListener('click', function() {
+          trackPreviewInteraction();
+          trackPracticeStarted();
+        });
+      }
+
+      // Отслеживание кликов по связанным практикам
+      const relatedPractices = document.querySelectorAll('.practice-card');
+      relatedPractices.forEach(function(practice) {
+        practice.addEventListener('click', function() {
+          const practiceName = practice.querySelector('.practice-card-title')?.textContent || 'Unknown Practice';
+          trackRelatedPracticeClick(practiceName);
+        });
+      });
+
+      // Отслеживание навигации
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          const tabName = tab.querySelector('div')?.textContent || 'Unknown';
+          trackNavigation(tabName);
+        });
+      });
+
+      // Отслеживание клика по логотипу
+      const logo = document.querySelector('.logo');
+      if (logo) {
+        logo.addEventListener('click', function() {
+          console.log('Клик по логотипу');
+          gtag('event', 'click', {
+            event_category: 'navigation',
+            event_label: 'Logo'
+          });
+        });
+      }
+
+      // Отслеживание просмотра типа практики
+      setTimeout(function() {
+        trackPracticeTypeView('СОН • ПОКОЙ');
+      }, 3000);
+
+      // Отслеживание связанных практик при скролле
+      window.addEventListener('scroll', trackRelatedPracticesView);
+      
+      // Проверка видимых практик при загрузке
+      setTimeout(trackRelatedPracticesView, 1000);
+      
+      // Отслеживание времени подготовки каждые 10 секунд
+      setInterval(trackPracticePreparationTime, 10000);
+
+      // События вовлеченности
+      setTimeout(trackPracticeEngagement, 30000);  // 30 секунд
+      setTimeout(trackPracticeReadiness, 60000);   // 1 минута
+
+      // Отслеживание ухода со страницы
+      window.addEventListener('beforeunload', function() {
+        const totalTimeSpent = Math.round((Date.now() - practiceStartTime) / 1000);
+        gtag('event', 'practice_session_end', {
+          event_category: 'sleep_engagement',
+          event_label: 'total_preparation_time_' + totalTimeSpent + '_seconds',
+          practice_type: 'sleep',
+          value: totalTimeSpent
+        });
+      });
+    });
+
+    // Обновляем функцию startFullScreenBreathing
+    function startFullScreenBreathing() {
+      // Отслеживаем начало полной практики
+      trackPracticeStarted();
+      
+      // Переходим к полноэкранной анимации
+      window.location.href = 'place-full.html';
+    }
+  </script>
+
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 81px 24px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 96px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 375px;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--main);
+      padding: 24px 24px 24px 24px;
+      box-sizing: border-box;
+    }
+
+    .logo {
+      display: block;
+    }
+
+    .logo img {
+      height: 33px;
+      width: auto;
+      display: block;
+    }
+
+    .close-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .close-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+      position: relative;
+    }
+
+    .close-icon::before,
+    .close-icon::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 1.5px;
+      background-color: var(--green);
+      transform-origin: center;
+    }
+
+    .close-icon::before {
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+
+    .close-icon::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    .tags {
+      font-size: 10px;
+      line-height: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0 0 4px 0;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 48px;
+    }
+
+    .preview-container {
+      width: 100%;
+      max-width: 327px;
+      height: 207px;
+      background-color: #0a1029;
+      border-radius: 8px;
+      margin: 0 auto 48px auto;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border: 1px solid #0a1029;
+    }
+
+    .preview-container:active {
+      transform: scale(0.98);
+    }
+
+    .preview-animation {
+      width: 100%;
+      height: 100%;
+    }
+
+    .start-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 120px;
+      height: 40px;
+      margin: 0 auto 24px auto;
+      background-color: var(--green);
+      border-radius: 8px;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--white);
+      transition: background-color 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .start-button:hover {
+      background-color: #2e9249;
+    }
+
+    .start-button:active {
+      background-color: #268240;
+    }
+
+    .description {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 48px;
+    }
+
+    .other-practices {
+      margin-top: 16px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 24px;
+    }
+
+    .practice-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      width: 100%;
+      height: 80px;
+      padding-right: 16px;
+      box-sizing: border-box;
+      transition: background-color 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .practice-card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .practice-card img:first-child {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 12px 0 0 12px;
+      flex-shrink: 0;
+    }
+
+    .practice-card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .practice-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .practice-card-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 18px;
+    }
+
+    .practice-card .arrow {
+      width: 5px;
+      height: 10px;
+      margin-left: 16px;
+      fill: var(--white);
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="logo">
+        <img src="img/logo.svg" alt="Potok logo">
+      </a>
+      
+      <a href="practices.html" class="close-button">
+        <div class="close-icon"></div>
+      </a>
+    </div>
+
+    <div class="tags">
+      <span>СОН</span>
+      <span>•</span>
+      <span>ПОКОЙ</span>
+    </div>
+
+    <h1 class="title">Уютное место</h1>
+    <div class="subtitle">Расслабьте тело, ощущая приятное тепло и тяжесть.</div>
+
+    <div class="preview-container" onclick="startFullScreenBreathing()">
+      <svg class="preview-animation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327 207">
+        <!-- Background - cosmic dark blue -->
+        <rect width="327" height="207" fill="#0a1029" rx="8" />
+        
+        <!-- Gradient definitions -->
+        <defs>
+          <radialGradient id="blueGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+            <stop offset="0%" stop-color="#a3c2ff" stop-opacity="0.8" />
+            <stop offset="70%" stop-color="#6b9cff" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#4285F4" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        
+        <!-- Smaller stars -->
+        <g fill="white">
+          <circle cx="30" cy="30" r="0.6" opacity="0.7" />
+          <circle cx="80" cy="45" r="0.4" opacity="0.5" />
+          <circle cx="120" cy="25" r="0.7" opacity="0.6" />
+          <circle cx="180" cy="40" r="0.5" opacity="0.8" />
+          <circle cx="230" cy="20" r="0.6" opacity="0.7" />
+          <circle cx="280" cy="35" r="0.4" opacity="0.5" />
+          <circle cx="300" cy="50" r="0.6" opacity="0.6" />
+          
+          <circle cx="20" cy="80" r="0.5" opacity="0.5" />
+          <circle cx="70" cy="110" r="0.7" opacity="0.7" />
+          <circle cx="110" cy="90" r="0.4" opacity="0.6" />
+          <circle cx="200" cy="120" r="0.7" opacity="0.8" />
+          <circle cx="260" cy="95" r="0.5" opacity="0.5" />
+          <circle cx="310" cy="105" r="0.6" opacity="0.6" />
+          
+          <circle cx="40" cy="160" r="0.6" opacity="0.8" />
+          <circle cx="90" cy="180" r="0.4" opacity="0.5" />
+          <circle cx="140" cy="170" r="0.7" opacity="0.6" />
+          <circle cx="220" cy="185" r="0.5" opacity="0.7" />
+          <circle cx="270" cy="165" r="0.7" opacity="0.8" />
+          <circle cx="300" cy="180" r="0.4" opacity="0.5" />
+        </g>
+        
+        <!-- Larger twinkling stars -->
+        <g>
+          <circle cx="60" cy="60" r="1" fill="white">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="8s" repeatCount="indefinite" />
+          </circle>
+          <circle cx="150" cy="50" r="1.2" fill="white">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="8s" repeatCount="indefinite" begin="1s" />
+          </circle>
+          <circle cx="250" cy="70" r="1" fill="white">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="8s" repeatCount="indefinite" begin="2s" />
+          </circle>
+          <circle cx="50" cy="140" r="1.1" fill="white">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="8s" repeatCount="indefinite" begin="3s" />
+          </circle>
+          <circle cx="170" cy="160" r="1" fill="white">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="8s" repeatCount="indefinite" begin="4s" />
+          </circle>
+          <circle cx="290" cy="150" r="1.2" fill="white">
+            <animate attributeName="opacity" values="0.4;1;0.4" dur="8s" repeatCount="indefinite" begin="5s" />
+          </circle>
+        </g>
+        
+        <!-- Main cosmic circle animation with blue glow -->
+        <!-- Glow effect -->
+        <circle cx="163.5" cy="103.5" r="50" fill="url(#blueGlow)" opacity="0.5">
+          <animate 
+            attributeName="r" 
+            values="50;70;50" 
+            dur="16s" 
+            repeatCount="indefinite"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0.5;0.8;0.5" 
+            dur="16s" 
+            repeatCount="indefinite"
+          />
+        </circle>
+        
+        <!-- Base blue circle -->
+        <circle cx="163.5" cy="103.5" r="35" fill="#4285F4" opacity="0.7">
+          <animate 
+            attributeName="r" 
+            values="35;50;35" 
+            dur="16s" 
+            repeatCount="indefinite"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0.7;1;0.7" 
+            dur="16s" 
+            repeatCount="indefinite"
+          />
+        </circle>
+        
+        <!-- Blue waves -->
+        <circle cx="163.5" cy="103.5" r="40" fill="none" stroke="#4285F4" stroke-width="1.5" opacity="0.6">
+          <animate 
+            attributeName="r" 
+            values="40;100" 
+            dur="12s" 
+            repeatCount="indefinite"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0.6;0" 
+            dur="12s" 
+            repeatCount="indefinite"
+          />
+        </circle>
+        
+        <circle cx="163.5" cy="103.5" r="40" fill="none" stroke="#4285F4" stroke-width="1.5" opacity="0.6">
+          <animate 
+            attributeName="r" 
+            values="40;100" 
+            dur="12s" 
+            repeatCount="indefinite"
+            begin="4s"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0.6;0" 
+            dur="12s" 
+            repeatCount="indefinite"
+            begin="4s"
+          />
+        </circle>
+        
+        <circle cx="163.5" cy="103.5" r="40" fill="none" stroke="#4285F4" stroke-width="1.5" opacity="0.6">
+          <animate 
+            attributeName="r" 
+            values="40;100" 
+            dur="12s" 
+            repeatCount="indefinite"
+            begin="8s"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0.6;0" 
+            dur="12s" 
+            repeatCount="indefinite"
+            begin="8s"
+          />
+        </circle>
+        
+        <!-- Play button overlay -->
+        <g transform="translate(163.5, 103.5)">
+          <!-- Button background -->
+          <circle r="20" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1"/>
+          <!-- Play icon -->
+          <path d="M-5 -7 L-5 7 L7 0 Z" fill="white" opacity="0.9"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="other-practices">
+      <div class="section-title">Другие практики</div>
+      
+      <a href="stars.html" class="practice-card">
+        <img src="img/stars.jpg" alt="Язык звезд">
+        <div class="practice-card-content">
+          <div class="practice-card-title">Язык звезд</div>
+          <div class="practice-card-subtitle">Подготовка ко сну</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+    </div>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Сегодня">
+      <div>Сегодня</div>
+    </a>
+    <a href="practices.html" class="tab active">
+      <img src="img/practices-active.svg" alt="Практики">
+      <div>Практики</div>
+    </a>
+    <a href="journal.html" class="tab">
+      <img src="img/journal.svg" alt="Журнал">
+      <div>Журнал</div>
+    </a>
+  </footer>
+</body>
+</html>
