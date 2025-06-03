@@ -391,7 +391,7 @@
     const cycleCounter = document.getElementById('cycleCounter');
     const completionMessage = document.getElementById('completionMessage');
 
-    // Обработчик кнопки "Назад"
+  // Обработчик кнопки "Назад"
     function handleBackButton() {
       const exitMethod = isStarted ? (isCompleted ? 'after_completion' : 'during_practice') : 'before_start';
       trackPracticeExit(exitMethod);
@@ -402,7 +402,7 @@
         audio.currentTime = 0;
       }
       
-      window.history.back();
+      window.location.href = 'practices.html';
     }
 
     // Проверка загрузки аудио с аналитикой
