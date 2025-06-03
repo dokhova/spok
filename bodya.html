@@ -427,19 +427,30 @@
     }
 
     // Обработчик кнопки "Назад"
-    function handleBackButton() {
-      const exitMethod = isStarted ? (isCompleted ? 'after_completion' : 'during_practice') : 'before_start';
-      trackPracticeExit(exitMethod);
-      
-      // Остановить аудио
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-      
-      window.location.href = 'practices.html';
-    }
-
+function handleBackButton() {
+  const exitMethod = isStarted ? (isCompleted ? 'after_completion' : 'during_practice') : 'before_start';
+  trackPracticeExit(exitMethod);
+  
+  // Остановить аудио
+  if (audio) {
+    audio.pause();
+    audio.currentTime = 0;
+  }
+  
+  // Определяем, откуда пришел пользователь
+  const referrer = document.referrer;
+  
+  if (referrer && referrer.includes('index.html')) {
+    // Если пришел с главной страницы - возвращаем на главную
+    window.location.href = 'index.html';
+  } else if (referrer && referrer.includes('practices.html')) {
+    // Если пришел со страницы практик - возвращаем на практики
+    window.location.href = 'practices.html';
+  } else {
+    // По умолчанию возвращаем на практики
+    window.location.href = 'practices.html';
+  }
+}
     // Проверка загрузки аудио с аналитикой
     audio.addEventListener('loadeddata', () => {
       console.log('Аудио файл загружен успешно');
