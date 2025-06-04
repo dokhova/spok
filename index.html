@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potok — Home</title>
+  
+  <!-- Google tag (gtag.js) - ОБЯЗАТЕЛЬНО ПЕРВЫМ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBWRD903C5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NBWRD903C5', {
+      enhanced_measurement: true
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Google Analytics загружается...');
+      
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает!');
+        gtag('event', 'test_load', {
+          event_category: 'test',
+          event_label: 'page_loaded'
+        });
+      } else {
+        console.log('❌ Google Analytics НЕ работает!');
+      }
+
+      // Отслеживание кликов по медитативной кнопке
+      const meditationButton = document.querySelector('.meditation-button');
+      if (meditationButton) {
+        meditationButton.addEventListener('click', function() {
+          console.log('Клик по медитативной кнопке "Тело как якорь"');
+          gtag('event', 'meditation_click', {
+            event_category: 'meditation',
+            event_label: 'Тело как якорь'
+          });
+        });
+      }
+
+      // Отслеживание кликов по карточкам
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(function(card) {
+        card.addEventListener('click', function() {
+          const cardTitle = card.querySelector('.card-title')?.textContent || 'Unknown';
+          console.log('Клик по карточке:', cardTitle);
+          gtag('event', 'card_click', {
+            event_category: 'card',
+            event_label: cardTitle
+          });
+        });
+      });
+
+      // Отслеживание навигации
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          const tabName = tab.querySelector('div')?.textContent || 'Unknown';
+          console.log('Клик по табу:', tabName);
+          gtag('event', 'navigation', {
+            event_category: 'tab_bar',
+            event_label: tabName
+          });
+        });
+      });
+
+      // Отслеживание клика по кнопке связи
+      const contactButton = document.querySelector('.contact-button');
+      if (contactButton) {
+        contactButton.addEventListener('click', function() {
+          console.log('Клик по кнопке "Telegram"');
+          gtag('event', 'contact_click', {
+            event_category: 'contact',
+            event_label: 'telegram_button'
+          });
+        });
+      }
+    });
+  </script>
+
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+      --blue: #4285F4;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .home {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      padding-bottom: 96px;
+      box-sizing: border-box;
+    }
+
+    .top-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .logo {
+      display: block;
+      width: fit-content;
+    }
+
+    .logo img {
+      height: 33px;
+      width: auto;
+      display: block;
+    }
+
+    .contact-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      transition: background-color 0.2s, transform 0.1s;
+      cursor: pointer;
+    }
+
+    .contact-button:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .contact-button:active {
+      background-color: rgba(255, 255, 255, 0.12);
+      transform: scale(0.95);
+    }
+
+    .contact-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--text-2);
+      transition: color 0.2s;
+      margin-left: -2px;
+      margin-top: -1px;
+    }
+
+    .contact-button:hover .contact-icon {
+      color: var(--white);
+    }
+
+    .header {
+      max-width: 327px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .text-welcome {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      color: var(--text-2);
+    }
+
+    .text-title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* Медитативная кнопка */
+    .meditation-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--text-2);
+      align-self: flex-start;
+    }
+
+    .meditation-button {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 327px;
+      height: 80px;
+      background: var(--blue);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 32px rgba(66, 133, 244, 0.3);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    .meditation-button:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 48px rgba(66, 133, 244, 0.4);
+    }
+
+    .meditation-button:active {
+      transform: translateY(-2px) scale(0.98);
+    }
+
+    .preview-animation {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .meditation-button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+      pointer-events: none;
+    }
+
+    .meditation-button.clicked::before {
+      width: 400px;
+      height: 400px;
+    }
+
+    .meditation-button::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border: 2px solid var(--blue);
+      border-radius: 12px;
+      opacity: 0;
+      animation: button-pulse 4s infinite;
+    }
+
+    @keyframes button-pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+      50% {
+        transform: scale(1.02);
+        opacity: 0.3;
+      }
+      100% {
+        transform: scale(1.05);
+        opacity: 0;
+      }
+    }
+
+    .meditation-button.active {
+      background: var(--green);
+      box-shadow: 0 8px 32px rgba(52, 168, 83, 0.4);
+    }
+
+    .meditation-button.active::after {
+      border-color: var(--green);
+    }
+
+    .meditation-button.active .preview-animation rect {
+      fill: var(--green);
+    }
+
+    .button-label {
+      display: none;
+    }
+
+    .button-status {
+      display: none;
+    }
+
+    .button-status.show {
+      opacity: 1;
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 327px;
+      height: 80px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding-right: 16px;
+      transition: background-color 0.2s;
+    }
+
+    .card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .card img:first-child {
+      width: 118px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px 0 0 8px;
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--white);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 16px;
+    }
+
+    .card .arrow {
+      width: 5px;
+      height: 10px;
+      margin-left: 16px;
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="home">
+    <div class="top-header">
+      <a href="index.html" class="logo">
+        <img src="img/logo.svg" alt="Potok logo">
+      </a>
+      
+      <a href="https://t.me/the_dokhova" class="contact-button" title="Связаться с нами" 
+         onclick="gtag('event', 'click', { 'event_category': 'contact', 'event_label': 'telegram_the_dokhova' });"
+         data-event-category="contact" 
+         data-event-action="click" 
+         data-event-label="telegram_the_dokhova">
+        <svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="header">
+      <div class="text-welcome">Добро пожаловать!</div>
+      <div class="text-title">С чего хочешь начать?</div>
+    </div>
+
+    <div class="meditation-section">
+      <div class="section-title">Практика дня</div>
+      
+      <button class="meditation-button" onclick="handleMeditationClick(this)">
+        <!-- SVG анимация -->
+        <svg class="preview-animation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327 80">
+          <!-- Background -->
+          <rect width="327" height="80" fill="#4285F4" rx="8" />
+          
+          <!-- Random white dots -->
+          <circle cx="60" cy="20" r="1.5" fill="white" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="270" cy="25" r="2" fill="white" opacity="0.5">
+            <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="250" cy="60" r="1" fill="white" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="80" cy="55" r="1.8" fill="white" opacity="0.4">
+            <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="180" cy="15" r="1.2" fill="white" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="300" cy="45" r="1.4" fill="white" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2.8s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="40" cy="35" r="2.2" fill="white" opacity="0.3">
+            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="200" cy="65" r="1.6" fill="white" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+          
+          <!-- 5 концентрических волн -->
+          <!-- Wave 1 -->
+          <circle cx="163.5" cy="40" r="35" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="35;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="0s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="0s"
+            />
+          </circle>
+          
+          <!-- Wave 2 -->
+          <circle cx="163.5" cy="40" r="35" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="35;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="1.6s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="1.6s"
+            />
+          </circle>
+          
+          <!-- Wave 3 -->
+          <circle cx="163.5" cy="40" r="35" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="35;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="3.2s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="3.2s"
+            />
+          </circle>
+          
+          <!-- Wave 4 -->
+          <circle cx="163.5" cy="40" r="35" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="35;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="4.8s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="4.8s"
+            />
+          </circle>
+          
+          <!-- Wave 5 -->
+          <circle cx="163.5" cy="40" r="35" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="35;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="6.4s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="6.4s"
+            />
+          </circle>
+          
+          <!-- Play button overlay -->
+          <g transform="translate(163.5, 40)">
+            <!-- Button background -->
+            <circle r="18" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1"/>
+            <!-- Play icon -->
+            <path d="M-4 -6 L-4 6 L6 0 Z" fill="white" opacity="0.9"/>
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <div class="cards">
+      <a href="pond.html" class="card">
+        <img src="img/mind.jpg" alt="Успокоить мысли">
+        <div class="card-content">
+          <div class="card-title">Успокоить мысли</div>
+          <div class="card-subtitle">Медитация</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+      <a href="478.html" class="card">
+        <img src="img/breathing.jpg" alt="Снизить стресс">
+        <div class="card-content">
+          <div class="card-title">Снизить стресс</div>
+          <div class="card-subtitle">Дыхание</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+      <a href="stars.html" class="card">
+        <img src="img/sleep.jpg" alt="Улучшить сон">
+        <div class="card-content">
+          <div class="card-title">Улучшить сон</div>
+          <div class="card-subtitle">Сон</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+    </div>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab active">
+      <img src="img/home-active.svg" alt="Сегодня">
+      <div>Сегодня</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Практики">
+      <div>Практики</div>
+    </a>
+    <a href="journal.html" class="tab">
+      <img src="img/journal.svg" alt="Журнал">
+      <div>Журнал</div>
+    </a>
+  </footer>
+
+  <script>
+    function handleMeditationClick(button) {
+      // Добавляем эффект клика
+      button.classList.add('clicked');
+      
+      // Переключаем активное состояние
+      button.classList.toggle('active');
+      
+      // Управляем статусом
+      const buttonStatus = document.getElementById('buttonStatus');
+      const isActive = button.classList.contains('active');
+      
+      if (isActive) {
+        buttonStatus.classList.add('show');
+        console.log('🧘‍♀️ Медитация "Тело как якорь" началась');
+        
+        // Меняем цвет фона SVG на зеленый
+        const bgRect = button.querySelector('rect');
+        bgRect.setAttribute('fill', '#34A853');
+        
+        // Добавляем вибрацию (если поддерживается)
+        if (navigator.vibrate) {
+          navigator.vibrate([100, 50, 100]);
+        }
+        
+        // Симулируем переход к странице медитации через 2 секунды
+        setTimeout(() => {
+          console.log('Переход к полноэкранной медитации...');
+          window.location.href = 'bodya.html';
+        }, 2000);
+        
+      } else {
+        buttonStatus.classList.remove('show');
+        console.log('⏸️ Медитация остановлена');
+        
+        // Возвращаем синий цвет
+        const bgRect = button.querySelector('rect');
+        bgRect.setAttribute('fill', '#4285F4');
+      }
+      
+      // Убираем эффект клика
+      setTimeout(() => {
+        button.classList.remove('clicked');
+      }, 600);
+    }
+
+    // Добавляем случайные изменения интенсивности анимации волн
+    setInterval(() => {
+      const waves = document.querySelectorAll('circle[cx="163.5"]');
+      const randomOffset = Math.random() * 2;
+      
+      waves.forEach((wave, index) => {
+        const currentBegin = parseFloat(wave.querySelector('animate').getAttribute('begin')) || (index * 1.6);
+        wave.querySelectorAll('animate').forEach(animate => {
+          animate.setAttribute('begin', `${currentBegin + randomOffset}s`);
+        });
+      });
+    }, 15000);
+
+    // Эффект дыхания для кнопки
+    let breatheInterval;
+    
+    function startBreatheEffect(button) {
+      breatheInterval = setInterval(() => {
+        if (!button.classList.contains('active')) {
+          button.style.transform = 'scale(1.01)';
+          setTimeout(() => {
+            button.style.transform = 'scale(1)';
+          }, 2000);
+        }
+      }, 4000);
+    }
+
+    // Запускаем эффект дыхания при загрузке
+    window.addEventListener('load', () => {
+      const button = document.querySelector('.meditation-button');
+      startBreatheEffect(button);
+    });
+
+    // Добавляем эффект при фокусе (для доступности)
+    document.querySelector('.meditation-button').addEventListener('focus', function() {
+      this.style.outline = '2px solid rgba(66, 133, 244, 0.5)';
+      this.style.outlineOffset = '4px';
+    });
+
+    document.querySelector('.meditation-button').addEventListener('blur', function() {
+      this.style.outline = 'none';
+    });
+
+    // Автоматическое отслеживание просмотра превью через 2 секунды
+    setTimeout(() => {
+      console.log('Просмотр превью анимации медитации');
+    }, 2000);
+  </script>
+</body>
+</html>
