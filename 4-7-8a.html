@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Potok — 4-7-8</title>
+  
+  <!-- Google tag (gtag.js) - ОБЯЗАТЕЛЬНО ПЕРВЫМ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4834XVE45Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4834XVE45Z', {
+    enhanced_measurement: true
+  });
+
+  // Функции для отслеживания дыхательной практики
+  function trackPracticeFullscreenStart() {
+    console.log('Полноэкранная дыхательная практика началась:', '4-7-8');
+    gtag('event', 'fullscreen_practice_start', {
+      event_category: 'breathing_practice',
+      event_label: '4-7-8_fullscreen',
+      practice_type: 'breathing',
+      value: 1
+    });
+  }
+
+  function trackPracticeActualStart() {
+    console.log('Пользователь нажал "Начать"');
+    gtag('event', 'practice_actual_start', {
+      event_category: 'breathing_engagement',
+      event_label: '4-7-8_button_start',
+      practice_type: 'breathing',
+      value: 1
+    });
+  }
+
+  function trackCycleCompletion(cycleNumber) {
+    console.log('Цикл завершен:', cycleNumber);
+    gtag('event', 'breathing_cycle_complete', {
+      event_category: 'breathing_progress',
+      event_label: 'cycle_' + cycleNumber,
+      practice_type: 'breathing',
+      value: cycleNumber
+    });
+  }
+
+  function trackPracticeCompletion() {
+    console.log('Практика 4-7-8 полностью завершена');
+    gtag('event', 'practice_completed', {
+      event_category: 'breathing_success',
+      event_label: '4-7-8_full_completion',
+      practice_type: 'breathing',
+      value: 5
+    });
+  }
+
+  function trackPracticeExit(exitMethod) {
+    console.log('Выход из практики:', exitMethod);
+    gtag('event', 'practice_exit', {
+      event_category: 'breathing_behavior',
+      event_label: exitMethod,
+      practice_type: 'breathing',
+      value: 1
+    });
+  }
+
+  function trackAudioEvent(eventType) {
+    console.log('Аудио событие:', eventType);
+    gtag('event', 'audio_' + eventType, {
+      event_category: 'breathing_audio',
+      event_label: '4-7-8_audio_' + eventType,
+      practice_type: 'breathing',
+      value: 1
+    });
+  }
+
+  function trackBreathingPhase(phase, cycleNumber) {
+    if (phase === 'Вдох' && cycleNumber <= 3) {
+      console.log('Фаза дыхания:', phase, 'Цикл:', cycleNumber);
+      gtag('event', 'breathing_phase', {
+        event_category: 'breathing_detail',
+        event_label: phase + '_cycle_' + cycleNumber,
+        practice_type: 'breathing',
+        value: 1
+      });
+    }
+  }
+
+  function trackPracticeEngagement(seconds) {
+    console.log('Время в практике:', seconds, 'секунд');
+    gtag('event', 'practice_engagement_time', {
+      event_category: 'breathing_engagement',
+      event_label: seconds + '_seconds',
+      practice_type: 'breathing',
+      value: seconds
+    });
+  }
+
+  // Глобальные переменные для отслеживания
+  let practiceStartTime = Date.now();
+  let engagementTracked = {
+    30: false,
+    60: false,
+    120: false
+  };
+  let lastTrackedCycle = 0;
+</script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    
+    :root {
+      --green: #34A853;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--green);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .breathing-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--white);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .cycle-counter {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .completion-message {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      display: none;
+    }
+
+    .completion-text {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .completion-praise {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .back-button {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      z-index: 20;
+      transition: background-color 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+
+    .start-prompt, .pause-prompt, .resume-prompt {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .start-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .start-button:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .start-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(0.98);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      50% {
+        transform: scale(1.05);
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    /* Стили для дыхательных кругов */
+    .breathing-circle {
+      transition: all 0.1s ease-out;
+    }
+
+    /* Стиль для кнопки в состоянии подготовки аудио */
+    .start-button.preparing {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+      animation: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Несколько форматов для лучшей совместимости -->
+    <audio id="breathingAudio" preload="auto" loop>
+      <source src="mp3/478.mp3" type="audio/mpeg">
+      <source src="mp3/478.MP3" type="audio/mpeg">
+    </audio>
+
+    <a href="#" class="back-button" onclick="handleBackButton(); return false;">
+      <svg class="close-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </a>
+
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" style="width: 100%; height: 100%;">
+      <!-- Stars -->
+      <path d="M15 20 L15.3 20.6 L15.9 20.65 L15.6 21 L15.7 21.6 L15 21.3 L14.3 21.6 L14.4 21 L14.1 20.65 L14.7 20.6 Z" fill="white" opacity="0.6">
+        <animate 
+          attributeName="opacity" 
+          values="0.6;0.9;0.6;0.3;0.6" 
+          dur="4s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M85 25 L85.3 25.6 L85.9 25.65 L85.6 26 L85.7 26.6 L85 26.3 L84.3 26.6 L84.4 26 L84.1 25.65 L84.7 25.6 Z" fill="white" opacity="0.5">
+        <animate 
+          attributeName="opacity" 
+          values="0.5;0.2;0.5;0.8;0.5" 
+          dur="5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M80 75 L80.3 75.6 L80.9 75.65 L80.6 76 L80.7 76.6 L80 76.3 L79.3 76.6 L79.4 76 L79.1 75.65 L79.7 75.6 Z" fill="white" opacity="0.7">
+        <animate 
+          attributeName="opacity" 
+          values="0.7;0.4;0.7;1;0.7" 
+          dur="6s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M20 75 L20.3 75.6 L20.9 75.65 L20.6 76 L20.7 76.6 L20 76.3 L19.3 76.6 L19.4 76 L19.1 75.65 L19.7 75.6 Z" fill="white" opacity="0.4">
+        <animate 
+          attributeName="opacity" 
+          values="0.4;0.7;0.4;0.1;0.4" 
+          dur="4.5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <path d="M50 15 L50.2 15.5 L50.6 15.55 L50.4 15.8 L50.5 16.2 L50 16 L49.5 16.2 L49.6 15.8 L49.4 15.55 L49.8 15.5 Z" fill="white" opacity="0.5">
+        <animate 
+          attributeName="opacity" 
+          values="0.5;0.8;0.5;0.2;0.5" 
+          dur="3.5s" 
+          repeatCount="indefinite"
+        />
+      </path>
+      
+      <!-- Breathing circles - БЕЗ SVG анимации, управляем через JavaScript -->
+      <circle cx="50" cy="50" r="15" fill="rgba(255, 255, 255, 0.15)" id="circle1" class="breathing-circle"></circle>
+      <circle cx="50" cy="50" r="12" fill="rgba(255, 255, 255, 0.2)" id="circle2" class="breathing-circle"></circle>
+      <circle cx="50" cy="50" r="9" fill="#34A853" stroke="rgba(255, 255, 255, 0.8)" stroke-width="0.5" id="circle3" class="breathing-circle"></circle>
+      
+      <!-- Текст фазы дыхания -->
+      <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" 
+            font-family="Inter, sans-serif" font-size="2.5" font-weight="400" 
+            fill="white" id="breathingPhaseText">Вдох</text>
+    </svg>
+    
+    <!-- Кнопка "Начать" (показывается изначально) -->
+    <div class="start-prompt" id="startPrompt">
+      <button class="start-button" id="startButton">Начать</button>
+    </div>
+    
+    <!-- Кнопка "Пауза" (показывается во время практики) -->
+    <div class="pause-prompt" id="pausePrompt" style="display: none;">
+      <button class="start-button" id="pauseButton">Пауза</button>
+    </div>
+    
+    <!-- Кнопка "Продолжить" (показывается при паузе) -->
+    <div class="resume-prompt" id="resumePrompt" style="display: none;">
+      <button class="start-button" id="resumeButton">Продолжить</button>
+    </div>
+
+    <div class="cycle-counter" id="cycleCounter" style="display: none;">Цикл 1 из 5</div>
+    <div class="completion-message" id="completionMessage">
+      <div class="completion-text">Практика закончилась</div>
+      <div class="completion-praise">Отличная работа!</div>
+    </div>
+  </div>
+
+  <script>
+    let startTime = null;
+    let currentCycle = 1;
+    let isCompleted = false;
+    let isStarted = false;
+    let isPaused = false;
+    let audioStarted = false;
+    let isAudioReady = false;
+    let userInteracted = false;
+    let pausedTime = 0;
+    let pausedAt = 0;
+    
+    // Элементы кругов для JavaScript анимации
+    const circle1 = document.getElementById('circle1');
+    const circle2 = document.getElementById('circle2');
+    const circle3 = document.getElementById('circle3');
+    const breathingPhaseText = document.getElementById('breathingPhaseText');
+    
+    const audio = document.getElementById('breathingAudio');
+    const startPrompt = document.getElementById('startPrompt');
+    const pausePrompt = document.getElementById('pausePrompt');
+    const resumePrompt = document.getElementById('resumePrompt');
+    const cycleCounter = document.getElementById('cycleCounter');
+    const completionMessage = document.getElementById('completionMessage');
+    const startButton = document.getElementById('startButton');
+
+    // Обработчик кнопки "Назад"
+    function handleBackButton() {
+      const exitMethod = isStarted ? (isCompleted ? 'after_completion' : 'during_practice') : 'before_start';
+      trackPracticeExit(exitMethod);
+      
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      
+      window.history.back();
+    }
+
+    // Улучшенная проверка готовности аудио
+    function checkAudioReady() {
+      return new Promise((resolve) => {
+        if (audio.readyState >= 2) {
+          console.log('Аудио уже готово, readyState:', audio.readyState);
+          isAudioReady = true;
+          resolve(true);
+          return;
+        }
+
+        let resolved = false;
+        
+        const onReady = (eventName) => {
+          if (resolved) return;
+          resolved = true;
+          
+          console.log('Аудио готово через событие:', eventName, 'readyState:', audio.readyState);
+          isAudioReady = true;
+          
+          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('canplaythrough', onCanPlayThrough);
+          audio.removeEventListener('loadeddata', onLoadedData);
+          
+          resolve(true);
+        };
+
+        const onCanPlay = () => onReady('canplay');
+        const onCanPlayThrough = () => onReady('canplaythrough');
+        const onLoadedData = () => onReady('loadeddata');
+
+        audio.addEventListener('canplay', onCanPlay);
+        audio.addEventListener('canplaythrough', onCanPlayThrough);
+        audio.addEventListener('loadeddata', onLoadedData);
+        
+        try {
+          audio.load();
+        } catch (e) {
+          console.warn('Ошибка при загрузке аудио:', e);
+        }
+        
+        setTimeout(() => {
+          if (resolved) return;
+          resolved = true;
+          
+          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('canplaythrough', onCanPlayThrough);
+          audio.removeEventListener('loadeddata', onLoadedData);
+          
+          console.warn('Таймаут загрузки аудио, пытаемся запустить принудительно');
+          console.log('Финальный readyState:', audio.readyState);
+          
+          isAudioReady = true;
+          resolve(true);
+        }, 5000);
+      });
+    }
+
+    // Аналитика аудио
+    audio.addEventListener('loadeddata', () => {
+      console.log('Аудио файл загружен успешно');
+      trackAudioEvent('loaded');
+      isAudioReady = true;
+    });
+
+    audio.addEventListener('canplaythrough', () => {
+      console.log('Аудио готово к воспроизведению');
+      trackAudioEvent('ready');
+      isAudioReady = true;
+    });
+
+    audio.addEventListener('error', (e) => {
+      console.error('Ошибка загрузки аудио:', e);
+      trackAudioEvent('error');
+    });
+
+    audio.addEventListener('play', () => {
+      console.log('Аудио начало воспроизведение');
+      audioStarted = true;
+      trackAudioEvent('started');
+    });
+
+    audio.addEventListener('pause', () => {
+      console.log('Аудио поставлено на паузу');
+      trackAudioEvent('paused');
+    });
+
+    // Улучшенная функция запуска практики (минимальные изменения)
+    async function startPractice() {
+      if (isStarted) return;
+      
+      // Простая проверка готовности аудио без блокировки UI
+      if (!isAudioReady && audio.readyState < 2) {
+        console.log('Аудио еще загружается, но запускаем практику');
+      }
+      
+      isStarted = true;
+      isPaused = false;
+      startTime = Date.now();
+      pausedTime = 0;
+      
+      trackPracticeActualStart();
+      
+      startPrompt.style.display = 'none';
+      pausePrompt.style.display = 'block';
+      cycleCounter.style.display = 'block';
+      
+      tryStartAudio();
+      
+      console.log('Практика началась');
+    }
+
+    function pausePractice() {
+      if (!isStarted || isPaused || isCompleted) return;
+      
+      isPaused = true;
+      pausedAt = Date.now();
+      
+      pausePrompt.style.display = 'none';
+      resumePrompt.style.display = 'block';
+      
+      if (audio && !audio.paused) {
+        audio.pause();
+      }
+      
+      console.log('Практика на паузе');
+    }
+
+    function resumePractice() {
+      if (!isStarted || !isPaused) return;
+      
+      isPaused = false;
+      
+      const pauseDuration = Date.now() - pausedAt;
+      pausedTime += pauseDuration;
+      
+      resumePrompt.style.display = 'none';
+      pausePrompt.style.display = 'block';
+      
+      if (audio && audio.paused) {
+        audio.play().catch(e => console.warn('Не удалось возобновить аудио:', e));
+      }
+      
+      console.log('Практика возобновлена');
+    }
+
+    // Простая функция запуска аудио (как в оригинале, но с улучшенной обработкой ошибок)
+    function tryStartAudio() {
+      if (audioStarted) return;
+      
+      console.log('Попытка запустить аудио...');
+      
+      audio.currentTime = 0;
+      
+      const playPromise = audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('Аудио запущено успешно');
+        }).catch(error => {
+          console.error('Не удалось запустить аудио:', error);
+          // Повторная попытка через секунду
+          setTimeout(() => {
+            audio.play().catch(e => console.warn('Повторная попытка не удалась:', e));
+          }, 1000);
+        });
+      }
+    }
+
+    // Функция для обновления размеров кругов через JavaScript
+    function updateCircleAnimation(elapsed) {
+      if (!circle1 || !circle2 || !circle3 || !breathingPhaseText) return;
+      
+      const cycleDuration = 19000; // 19 секунд (4+7+8)
+      const phaseTime = elapsed % cycleDuration;
+      
+      // Нормализуем время в диапазон 0-1
+      let progress = phaseTime / cycleDuration;
+      
+      // Размеры для разных фаз (дыхание 4-7-8)
+      let radius1, radius2, radius3;
+      let phaseText = '';
+      
+      if (progress <= 4/19) {
+        // Вдох (0-21%): от маленького к большому
+        const t = progress / (4/19);
+        radius1 = 15 + (25 - 15) * t;
+        radius2 = 12 + (20 - 12) * t;
+        radius3 = 9 + (15 - 9) * t;
+        phaseText = 'Вдох';
+      } else if (progress <= 11/19) {
+        // Пауза (21-58%): остается большим
+        radius1 = 25;
+        radius2 = 20;
+        radius3 = 15;
+        phaseText = 'Пауза';
+      } else {
+        // Выдох (58-100%): от большого к маленькому
+        const t = (progress - 11/19) / (8/19);
+        radius1 = 25 - (25 - 15) * t;
+        radius2 = 20 - (20 - 12) * t;
+        radius3 = 15 - (15 - 9) * t;
+        phaseText = 'Выдох';
+      }
+      
+      // Применяем новые размеры
+      circle1.setAttribute('r', radius1);
+      circle2.setAttribute('r', radius2);
+      circle3.setAttribute('r', radius3);
+      
+      // Обновляем текст фазы
+      breathingPhaseText.textContent = phaseText;
+    }
+
+    // Отслеживание времени вовлеченности (упрощенное)
+    function trackEngagementTime() {
+      if (!isStarted || isCompleted || isPaused) return;
+      
+      const timeSpent = Math.round((Date.now() - practiceStartTime) / 1000);
+      
+      Object.keys(engagementTracked).forEach(seconds => {
+        if (timeSpent >= seconds && !engagementTracked[seconds]) {
+          engagementTracked[seconds] = true;
+          trackPracticeEngagement(parseInt(seconds));
+        }
+      });
+    }
+    
+    function updateBreathingText() {
+      if (!isStarted || isCompleted || isPaused) return;
+      
+      const cycleDuration = 19000; // 19 секунд для 4-7-8
+      
+      // Вычислить общее время с учетом пауз
+      const totalElapsed = (Date.now() - startTime) - pausedTime;
+      const elapsed = totalElapsed % cycleDuration;
+      
+      // Обновляем анимацию кругов ТОЛЬКО если не на паузе
+      if (!isPaused) {
+        updateCircleAnimation(totalElapsed);
+      }
+      
+      const newCycle = Math.floor(totalElapsed / cycleDuration) + 1;
+      
+      // Отслеживание завершения циклов
+      if (newCycle !== currentCycle && newCycle <= 5) {
+        if (currentCycle > lastTrackedCycle) {
+          trackCycleCompletion(currentCycle);
+          lastTrackedCycle = currentCycle;
+        }
+        currentCycle = newCycle;
+        cycleCounter.textContent = `Цикл ${currentCycle} из 5`;
+      }
+      
+      if (totalElapsed >= cycleDuration * 5) {
+        if (!isCompleted) {
+          isCompleted = true;
+          
+          // Отследить завершение последнего цикла и всей практики
+          if (currentCycle > lastTrackedCycle) {
+            trackCycleCompletion(5);
+          }
+          trackPracticeCompletion();
+          
+          cycleCounter.style.display = 'none';
+          pausePrompt.style.display = 'none';
+          resumePrompt.style.display = 'none';
+          completionMessage.style.display = 'block';
+          
+          // Скрыть текст фазы дыхания
+          if (breathingPhaseText) {
+            breathingPhaseText.style.display = 'none';
+          }
+          
+          // Остановить аудио
+          audio.pause();
+          audio.currentTime = 0;
+        }
+        return;
+      }
+      
+      // Отслеживаем фазы дыхания для первых циклов
+      const currentPhase = elapsed <= 4000 ? 'Вдох' : 
+                          elapsed <= 11000 ? 'Пауза' : 'Выдох';
+      
+      if (currentPhase === 'Вдох' && elapsed < 1000) { // Начало вдоха
+        trackBreathingPhase(currentPhase, currentCycle);
+      }
+    }
+
+    // Единый обработчик пользовательского взаимодействия (упрощенный)
+    function handleUserInteraction(event) {
+      if (!isStarted) {
+        event.preventDefault();
+        startPractice();
+      }
+    }
+
+    // Обработчики событий - ТОЛЬКО ОДИН НА КНОПКУ
+    if (startButton) {
+      if ('ontouchstart' in window) {
+        startButton.addEventListener('touchstart', handleUserInteraction, { passive: false });
+      } else {
+        startButton.addEventListener('click', handleUserInteraction);
+      }
+    }
+
+    const pauseButton = document.getElementById('pauseButton');
+    if (pauseButton) {
+      if ('ontouchstart' in window) {
+        pauseButton.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Нажата кнопка паузы (touch)');
+          pausePractice();
+        }, { passive: false });
+      } else {
+        pauseButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Нажата кнопка паузы (click)');
+          pausePractice();
+        });
+      }
+    }
+
+    const resumeButton = document.getElementById('resumeButton');
+    if (resumeButton) {
+      if ('ontouchstart' in window) {
+        resumeButton.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Нажата кнопка возобновления (touch)');
+          resumePractice();
+        }, { passive: false });
+      } else {
+        resumeButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('Нажата кнопка возобновления (click)');
+          resumePractice();
+        });
+      }
+    }
+
+    // Поддержка клавиатуры
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        if (!isStarted) {
+          handleUserInteraction(e);
+        } else if (!isPaused && !isCompleted) {
+          e.preventDefault();
+          pausePractice();
+        } else if (isPaused) {
+          e.preventDefault();
+          resumePractice();
+        }
+      }
+    });
+
+    // Основной цикл обновления (как в оригинале)
+    function gameLoop() {
+      if (!isPaused && !isCompleted && isStarted) {
+        updateBreathingText();
+        trackEngagementTime();
+      }
+      
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Запуск после загрузки страницы (минимальные изменения)
+    window.addEventListener('load', () => {
+      console.log('Полноэкранная страница дыхательной практики загружена');
+      
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает на полноэкранной практике!');
+        trackPracticeFullscreenStart();
+      }
+      
+      gameLoop();
+      completionMessage.style.display = 'none';
+      
+      // Предварительная загрузка аудио
+      audio.load();
+    });
+
+    // Отслеживание ухода со страницы
+    window.addEventListener('beforeunload', () => {
+      if (isStarted && !isCompleted) {
+        trackPracticeExit('page_unload');
+      }
+    });
+
+    // Предотвращение скролла на мобильных устройствах
+    document.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
+</body>
+</html>
