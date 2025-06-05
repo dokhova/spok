@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Potok — Practices</title>
+  
+  <!-- Google tag (gtag.js) - ОБЯЗАТЕЛЬНО ПЕРВЫМ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBWRD903C5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NBWRD903C5', {
+      enhanced_measurement: true
+    });
+
+    // Функции для отслеживания событий
+    function trackPracticeClick(practiceName, practiceCategory) {
+      console.log('Клик по практике:', practiceName, 'в категории:', practiceCategory);
+      gtag('event', 'practice_click', {
+        event_category: practiceCategory,
+        event_label: practiceName,
+        value: 1
+      });
+    }
+
+    function trackNavigation(navItem) {
+      console.log('Клик по табу:', navItem);
+      gtag('event', 'navigation', {
+        event_category: 'tab_bar',
+        event_label: navItem,
+        value: 1
+      });
+    }
+
+    function trackCategoryView(categoryName) {
+      console.log('Просмотр категории:', categoryName);
+      gtag('event', 'category_view', {
+        event_category: 'practices',
+        event_label: categoryName,
+        value: 1
+      });
+    }
+
+    // Отслеживание скролла до разных секций
+    let sectionsTracked = {
+      meditation: false,
+      breathing: false,
+      sleep: false
+    };
+
+    function trackSectionScroll() {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(function(section, index) {
+        const sectionTitle = section.querySelector('.section-title')?.textContent || 'Unknown';
+        const rect = section.getBoundingClientRect();
+        
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          let sectionKey = sectionTitle.toLowerCase();
+          if (sectionKey === 'медитация') sectionKey = 'meditation';
+          if (sectionKey === 'дыхание') sectionKey = 'breathing';
+          if (sectionKey === 'сон') sectionKey = 'sleep';
+          
+          if (!sectionsTracked[sectionKey]) {
+            sectionsTracked[sectionKey] = true;
+            trackCategoryView(sectionTitle);
+          }
+        }
+      });
+    }
+
+    // Инициализация отслеживания
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Google Analytics загружается на странице Практики...');
+      
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает на Практиках!');
+        gtag('event', 'practices_page_loaded', {
+          event_category: 'page',
+          event_label: 'practices'
+        });
+      } else {
+        console.log('❌ Google Analytics НЕ работает!');
+      }
+
+      // Отслеживание кликов по практикам
+      const practiceCards = document.querySelectorAll('.card');
+      practiceCards.forEach(function(card) {
+        card.addEventListener('click', function() {
+          const practiceName = card.querySelector('.card-title')?.textContent || 'Unknown';
+          const sectionTitle = card.closest('.section')?.querySelector('.section-title')?.textContent || 'Unknown';
+          trackPracticeClick(practiceName, sectionTitle);
+        });
+      });
+
+      // Отслеживание навигации
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          const tabName = tab.querySelector('div')?.textContent || 'Unknown';
+          trackNavigation(tabName);
+        });
+      });
+
+      // Отслеживание скролла до секций
+      window.addEventListener('scroll', trackSectionScroll);
+      
+      // Проверка видимых секций при загрузке
+      setTimeout(trackSectionScroll, 1000);
+    });
+  </script>
+
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .home {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 125px;
+      box-sizing: border-box;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section + .section {
+      margin-top: 48px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      width: 100%;
+      height: 80px;
+      padding-right: 16px;
+      box-sizing: border-box;
+      transition: background-color 0.2s;
+    }
+
+    .card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .card img:first-child {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 12px 0 0 12px;
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--white);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 16px;
+    }
+
+    .card .arrow {
+      width: 5px;
+      height: 10px;
+      margin-left: 16px;
+      fill: var(--white);
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="home">
+    <div class="section">
+      <div class="section-title">Медитация</div>
+      <div class="cards">
+        <a href="pond.html" class="card">
+          <img src="img/pond.jpg" alt="Листья в пруду">
+          <div class="card-content">
+            <div class="card-title">Листья в пруду</div>
+            <div class="card-subtitle">Работа с мыслями</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+        <a href="pause.html" class="card">
+          <img src="img/pause.jpg" alt="Осознанные паузы">
+          <div class="card-content">
+            <div class="card-title">Осознанные паузы</div>
+            <div class="card-subtitle">Переключение внимания</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+        <a href="body.html" class="card">
+          <img src="img/body.jpg" alt="Тело как якорь">
+          <div class="card-content">
+            <div class="card-title">Тело как якорь</div>
+            <div class="card-subtitle">Ощущение опоры</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Дыхание</div>
+      <div class="cards">
+        <a href="478.html" class="card">
+          <img src="img/478.jpg" alt="4-7-8">
+          <div class="card-content">
+            <div class="card-title">4-7-8</div>
+            <div class="card-subtitle">Замедление дыхания</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+        <a href="505.html" class="card">
+          <img src="img/505.jpg" alt="5-0-5">
+          <div class="card-content">
+            <div class="card-title">5-0-5</div>
+            <div class="card-subtitle">Регулирование дыхания</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+        <a href="4444.html" class="card">
+          <img src="img/4444.jpg" alt="4-4-4-4">
+          <div class="card-content">
+            <div class="card-title">4-4-4-4</div>
+            <div class="card-subtitle">Выравнивание ритма</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Сон</div>
+      <div class="cards">
+        <a href="stars.html" class="card">
+          <img src="img/stars.jpg" alt="Язык звёзд">
+          <div class="card-content">
+            <div class="card-title">Язык звёзд</div>
+            <div class="card-subtitle">Подготовка ко сну</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+        <a href="place.html" class="card">
+          <img src="img/place.jpg" alt="Уютное место">
+          <div class="card-content">
+            <div class="card-title">Уютное место</div>
+            <div class="card-subtitle">Создание покоя</div>
+          </div>
+          <img class="arrow" src="img/arrow.svg" alt="arrow">
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Сегодня">
+      <div>Сегодня</div>
+    </a>
+    <a href="practices.html" class="tab active">
+      <img src="img/practices-active.svg" alt="Практики">
+      <div>Практики</div>
+    </a>
+    <a href="journal.html" class="tab">
+      <img src="img/journal.svg" alt="Журнал">
+      <div>Журнал</div>
+    </a>
+  </footer>
+</body>
+</html>
