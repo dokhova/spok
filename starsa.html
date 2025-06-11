@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-translate="page_title">Potok — Язык звёзд</title>
+  
+  <!-- Google tag (gtag.js) - ОБЯЗАТЕЛЬНО ПЕРВЫМ -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-4834XVE45Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4834XVE45Z', {
+    enhanced_measurement: true
+  });
+
+  // Функции для отслеживания медитации
+  function trackPracticeFullscreenStart() {
+    console.log('Полноэкранная медитация началась:', 'Язык звёзд');
+    gtag('event', 'fullscreen_practice_start', {
+      event_category: 'meditation_practice',
+      event_label: 'stars_fullscreen',
+      practice_type: 'meditation',
+      value: 1
+    });
+  }
+
+  function trackPracticeActualStart() {
+    console.log('Пользователь нажал "Начать"');
+    gtag('event', 'practice_actual_start', {
+      event_category: 'meditation_engagement',
+      event_label: 'stars_button_start',
+      practice_type: 'meditation',
+      value: 1
+    });
+  }
+
+  function trackCycleCompletion(cycleNumber) {
+    console.log('Этап завершен:', cycleNumber);
+    gtag('event', 'meditation_stage_complete', {
+      event_category: 'meditation_progress',
+      event_label: 'stage_' + cycleNumber,
+      practice_type: 'meditation',
+      value: cycleNumber
+    });
+  }
+
+  function trackPracticeCompletion() {
+    console.log('Медитация "Язык звёзд" полностью завершена');
+    gtag('event', 'practice_completed', {
+      event_category: 'meditation_success',
+      event_label: 'stars_full_completion',
+      practice_type: 'meditation',
+      value: 5
+    });
+  }
+
+  function trackPracticeExit(exitMethod) {
+    console.log('Выход из медитации:', exitMethod);
+    gtag('event', 'practice_exit', {
+      event_category: 'meditation_behavior',
+      event_label: exitMethod,
+      practice_type: 'meditation',
+      value: 1
+    });
+  }
+
+  function trackAudioEvent(eventType) {
+    console.log('Аудио событие:', eventType);
+    gtag('event', 'audio_' + eventType, {
+      event_category: 'meditation_audio',
+      event_label: 'stars_audio_' + eventType,
+      practice_type: 'meditation',
+      value: 1
+    });
+  }
+
+  function trackMeditationPhase(phase, cycleNumber) {
+    if (phase === 'Вдох' && cycleNumber <= 3) {
+      console.log('Фаза медитации:', phase, 'Этап:', cycleNumber);
+      gtag('event', 'meditation_phase', {
+        event_category: 'meditation_detail',
+        event_label: phase + '_stage_' + cycleNumber,
+        practice_type: 'meditation',
+        value: 1
+      });
+    }
+  }
+
+  function trackPracticeEngagement(seconds) {
+    console.log('Время в медитации:', seconds, 'секунд');
+    gtag('event', 'practice_engagement_time', {
+      event_category: 'meditation_engagement',
+      event_label: seconds + '_seconds',
+      practice_type: 'meditation',
+      value: seconds
+    });
+  }
+
+  // Глобальные переменные для отслеживания
+  let practiceStartTime = Date.now();
+  let engagementTracked = {
+    30: false,
+    60: false,
+    120: false
+  };
+  let lastTrackedCycle = 0;
+</script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+    
+    :root {
+      --dark-blue: #0a1029;
+      --white: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-blue);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 300;
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Inter", sans-serif;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      color: white;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+    }
+
+    .lang-btn.active:hover {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+    }
+
+    .completion-message {
+      position: absolute;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      display: none;
+    }
+
+    .completion-text {
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .completion-praise {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .back-button {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      z-index: 20;
+      transition: background-color 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .back-button:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .close-icon {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+
+    .start-prompt, .pause-prompt, .resume-prompt {
+      position: absolute;
+      bottom: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    .start-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+      50% {
+        transform: scale(1.05);
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    .start-button:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .start-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+      transform: scale(0.98);
+    }
+
+    .wave {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      transform-origin: center;
+      transform: translate(-50%, -50%);
+    }
+    
+    /* CSS анимации для управления через JavaScript */
+    @keyframes cosmicGlow {
+      0%, 100% {
+        r: 200px;
+        opacity: 0.5;
+      }
+      50% {
+        r: 240px;
+        opacity: 0.7;
+      }
+    }
+    
+    @keyframes cosmicCircle {
+      0%, 100% {
+        r: 180px;
+        opacity: 0.7;
+      }
+      50% {
+        r: 220px;
+        opacity: 1;
+      }
+    }
+    
+    @keyframes cosmicWave {
+      0% {
+        r: 220px;
+        opacity: 0.4;
+      }
+      100% {
+        r: 450px;
+        opacity: 0;
+      }
+    }
+    
+    @keyframes starTwinkle {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+    
+    /* Классы для управления анимациями */
+    .cosmic-glow {
+      animation: cosmicGlow 8s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+    
+    .cosmic-circle {
+      animation: cosmicCircle 8s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+    
+    .cosmic-wave-1 {
+      animation: cosmicWave 8s ease-in-out infinite;
+      animation-play-state: paused;
+      animation-delay: 0s;
+    }
+    
+    .cosmic-wave-2 {
+      animation: cosmicWave 8s ease-in-out infinite;
+      animation-play-state: paused;
+      animation-delay: 2s;
+    }
+    
+    .cosmic-wave-3 {
+      animation: cosmicWave 8s ease-in-out infinite;
+      animation-play-state: paused;
+      animation-delay: 4s;
+    }
+    
+    .cosmic-stars circle {
+      animation: starTwinkle 8s ease-in-out infinite;
+      animation-play-state: paused;
+    }
+    
+    /* Классы для запуска анимаций */
+    .started .cosmic-glow,
+    .started .cosmic-circle,
+    .started .cosmic-wave-1,
+    .started .cosmic-wave-2,
+    .started .cosmic-wave-3,
+    .started .cosmic-stars circle {
+      animation-play-state: running;
+    }
+    
+    .wave {
+      border-radius: 50%;
+    }
+    
+    @keyframes expand {
+      0% {
+        transform: translate(-50%, -50%) scale(5);
+        opacity: 0;
+      }
+      
+      30% {
+        opacity: 0.5;
+      }
+      
+      100% {
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 0.9;
+      }
+    }
+
+    /* Стиль для кнопки в состоянии подготовки аудио */
+    .start-button.preparing {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+      animation: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="lang-btn" id="enBtn">EN</button>
+    <button class="lang-btn active" id="ruBtn">RU</button>
+  </div>
+
+  <div class="container">
+    <!-- Аудио с динамическим источником -->
+    <audio id="breathingAudio" preload="auto">
+      <source id="audioSource" src="mp3/stars_ru.mp3" type="audio/mpeg">
+    </audio>
+
+    <button class="back-button" onclick="handleBackButton();" type="button">
+      <svg class="close-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <!-- Космическая SVG анимация -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" style="position: absolute; top: 0; left: 0;" id="cosmicSvg">
+      <!-- Background -->
+      <rect width="1920" height="1080" fill="#0a1029" />
+      
+      <!-- Gradient definitions -->
+      <defs>
+        <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+          <stop offset="0%" stop-color="#FFD527" stop-opacity="0.8" />
+          <stop offset="70%" stop-color="#FFD527" stop-opacity="0.3" />
+          <stop offset="100%" stop-color="#FFD527" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+      
+      <!-- Stars background -->
+      <g id="stars">
+        <!-- Smaller stars -->
+        <g fill="white">
+          <circle cx="300" cy="180" r="1.2" opacity="0.6" />
+          <circle cx="1200" cy="300" r="1.5" opacity="0.8" />
+          <circle cx="500" cy="800" r="1" opacity="0.5" />
+        </g>
+        
+        <!-- Larger stars with CSS twinkle animation -->
+        <g class="cosmic-stars">
+          <circle cx="1500" cy="200" r="2.2" fill="white" style="animation-delay: 0s;" />
+          <circle cx="400" cy="600" r="2" fill="white" style="animation-delay: 2s;" />
+          <circle cx="1300" cy="700" r="2.5" fill="white" style="animation-delay: 4s;" />
+          <circle cx="800" cy="150" r="2.3" fill="white" style="animation-delay: 6s;" />
+        </g>
+      </g>
+      
+      <!-- Main circle animation with glow -->
+      <g class="main-circle">
+        <!-- Glow effect below the circle -->
+        <circle cx="960" cy="540" r="200" fill="url(#glowGradient)" opacity="0.5" class="cosmic-glow" />
+        
+        <!-- Base circle -->
+        <circle cx="960" cy="540" r="180" fill="#FFD527" opacity="0.7" class="cosmic-circle" />
+      </g>
+      
+      <!-- Multiple cyclic wave animations - упрощенная версия как в оригинале -->
+      <g class="waves">
+        <!-- Wave 1 -->
+        <circle cx="960" cy="540" r="220" fill="none" stroke="#FFD527" stroke-width="3" opacity="0.4" class="cosmic-wave-1" />
+        <!-- Wave 2 -->
+        <circle cx="960" cy="540" r="220" fill="none" stroke="#FFD527" stroke-width="3" opacity="0.4" class="cosmic-wave-2" />
+        <!-- Wave 3 -->
+        <circle cx="960" cy="540" r="220" fill="none" stroke="#FFD527" stroke-width="3" opacity="0.4" class="cosmic-wave-3" />
+      </g>
+    </svg>
+    
+    <div class="start-prompt" id="startPrompt">
+      <button class="start-button" id="startButton">Начать</button>
+    </div>
+    
+    <div class="pause-prompt" id="pausePrompt" style="display: none;">
+      <button class="start-button" id="pauseButton">Пауза</button>
+    </div>
+    
+    <div class="resume-prompt" id="resumePrompt" style="display: none;">
+      <button class="start-button" id="resumeButton">Продолжить</button>
+    </div>
+    
+    <div class="completion-message" id="completionMessage">
+      <div class="completion-text">Медитация закончилась</div>
+      <div class="completion-praise">Отличная работа!</div>
+    </div>
+  </div>
+
+  <script>
+    // Translations
+    const translations = {
+      ru: {
+        page_title: "Potok — Язык звёзд",
+        button_start: "Начать",
+        button_pause: "Пауза", 
+        button_continue: "Продолжить",
+        meditation_finished: "Медитация закончилась",
+        great_job: "Отличная работа!",
+        preparing: "Подготовка..."
+      },
+      en: {
+        page_title: "Potok — Language of Stars",
+        button_start: "Start",
+        button_pause: "Pause",
+        button_continue: "Continue",
+        meditation_finished: "Meditation finished",
+        great_job: "Great work!",
+        preparing: "Preparing..."
+      }
+    };
+
+    // Translator class
+    class Translator {
+      constructor() {
+        console.log('🔄 Инициализация переводчика STARSA.HTML...');
+        
+        this.localStorageAvailable = this.checkLocalStorageAvailability();
+        this.currentLang = this.getLanguageFromURL() || 
+                          (this.localStorageAvailable ? this.getLanguageFromStorage() : null) || 
+                          'ru';
+        
+        console.log(`🌐 Выбранный язык: ${this.currentLang}`);
+        this.init();
+      }
+
+      checkLocalStorageAvailability() {
+        try {
+          const testKey = 'test_storage_' + Date.now();
+          localStorage.setItem(testKey, 'test');
+          localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          console.log(`⚠️ localStorage недоступен: ${error.message}`);
+          return false;
+        }
+      }
+
+      getLanguageFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('lang');
+      }
+
+      getLanguageFromStorage() {
+        if (!this.localStorageAvailable) return null;
+        try {
+          return localStorage.getItem('potok_language');
+        } catch (error) {
+          return null;
+        }
+      }
+
+      init() {
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updateAudioSource();
+        this.setupLanguageButtons();
+        document.documentElement.lang = this.currentLang;
+        document.title = this.translate('page_title');
+      }
+
+      setupLanguageButtons() {
+        document.getElementById('enBtn')?.addEventListener('click', () => {
+          console.log('🔘 Клик по EN в STARSA.HTML');
+          this.setLanguage('en');
+        });
+        
+        document.getElementById('ruBtn')?.addEventListener('click', () => {
+          console.log('🔘 Клик по RU в STARSA.HTML');
+          this.setLanguage('ru');
+        });
+      }
+
+      setLanguage(lang) {
+        console.log(`🔄 Смена языка на: ${lang} в STARSA.HTML`);
+        
+        this.currentLang = lang;
+        
+        if (this.localStorageAvailable) {
+          try {
+            localStorage.setItem('potok_language', lang);
+          } catch (error) {
+            console.log(`❌ Не удалось сохранить в localStorage: ${error.message}`);
+          }
+        }
+        
+        try {
+          const newUrl = `${window.location.pathname}?lang=${lang}`;
+          window.history.replaceState({}, '', newUrl);
+        } catch (error) {
+          console.log(`❌ Не удалось обновить URL: ${error.message}`);
+        }
+        
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updateAudioSource();
+        document.documentElement.lang = lang;
+        document.title = this.translate('page_title');
+      }
+
+      updateAudioSource() {
+        const audioSource = document.getElementById('audioSource');
+        const audio = document.getElementById('breathingAudio');
+        
+        if (audioSource && audio) {
+          const newSrc = `mp3/stars_${this.currentLang}.mp3`;
+          console.log(`🎵 Меняем аудио источник на: ${newSrc}`);
+          
+          audio.pause();
+          audio.currentTime = 0;
+          audioSource.src = newSrc;
+          audio.load();
+          
+          // Сброс флагов
+          window.isAudioReady = false;
+          window.audioStarted = false;
+        }
+      }
+
+      translate(key, variables = {}) {
+        let translation = translations[this.currentLang]?.[key] || translations.ru[key] || key;
+        
+        Object.keys(variables).forEach(variable => {
+          translation = translation.replace(`{${variable}}`, variables[variable]);
+        });
+        
+        return translation;
+      }
+
+      updatePage() {
+        this.updateDynamicElements();
+      }
+
+      updateDynamicElements() {
+        const startButton = document.getElementById('startButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const resumeButton = document.getElementById('resumeButton');
+        const completionText = document.querySelector('.completion-text');
+        const completionPraise = document.querySelector('.completion-praise');
+        
+        if (startButton && !startButton.classList.contains('preparing')) {
+          startButton.textContent = this.translate('button_start');
+        }
+        if (pauseButton) {
+          pauseButton.textContent = this.translate('button_pause');
+        }
+        if (resumeButton) {
+          resumeButton.textContent = this.translate('button_continue');
+        }
+        if (completionText) {
+          completionText.textContent = this.translate('meditation_finished');
+        }
+        if (completionPraise) {
+          completionPraise.textContent = this.translate('great_job');
+        }
+      }
+
+      updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.remove('active');
+          const btnLang = btn.id === 'enBtn' ? 'en' : 'ru';
+          if (btnLang === this.currentLang) {
+            btn.classList.add('active');
+          }
+        });
+      }
+    }
+
+    // Initialize translator
+    window.translator = new Translator();
+
+    // Meditation logic variables
+    let startTime = null;
+    let currentCycle = 1;
+    let isCompleted = false;
+    let isStarted = false;
+    let isPaused = false;
+    let pausedTime = 0;
+    let isAnimationStarted = false;
+    let audioStarted = false;
+    let isAudioReady = false;
+    let userInteracted = false;
+    const practicesDuration = 292000; // 4 минуты 52 секунды в миллисекундах
+    
+    // Делаем переменные глобальными для переводчика
+    window.isAudioReady = isAudioReady;
+    window.audioStarted = audioStarted;
+    
+    const audio = document.getElementById('breathingAudio');
+    const startPrompt = document.getElementById('startPrompt');
+    const pausePrompt = document.getElementById('pausePrompt');
+    const resumePrompt = document.getElementById('resumePrompt');
+    const completionMessage = document.getElementById('completionMessage');
+    const startButton = document.getElementById('startButton');
+
+    // Обработчик кнопки "Назад" - улучшенная версия как в pausea.html
+    function handleBackButton() {
+      const exitMethod = isStarted ? (isCompleted ? 'after_completion' : 'during_practice') : 'before_start';
+      trackPracticeExit(exitMethod);
+      
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+      
+      // Переход на stars.html с сохранением языка
+      const currentLang = window.translator ? window.translator.currentLang : 'ru';
+      console.log(`🔙 Возврат на stars.html с языком: ${currentLang}`);
+      window.location.href = `stars.html?lang=${currentLang}`;
+    }
+
+    // Проверка готовности аудио
+    function checkAudioReady() {
+      return new Promise((resolve) => {
+        if (audio.readyState >= 2) {
+          console.log('Аудио уже готово, readyState:', audio.readyState);
+          isAudioReady = true;
+          window.isAudioReady = true;
+          resolve(true);
+          return;
+        }
+
+        let resolved = false;
+        
+        const onReady = (eventName) => {
+          if (resolved) return;
+          resolved = true;
+          
+          console.log('Аудио готово через событие:', eventName);
+          isAudioReady = true;
+          window.isAudioReady = true;
+          
+          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('canplaythrough', onCanPlayThrough);
+          audio.removeEventListener('loadeddata', onLoadedData);
+          
+          resolve(true);
+        };
+
+        const onCanPlay = () => onReady('canplay');
+        const onCanPlayThrough = () => onReady('canplaythrough');
+        const onLoadedData = () => onReady('loadeddata');
+
+        audio.addEventListener('canplay', onCanPlay);
+        audio.addEventListener('canplaythrough', onCanPlayThrough);
+        audio.addEventListener('loadeddata', onLoadedData);
+        
+        try {
+          audio.load();
+        } catch (e) {
+          console.warn('Ошибка при загрузке аудио:', e);
+        }
+        
+        setTimeout(() => {
+          if (resolved) return;
+          resolved = true;
+          
+          audio.removeEventListener('canplay', onCanPlay);
+          audio.removeEventListener('canplaythrough', onCanPlayThrough);
+          audio.removeEventListener('loadeddata', onLoadedData);
+          
+          console.warn('Таймаут загрузки аудио');
+          isAudioReady = true;
+          window.isAudioReady = true;
+          resolve(true);
+        }, 5000);
+      });
+    }
+
+    // Аналитика аудио
+    audio.addEventListener('loadeddata', () => {
+      console.log('Аудио файл загружен успешно');
+      trackAudioEvent('loaded');
+      isAudioReady = true;
+      window.isAudioReady = true;
+    });
+
+    audio.addEventListener('canplaythrough', () => {
+      console.log('Аудио готово к воспроизведению');
+      trackAudioEvent('ready');
+    });
+
+    audio.addEventListener('error', (e) => {
+      console.error('Ошибка загрузки аудио:', e);
+      trackAudioEvent('error');
+    });
+
+    audio.addEventListener('play', () => {
+      console.log('Аудио начало воспроизведение');
+      audioStarted = true;
+      window.audioStarted = true;
+      trackAudioEvent('started');
+    });
+
+    audio.addEventListener('pause', () => {
+      console.log('Аудио поставлено на паузу');
+      trackAudioEvent('paused');
+    });
+
+    // Функция запуска практики
+    async function startPractice() {
+      if (isStarted || !userInteracted) return;
+      
+      startButton.textContent = window.translator.translate('preparing');
+      startButton.classList.add('preparing');
+      
+      try {
+        await checkAudioReady();
+        
+        isStarted = true;
+        startTime = Date.now();
+        
+        trackPracticeActualStart();
+        
+        startPrompt.style.display = 'none';
+        pausePrompt.style.display = 'block';
+        
+        // Запустить CSS анимации через добавление класса (только один раз)
+        const svg = document.getElementById('cosmicSvg');
+        if (svg && !isAnimationStarted) {
+          svg.classList.add('started');
+          isAnimationStarted = true;
+        }
+        
+        await tryStartAudio();
+        
+        console.log('Медитация началась');
+        
+      } catch (error) {
+        console.error('Ошибка запуска практики:', error);
+        
+        startButton.textContent = window.translator.translate('button_start');
+        startButton.classList.remove('preparing');
+      }
+    }
+
+    function pausePractice() {
+      if (!isStarted || isPaused) return;
+      
+      isPaused = true;
+      pausedTime = Date.now() - startTime;
+      
+      pausePrompt.style.display = 'none';
+      resumePrompt.style.display = 'block';
+      
+      // Поставить CSS анимации на паузу
+      if (isAnimationStarted) {
+        const cosmicElements = document.querySelectorAll('.cosmic-glow, .cosmic-circle, .cosmic-wave-1, .cosmic-wave-2, .cosmic-wave-3, .cosmic-stars circle');
+        cosmicElements.forEach(element => {
+          element.style.animationPlayState = 'paused';
+        });
+      }
+      
+      if (audio && !audio.paused) {
+        audio.pause();
+      }
+      
+      console.log('Медитация поставлена на паузу');
+    }
+
+    async function resumePractice() {
+      if (!isStarted || !isPaused) return;
+      
+      isPaused = false;
+      startTime = Date.now() - pausedTime;
+      
+      resumePrompt.style.display = 'none';
+      pausePrompt.style.display = 'block';
+      
+      // Возобновить CSS анимации
+      if (isAnimationStarted) {
+        const cosmicElements = document.querySelectorAll('.cosmic-glow, .cosmic-circle, .cosmic-wave-1, .cosmic-wave-2, .cosmic-wave-3, .cosmic-stars circle');
+        cosmicElements.forEach(element => {
+          element.style.animationPlayState = 'running';
+        });
+      }
+      
+      if (audio && audio.paused) {
+        try {
+          await audio.play();
+        } catch (e) {
+          console.warn('Не удалось возобновить аудио:', e);
+        }
+      }
+      
+      console.log('Медитация возобновлена');
+    }
+
+    // Функция запуска аудио
+    async function tryStartAudio() {
+      if (audioStarted) return;
+      
+      try {
+        console.log('Попытка запустить аудио, readyState:', audio.readyState);
+        
+        audio.currentTime = 0;
+        
+        if (audio.readyState < 2) {
+          console.log('Принудительная загрузка аудио...');
+          audio.load();
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+        await audio.play();
+        
+        audioStarted = true;
+        window.audioStarted = true;
+        console.log('Аудио запущено успешно');
+        
+      } catch (error) {
+        console.error('Ошибка запуска аудио:', error);
+        
+        setTimeout(async () => {
+          try {
+            await audio.play();
+            audioStarted = true;
+            window.audioStarted = true;
+          } catch (e) {
+            console.error('Повторная попытка не удалась:', e);
+          }
+        }, 1000);
+      }
+    }
+
+    // Отслеживание времени вовлеченности
+    function trackEngagementTime() {
+      if (!isStarted || isCompleted || isPaused) return;
+      
+      const timeSpent = Math.round((Date.now() - practiceStartTime) / 1000);
+      
+      Object.keys(engagementTracked).forEach(seconds => {
+        if (timeSpent >= seconds && !engagementTracked[seconds]) {
+          engagementTracked[seconds] = true;
+          trackPracticeEngagement(parseInt(seconds));
+        }
+      });
+    }
+    
+    function updateMeditationProgress() {
+      if (!isStarted || isCompleted || isPaused) return;
+      
+      const cycleDuration = 16000; // 16 секунд на цикл
+      const totalElapsed = Date.now() - startTime;
+      const newCycle = Math.floor(totalElapsed / cycleDuration) + 1;
+      
+      // Отслеживание завершения этапов
+      if (newCycle !== currentCycle && newCycle <= 5) {
+        if (currentCycle > lastTrackedCycle) {
+          trackCycleCompletion(currentCycle);
+          lastTrackedCycle = currentCycle;
+        }
+        currentCycle = newCycle;
+      }
+      
+      if (totalElapsed >= practicesDuration) {
+        if (!isCompleted) {
+          isCompleted = true;
+          
+          if (currentCycle > lastTrackedCycle) {
+            trackCycleCompletion(5);
+          }
+          trackPracticeCompletion();
+          
+          pausePrompt.style.display = 'none';
+          resumePrompt.style.display = 'none';
+          completionMessage.style.display = 'block';
+          
+          audio.pause();
+          audio.currentTime = 0;
+        }
+        return;
+      }
+    }
+
+    // Единый обработчик пользовательского взаимодействия
+    function handleUserInteraction(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      
+      console.log('handleUserInteraction вызван, isStarted:', isStarted);
+      
+      if (!userInteracted) {
+        userInteracted = true;
+        console.log('Первое пользовательское взаимодействие зафиксировано');
+      }
+      
+      if (!isStarted) {
+        console.log('Запускаем практику');
+        startPractice();
+      }
+    }
+
+    // Обработчики событий
+    if (startButton) {
+      // Используем click для универсальности
+      startButton.addEventListener('click', handleUserInteraction);
+      // Дополнительно touchend для мобильных
+      startButton.addEventListener('touchend', handleUserInteraction);
+    }
+
+    const pauseButton = document.getElementById('pauseButton');
+    if (pauseButton) {
+      pauseButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        pausePractice();
+      });
+      pauseButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        pausePractice();
+      });
+    }
+
+    const resumeButton = document.getElementById('resumeButton');
+    if (resumeButton) {
+      resumeButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        resumePractice();
+      });
+      resumeButton.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        resumePractice();
+      });
+    }
+
+    // Дополнительные обработчики для клавиатуры
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        handleUserInteraction(e);
+      }
+    });
+
+    // Основной цикл обновления
+    function gameLoop() {
+      if (!isPaused && !isCompleted && isStarted) {
+        updateMeditationProgress();
+        trackEngagementTime();
+      }
+      
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Запуск после загрузки страницы
+    window.addEventListener('load', async () => {
+      console.log('Полноэкранная страница медитации загружена');
+      
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает на полноэкранной медитации!');
+        trackPracticeFullscreenStart();
+      }
+      
+      gameLoop();
+      completionMessage.style.display = 'none';
+      
+      // Загрузка аудио
+      console.log('Начинаем загрузку аудио...');
+      audio.load();
+      
+      setTimeout(async () => {
+        try {
+          await checkAudioReady();
+          
+          if (isAudioReady && startButton) {
+            startButton.textContent = window.translator.translate('button_start');
+            startButton.classList.remove('preparing');
+          }
+          
+        } catch (error) {
+          console.warn('Проблема с подготовкой аудио:', error);
+        }
+      }, 500);
+    });
+
+    // Отслеживание ухода со страницы
+    window.addEventListener('beforeunload', () => {
+      if (isStarted && !isCompleted) {
+        trackPracticeExit('page_unload');
+      }
+    });
+
+    // Предотвращение скролла на мобильных устройствах
+    document.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+    }, { passive: false });
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🔄 DOM загружен, переводчик готов');
+    });
+  </script>
+</body>
+</html>
