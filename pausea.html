@@ -406,7 +406,7 @@
   <div class="container">
     <!-- Аудио с динамическим источником -->
     <audio id="breathingAudio" preload="auto">
-      <source id="audioSource" src="mp3/pausea_ru.mp3" type="audio/mpeg">
+      <source id="audioSource" src="mp3/pause_ru.mp3" type="audio/mpeg">
     </audio>
 
     <button class="back-button" onclick="handleBackButton();" type="button">
@@ -566,7 +566,7 @@
         const audio = document.getElementById('breathingAudio');
         
         if (audioSource && audio) {
-          const newSrc = `mp3/pausea_${this.currentLang}.mp3`;
+          const newSrc = `mp3/pause_${this.currentLang}.mp3`;
           console.log(`🎵 Меняем аудио источник на: ${newSrc}`);
           
           audio.pause();
