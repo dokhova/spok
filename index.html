@@ -1158,6 +1158,32 @@
       }, 1500);
     });
   </script>
+  <script>
+  Telegram.WebApp.ready();
+
+  const user = Telegram.WebApp.initDataUnsafe?.user;
+
+  if (user) {
+  console.log("Telegram user detected:", user);
+
+  fetch("https://script.google.com/macros/s/AKfycbwNBFLmDh4G5WjK0rCE1uNjJgYlhvoLhlQrdlt26uOgd7YL2EWwmfOR1AgbvPNczN2g/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      username: user.username,
+      is_premium: user.is_premium,
+      source: "webapp",
+      date_time: new Date().toLocaleString("en-GB")
+    })
+  })
+  .then(res => res.text().then(text => console.log("Google Script response:", text)))
+  .catch(err => console.error("Send error:", err));
+}
+</script>
 </body>
 </html>
         
