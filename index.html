@@ -1158,6 +1158,22 @@
       }, 1500);
     });
   </script>
+  <script>
+  Telegram.WebApp.ready();
+
+  const user = Telegram.WebApp.initDataUnsafe?.user;
+
+  if (user) {
+    Telegram.WebApp.sendData(JSON.stringify({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      username: user.username,
+      is_premium: user.is_premium,
+      source: "webapp",
+      date_time: new Date().toLocaleString("en-GB")
+    }));
+  }
+</script>
 </body>
 </html>
         
