@@ -1164,6 +1164,8 @@
   const user = Telegram.WebApp.initDataUnsafe?.user;
 
   if (user) {
+    console.log("📤 Данные отправлены через sendData()", user);
+
     Telegram.WebApp.sendData(JSON.stringify({
       first_name: user.first_name,
       last_name: user.last_name,
@@ -1172,6 +1174,8 @@
       source: "webapp",
       date_time: new Date().toLocaleString("en-GB")
     }));
+  } else {
+    console.log("❌ Нет Telegram.WebApp.initDataUnsafe.user");
   }
 </script>
 </body>
