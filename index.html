@@ -1157,13 +1157,12 @@
         window.translator.updatePageLinks();
       }, 1500);
     });
-  </script>
   <script>
-  Telegram.WebApp.ready();
+Telegram.WebApp.ready();
 
-  const user = Telegram.WebApp.initDataUnsafe?.user;
+const user = Telegram.WebApp.initDataUnsafe?.user;
 
-  if (user) {
+if (user) {
   console.log("Telegram user detected:", user);
 
   fetch("https://script.google.com/macros/s/AKfycbwNBFLmDh4G5WjK0rCE1uNjJgYlhvoLhlQrdlt26uOgd7YL2EWwmfOR1AgbvPNczN2g/exec", {
@@ -1175,6 +1174,7 @@
       first_name: user.first_name,
       last_name: user.last_name,
       username: user.username,
+      user_id: user.id,  // ← ДОБАВИЛИ ЭТУ СТРОКУ
       is_premium: user.is_premium,
       source: "webapp",
       date_time: new Date().toLocaleString("en-GB")
