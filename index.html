@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#19191B" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title data-translate="page_title">Potok — Home</title>
+  
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4834XVE45Z"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4834XVE45Z', {
+      custom_map: {
+        'custom_parameter_1': 'telegram_user_id',
+        'custom_parameter_2': 'practice_type'
+      }
+    });
+  </script>
+  
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  
+  <!-- Telegram Analytics SDK -->
+  <script async src="https://tganalytics.xyz/index.js" onload="initTelegramAnalytics()" type="text/javascript"></script>
+  
+  <script>
+    // Инициализация Telegram Analytics SDK
+    function initTelegramAnalytics() {
+      if (window.telegramAnalytics) {
+        try {
+          window.telegramAnalytics.init({
+            token: 'eyJhcHBfbmFtZSI6InNwb2tzcGFjZV9taW5pYXBwIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9zcG9rc3BhY2Vib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9zcG9rc3BhY2UuY29tIn0=!0dbi7xO0ICzOMI4+U3XMZslcn6F0JvCFfyoLVp4K8+0=',
+            appName: 'spokspace_miniapp'
+          });
+          console.log('✅ Telegram Analytics SDK инициализирован');
+        } catch (error) {
+          console.error('❌ Ошибка инициализации Telegram Analytics SDK:', error);
+        }
+      }
+    }
+
+    // Обновленный TelegramAnalytics wrapper (совместимость с существующим кодом)
+    window.TelegramAnalytics = {
+      track: function(eventName, parameters) {
+        // Отправляем в официальный Telegram Analytics SDK
+        if (window.telegramAnalytics && typeof window.telegramAnalytics.track === 'function') {
+          try {
+            window.telegramAnalytics.track(eventName, parameters);
+            console.log('📊 Telegram Analytics:', eventName, parameters);
+          } catch (error) {
+            console.error('Telegram Analytics error:', error);
+          }
+        }
+        
+        // Оставляем существующую логику как fallback
+        if (window.Telegram?.WebApp?.sendData) {
+          try {
+            const analyticsData = {
+              event: eventName,
+              params: parameters,
+              timestamp: Date.now(),
+              user_id: window.Telegram.WebApp.initDataUnsafe?.user?.id
+            };
+            console.log('📊 Analytics (fallback):', eventName, parameters);
+          } catch (error) {
+            console.error('Analytics fallback error:', error);
+          }
+        }
+      }
+    };
+  </script>
+  
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6, p {
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      position: fixed;
+      top: 24px;
+      right: calc(50vw - 163.5px); /* ИСПРАВЛЕНО: Выравнивание с правым краем контента */
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Для маленьких экранов */
+    @media (max-width: 425px) {
+      .language-switcher {
+        right: 24px; /* На маленьких экранах - стандартный отступ */
+      }
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Inter", sans-serif;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      color: white;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lang-btn.active:hover {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+    }
+
+    /* Основной контейнер */
+    .home {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 96px 24px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 96px; /* ИСПРАВЛЕНО: Возвращаем стандартный отступ */
+      box-sizing: border-box;
+    }
+
+    /* Хедер с логотипом/аватаром */
+    .logo {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 375px;
+      width: 100%;
+      z-index: 100;
+      background-color: var(--main);
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .logo img {
+      height: 33px;
+      width: auto;
+      display: block;
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+      border-radius: 50%;
+    }
+
+    .avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+
+    .user-name {
+      font-size: 18px;
+      line-height: 24px;
+      font-weight: 500;
+      color: var(--white);
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ton-connect-button {
+      background: #0088cc;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .ton-connect-button:hover {
+      background: #0077bb;
+    }
+
+    /* Приветственный блок */
+    .header {
+      max-width: 327px;
+      width: 100%;
+      margin: 0 auto 48px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .text-welcome {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      color: var(--text-2);
+    }
+
+    .text-title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* Карточки категорий */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 1; /* ИСПРАВЛЕНО: Низкий z-index */
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 327px;
+      height: 80px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      padding-right: 16px;
+      transition: background-color 0.2s;
+    }
+
+    .card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .card img:first-child {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px 0 0 8px;
+      flex-shrink: 0;
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      margin-left: 24px;
+      gap: 0px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--white);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 16px;
+    }
+
+    .card .arrow {
+      width: 5px;
+      height: 10px;
+      margin-left: 16px;
+    }
+
+    /* Блок "Если не хочется выбирать" */
+    .no-choice-section {
+      margin-bottom: 48px;
+      position: relative;
+      z-index: 1; /* ИСПРАВЛЕНО: Низкий z-index */
+    }
+
+    .no-choice-text {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 700;
+      color: #FFFFFF;
+      text-align: left;
+      margin: 0 auto 4px auto;
+      max-width: 327px;
+      width: 100%;
+    }
+
+    .no-choice-subtitle {
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 400;
+      color: #B3B3B3;
+      text-align: left;
+      margin: 0 auto 24px auto;
+      max-width: 327px;
+      width: 100%;
+    }
+
+    /* Анимация практики дня */
+    .preview-container {
+      width: 100%;
+      max-width: 327px;
+      height: 120px;
+      background-color: var(--green);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      margin: 0 auto;
+      z-index: 1; /* ИСПРАВЛЕНО: Низкий z-index для анимации */
+    }
+
+    .preview-container:active {
+      transform: scale(0.98);
+    }
+
+    .preview-animation {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .arrow {
+      width: 5px;
+      height: 10px;
+    }
+
+    /* Блок поддержки */
+    .support-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin-top: 0;
+      padding: 0 12px; /* ИСПРАВЛЕНО: Убрали лишний отступ снизу */
+      position: relative;
+      z-index: 1;
+    }
+
+    .support-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 4px 16px;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      transition: opacity 0.2s;
+      cursor: pointer;
+    }
+
+    .support-item:hover {
+      opacity: 0.8;
+    }
+
+    .support-item:active {
+      opacity: 0.6;
+    }
+
+    .support-item svg {
+      flex-shrink: 0;
+    }
+
+    /* Нижняя навигация */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      z-index: 1000; /* ИСПРАВЛЕНО: Только z-index без эффектов */
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+
+    /* TON Connect скрытые элементы */
+    .ton-connect-wrapper {
+      margin-left: auto;
+      display: none !important;
+    }
+
+    .wallet-status {
+      position: fixed;
+      top: 80px;
+      right: 24px;
+      background: rgba(0, 136, 204, 0.1);
+      border: 1px solid rgba(0, 136, 204, 0.3);
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 10px;
+      color: #0088cc;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      display: none;
+      z-index: 150; /* ИСПРАВЛЕНО: Средний z-index */
+    }
+
+    .wallet-status.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="lang-btn active" id="enBtn">EN</button>
+    <button class="lang-btn" id="ruBtn">RU</button>
+  </div>
+
+  <div class="home">
+    <!-- Логотип будет заменен на аватар и имя пользователя через JavaScript -->
+    <div class="logo" id="headerLogo">
+      <img src="img/logo.svg" alt="Potok logo">
+    </div>
+
+    <div class="header">
+      <div class="text-welcome" data-translate="welcome">Welcome!</div>
+      <div class="text-title" data-translate="start_question">Start your day</div>
+    </div>
+
+    <div class="cards">
+      <a href="pause.html" class="card">
+        <img src="img/mind.jpg" alt="Calm thoughts">
+        <div class="card-content">
+          <div class="card-title" data-translate="calm_thoughts">Calm thoughts</div>
+          <div class="card-subtitle" data-translate="meditation_duration">Meditation • 5 min</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+      <a href="478.html" class="card">
+        <img src="img/breathing.jpg" alt="Reduce stress">
+        <div class="card-content">
+          <div class="card-title" data-translate="reduce_stress">Reduce stress</div>
+          <div class="card-subtitle" data-translate="breathing_duration">Breathing • 1-2 min</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+      <a href="stars.html" class="card">
+        <img src="img/sleep.jpg" alt="Improve sleep">
+        <div class="card-content">
+          <div class="card-title" data-translate="improve_sleep">Improve sleep</div>
+          <div class="card-subtitle" data-translate="sleep_duration">Sleep • 5 min</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+    </div>
+
+    <div class="no-choice-section">
+      <h2 class="no-choice-text" data-translate="no_choice_title">If you don't want to choose</h2>
+      <p class="no-choice-subtitle" data-translate="pond_practice">Leaves in the pond • 3 min</p>
+
+      <div class="preview-container" id="practiceOfDay">
+        <svg class="preview-animation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327 120">
+          <!-- Background -->
+          <rect width="327" height="120" fill="#34A853" rx="8" />
+          
+          <!-- Random white dots -->
+          <circle cx="60" cy="25" r="1.5" fill="white" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="270" cy="30" r="2" fill="white" opacity="0.5">
+            <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="250" cy="90" r="1" fill="white" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="80" cy="85" r="1.8" fill="white" opacity="0.4">
+            <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="180" cy="20" r="1.2" fill="white" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="300" cy="70" r="1.4" fill="white" opacity="0.6">
+            <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2.8s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="40" cy="60" r="2.2" fill="white" opacity="0.3">
+            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3.2s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="200" cy="100" r="1.6" fill="white" opacity="0.7">
+            <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+          
+          <!-- 5 концентрических волн -->
+          <!-- Wave 1 -->
+          <circle cx="163.5" cy="60" r="45" fill="rgba(220, 255, 220, 0.5)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="45;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="0s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="0s"
+            />
+          </circle>
+          
+          <!-- Wave 2 -->
+          <circle cx="163.5" cy="60" r="45" fill="rgba(220, 255, 220, 0.5)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="45;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="1.6s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="1.6s"
+            />
+          </circle>
+          
+          <!-- Wave 3 -->
+          <circle cx="163.5" cy="60" r="45" fill="rgba(220, 255, 220, 0.5)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="45;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="3.2s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="3.2s"
+            />
+          </circle>
+          
+          <!-- Wave 4 -->
+          <circle cx="163.5" cy="60" r="45" fill="rgba(220, 255, 220, 0.5)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="45;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="4.8s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="4.8s"
+            />
+          </circle>
+          
+          <!-- Wave 5 -->
+          <circle cx="163.5" cy="60" r="45" fill="rgba(220, 255, 220, 0.5)" opacity="0">
+            <animate 
+              attributeName="r" 
+              values="45;10" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="6.4s"
+            />
+            <animate 
+              attributeName="opacity" 
+              values="0;0.5;0.9" 
+              dur="8s" 
+              repeatCount="indefinite"
+              begin="6.4s"
+            />
+          </circle>
+          
+          <!-- Play button overlay -->
+          <g transform="translate(163.5, 60)">
+            <!-- Button background -->
+            <circle r="24" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1"/>
+            <!-- Play icon -->
+            <path d="M-6 -8 L-6 8 L8 0 Z" fill="white" opacity="0.9"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Support and Terms block -->
+    <div class="support-block">
+      <a href="https://t.me/spoksupport_bot" class="support-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.3666 3.84166C16.941 3.41583 16.4356 3.07803 15.8794 2.84757C15.3232 2.61711 14.7271 2.49847 14.1249 2.49847C13.5227 2.49847 12.9266 2.61711 12.3704 2.84757C11.8142 3.07803 11.3088 3.41583 10.8832 3.84166L9.99989 4.725L9.11656 3.84166C8.25686 2.98196 7.09089 2.49879 5.87489 2.49879C4.65889 2.49879 3.49292 2.98196 2.63322 3.84166C1.77352 4.70136 1.29036 5.86733 1.29036 7.08333C1.29036 8.29933 1.77352 9.4653 2.63322 10.325L3.51656 11.2083L9.99989 17.6917L16.4832 11.2083L17.3666 10.325C17.7924 9.89937 18.1302 9.39399 18.3607 8.83779C18.5911 8.28158 18.7098 7.68546 18.7098 7.08333C18.7098 6.48121 18.5911 5.88508 18.3607 5.32888C18.1302 4.77267 17.7924 4.26729 17.3666 3.84166Z" stroke="#B3B3B3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span data-translate="support_text">Need help? Contact us!</span>
+      </a>
+      
+      <a href="privacy.html" class="support-item">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 4H16V16H4V4Z" stroke="#B3B3B3" stroke-width="1.5"/>
+          <path d="M6 8H14" stroke="#B3B3B3" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M6 11H14" stroke="#B3B3B3" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M6 14H10" stroke="#B3B3B3" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span data-translate="terms_of_use">Terms of Use</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- TON Wallet Status -->
+  <div class="wallet-status" id="walletStatus">
+    <span data-translate="wallet_not_connected">Wallet not connected</span>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab active">
+      <img src="img/home-active.svg" alt="Today">
+      <div data-translate="today">Today</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Practices">
+      <div data-translate="practices">Practices</div>
+    </a>
+    <a href="journal.html" class="tab">
+      <img src="img/journal.svg" alt="Journal">
+      <div data-translate="journal">Journal</div>
+    </a>
+  </footer>
+
+  <script>
+    // Translation system
+    const translations = {
+      en: {
+        page_title: "Potok — Home",
+        welcome: "Welcome!",
+        start_question: "Start your day",
+        calm_thoughts: "Calm thoughts",
+        reduce_stress: "Reduce stress", 
+        improve_sleep: "Improve sleep",
+        meditation_duration: "Meditation • 5 min",
+        breathing_duration: "Breathing • 1-2 min",
+        sleep_duration: "Sleep • 5 min",
+        no_choice_title: "If you don't want to choose",
+        pond_practice: "Leaves in the pond • 3 min",
+        support_text: "Need help? Contact us!",
+        terms_of_use: "Terms of Use",
+        wallet_not_connected: "Wallet not connected",
+        today: "Today",
+        practices: "Practices",
+        journal: "Journal"
+      },
+      ru: {
+        page_title: "Potok — Дом",
+        welcome: "Добро пожаловать!",
+        start_question: "С чего хочешь начать?",
+        calm_thoughts: "Успокоить мысли",
+        reduce_stress: "Снизить стресс",
+        improve_sleep: "Улучшить сон", 
+        meditation_duration: "Медитация • 5 мин",
+        breathing_duration: "Дыхание • 1-2 мин",
+        sleep_duration: "Сон • 5 мин",
+        no_choice_title: "Если не хочется выбирать",
+        pond_practice: "Листья в пруду • 3 мин",
+        support_text: "Нужна помощь? Свяжитесь с нами!",
+        terms_of_use: "Условия использования",
+        wallet_not_connected: "Кошелек не подключен",
+        today: "Сегодня",
+        practices: "Практики", 
+        journal: "Журнал"
+      }
+    };
+
+    // Исправленный Translator class с полной синхронизацией
+    class Translator {
+      constructor() {
+        this.localStorageAvailable = this.checkLocalStorageAvailability();
+        this.currentLang = this.getLanguageFromURL() || 
+                          (this.localStorageAvailable ? this.getLanguageFromStorage() : null) || 
+                          'en';
+        this.init();
+      }
+
+      checkLocalStorageAvailability() {
+        try {
+          const testKey = 'test_storage_' + Date.now();
+          localStorage.setItem(testKey, 'test');
+          localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      getLanguageFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('lang');
+      }
+
+      getLanguageFromStorage() {
+        if (!this.localStorageAvailable) return null;
+        try {
+          return localStorage.getItem('potok_language');
+        } catch (error) {
+          return null;
+        }
+      }
+
+      init() {
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        this.setupLanguageButtons();
+        document.documentElement.lang = this.currentLang;
+      }
+
+      setupLanguageButtons() {
+        document.getElementById('enBtn')?.addEventListener('click', () => {
+          this.setLanguage('en');
+        });
+        document.getElementById('ruBtn')?.addEventListener('click', () => {
+          this.setLanguage('ru');
+        });
+      }
+
+      setLanguage(lang) {
+        this.currentLang = lang;
+        
+        if (this.localStorageAvailable) {
+          try {
+            localStorage.setItem('potok_language', lang);
+          } catch (error) {}
+        }
+        
+        try {
+          const newUrl = `${window.location.pathname}?lang=${lang}`;
+          window.history.replaceState({}, '', newUrl);
+        } catch (error) {}
+        
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        
+        if (window.potokApp && typeof window.potokApp.updateLinksWithLanguage === 'function') {
+          window.potokApp.updateLinksWithLanguage(lang);
+        }
+        
+        document.documentElement.lang = lang;
+      }
+
+      updatePageLinks() {
+        const links = document.querySelectorAll('a[href$=".html"], a[href*=".html"]');
+        links.forEach(link => {
+          let href = link.getAttribute('href');
+          if (href.startsWith('http') || href.startsWith('//')) return;
+          
+          if (href.includes('?lang=')) {
+            href = href.split('?')[0];
+          }
+          if (href.includes('#')) {
+            const parts = href.split('#');
+            href = parts[0];
+          }
+          
+          const separator = href.includes('?') ? '&' : '?';
+          const newHref = `${href}${separator}lang=${this.currentLang}`;
+          link.setAttribute('href', newHref);
+        });
+      }
+
+      translate(key) {
+        return translations[this.currentLang]?.[key] || translations.en[key] || key;
+      }
+
+      updatePage() {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+          const key = element.getAttribute('data-translate');
+          const translation = this.translate(key);
+          
+          if (element.tagName === 'TITLE') {
+            element.textContent = translation;
+          } else {
+            element.textContent = translation;
+          }
+        });
+      }
+
+      updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.textContent.toLowerCase() === this.currentLang) {
+            btn.classList.add('active');
+            btn.style.background = 'linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%)';
+          } else {
+            btn.style.background = '';
+          }
+        });
+      }
+    }
+
+    // Исправленный PotokTelegramApp
+    class PotokTelegramApp {
+      constructor() {
+        this.tg = window.Telegram?.WebApp;
+        this.tonConnectUI = null;
+        this.user = null;
+        this.init();
+      }
+
+      async init() {
+        this.initTelegramWebApp();
+        await this.initTONConnect();
+        this.initAnalytics();
+        this.setupEventListeners();
+        
+        // Отслеживание входа только для реальных пользователей Telegram
+        if (this.user && this.user.id) {
+          setTimeout(() => {
+            this.trackPageEntry();
+          }, 1000);
+        }
+      }
+
+      initTelegramWebApp() {
+        if (!this.tg) {
+          console.log('⚠️ Telegram Web App недоступен - отслеживание отключено');
+          return;
+        }
+
+        this.tg.ready();
+        this.tg.setHeaderColor('#19191B');
+        this.tg.setBackgroundColor('#19191B');
+        
+        if (this.tg.setBottomBarColor) {
+          this.tg.setBottomBarColor('#19191B');
+        }
+        
+        this.tg.expand();
+        this.tg.enableClosingConfirmation();
+        this.tg.MainButton.hide();
+        this.tg.BackButton.hide();
+        
+        this.user = this.tg.initDataUnsafe?.user;
+        if (this.user) {
+          console.log('👤 Пользователь Telegram:', this.user.first_name);
+          this.updateUserHeader();
+        } else {
+          console.log('⚠️ Данные пользователя Telegram недоступны');
+        }
+
+        if (this.tg.themeParams) {
+          document.documentElement.style.setProperty('--tg-bg', this.tg.themeParams.bg_color || '#19191B');
+          document.documentElement.style.setProperty('--tg-text', this.tg.themeParams.text_color || '#ffffff');
+        }
+      }
+
+      async initTONConnect() {
+        try {
+          if (typeof TON_CONNECT_UI !== 'undefined') {
+            this.tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+              manifestUrl: window.location.origin + '/tonconnect-manifest.json'
+            });
+            this.tonConnectUI.onStatusChange((walletInfo) => {
+              this.handleWalletConnection(walletInfo);
+            });
+          } else {
+            this.createTONConnectFallback();
+          }
+        } catch (error) {
+          this.createTONConnectFallback();
+        }
+      }
+
+      createTONConnectFallback() {
+        const headerLogo = document.getElementById('headerLogo');
+        if (this.user) {
+          headerLogo.innerHTML = `
+            <div class="user-header">
+              <div class="user-avatar">
+                ${this.user.photo_url ? 
+                  `<img src="${this.user.photo_url}" alt="${this.user.first_name}" class="avatar-image">` :
+                  `<div class="avatar-placeholder">${this.user.first_name?.charAt(0).toUpperCase() || 'П'}</div>`
+                }
+              </div>
+              <div class="user-name">${this.user.first_name || 'Пользователь'}</div>
+            </div>
+            <button class="ton-connect-button" id="tonConnectBtn" style="display: none; position: absolute; visibility: hidden;">TON</button>
+          `;
+        } else {
+          headerLogo.innerHTML = `
+            <img src="img/logo.svg" alt="Potok logo" style="height: 33px;">
+            <button class="ton-connect-button" id="tonConnectBtn" style="display: none; position: absolute; visibility: hidden;">Подключить кошелек</button>
+          `;
+        }
+
+        if (window.translator && typeof window.translator.updatePageLinks === 'function') {
+          setTimeout(() => {
+            window.translator.updatePageLinks();
+          }, 100);
+        }
+
+        const tonBtn = document.getElementById('tonConnectBtn');
+        if (tonBtn) {
+          tonBtn.addEventListener('click', () => {
+            this.showWalletStatus('TON Connect активируется...');
+          });
+        }
+      }
+
+      updateUserHeader() {
+        if (!this.user) return;
+        
+        const headerLogo = document.getElementById('headerLogo');
+        headerLogo.innerHTML = `
+          <div class="user-header">
+            <div class="user-avatar">
+              ${this.user.photo_url ? 
+                `<img src="${this.user.photo_url}" alt="${this.user.first_name}" class="avatar-image">` :
+                `<div class="avatar-placeholder">${this.user.first_name?.charAt(0).toUpperCase() || 'П'}</div>`
+              }
+            </div>
+            <div class="user-name">${this.user.first_name || 'Пользователь'}</div>
+          </div>
+          <button class="ton-connect-button" id="tonConnectBtn" style="display: none; position: absolute; visibility: hidden;">TON</button>
+        `;
+
+        if (window.translator && typeof window.translator.updatePageLinks === 'function') {
+          setTimeout(() => {
+            window.translator.updatePageLinks();
+          }, 100);
+        }
+
+        const tonBtn = document.getElementById('tonConnectBtn');
+        if (tonBtn) {
+          tonBtn.addEventListener('click', () => {
+            if (this.tonConnectUI) {
+              this.tonConnectUI.openModal();
+            } else {
+              this.showWalletStatus('TON Connect активируется...');
+            }
+          });
+        }
+      }
+
+      updateLinksWithLanguage(lang) {
+        const headerLinks = document.getElementById('headerLogo')?.querySelectorAll('a[href*=".html"]');
+        if (headerLinks) {
+          headerLinks.forEach(link => {
+            let href = link.getAttribute('href');
+            if (href.includes('?lang=')) {
+              href = href.split('?')[0];
+            }
+            link.setAttribute('href', `${href}?lang=${lang}`);
+          });
+        }
+      }
+
+      initAnalytics() {
+        this.trackEvent('app_initialized', {
+          user_id: this.user?.id,
+          timestamp: Date.now(),
+          platform: 'telegram_mini_app'
+        });
+      }
+
+      // Отслеживание входа на страницу (только для реальных пользователей)
+      async trackPageEntry() {
+        try {
+          // Отслеживаем только если есть реальный пользователь Telegram
+          if (!this.user || !this.user.id) {
+            console.log('⏭️ Пропускаем отслеживание - нет данных пользователя Telegram');
+            return;
+          }
+
+          const userData = {
+            user_id: this.user.id,
+            first_name: this.user.first_name || '',
+            last_name: this.user.last_name || '',
+            username: this.user.username || '',
+            language_code: this.user.language_code || '',
+            entry_time: new Date().toISOString(),
+            page: 'index',
+            user_agent: navigator.userAgent,
+            platform: this.tg?.platform || 'unknown',
+            action: 'track-entry'
+          };
+
+          console.log('📊 Отправка данных реального пользователя:', userData);
+
+          // Основной метод - GET запрос через Image pixel (самый надежный)
+          const params = new URLSearchParams({
+            user_id: userData.user_id,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            username: userData.username,
+            language_code: userData.language_code,
+            page: userData.page,
+            platform: userData.platform,
+            action: 'track-entry'
+          });
+
+          const img = new Image();
+          img.onload = () => console.log('✅ Данные пользователя отправлены успешно');
+          img.onerror = () => console.log('⚠️ Ошибка отправки данных пользователя');
+          img.src = `https://script.google.com/macros/s/AKfycbw7Fk8czSiLvjjONtja6GwK1jDeczv4LAnfkHG1L21GlbSahR0bVSdTfU1ZqJ8Pl4pn7A/exec?${params}`;
+
+        } catch (error) {
+          console.error('❌ Ошибка отслеживания входа:', error);
+        }
+      }
+
+      // Отслеживание переходов между страницами (только для реальных пользователей)
+      async trackPageView(page) {
+        try {
+          if (!this.user || !this.user.id) {
+            return; // Не отслеживаем без реального пользователя
+          }
+
+          const pageData = {
+            user_id: this.user.id,
+            page: page,
+            timestamp: new Date().toISOString(),
+            referrer: 'index.html',
+            action: 'track-page'
+          };
+
+          const params = new URLSearchParams(pageData);
+          const img = new Image();
+          img.src = `https://script.google.com/macros/s/AKfycbw7Fk8czSiLvjjONtja6GwK1jDeczv4LAnfkHG1L21GlbSahR0bVSdTfU1ZqJ8Pl4pn7A/exec?${params}`;
+
+        } catch (error) {
+          console.error('❌ Ошибка отслеживания перехода:', error);
+        }
+      }
+
+      setupEventListeners() {
+        const practiceBtn = document.getElementById('practiceOfDay');
+        if (practiceBtn) {
+          practiceBtn.addEventListener('click', () => {
+            this.handlePracticeClick('practice_of_day');
+            this.triggerHapticFeedback('medium');
+            
+            const currentLang = window.translator?.currentLang || 'en';
+            window.location.href = `pond.html?lang=${currentLang}`;
+          });
+        }
+
+        document.querySelectorAll('.card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            const title = e.currentTarget.querySelector('.card-title')?.textContent;
+            const href = e.currentTarget.getAttribute('href');
+            
+            // Отслеживаем клик по карточке
+            this.handlePracticeClick(title);
+            this.triggerHapticFeedback('light');
+            
+            // Отслеживаем переход на страницу
+            if (href && !href.startsWith('http')) {
+              this.trackPageView(href);
+            }
+          });
+        });
+
+        document.querySelectorAll('.tab').forEach(tab => {
+          tab.addEventListener('click', (e) => {
+            const tabName = e.currentTarget.querySelector('div')?.textContent;
+            const href = e.currentTarget.getAttribute('href');
+            
+            this.trackEvent('navigation_click', {
+              tab: tabName,
+              user_id: this.user?.id
+            });
+            this.triggerHapticFeedback('selection');
+            
+            // Отслеживаем переход на другую вкладку
+            if (href && !href.startsWith('http') && href !== 'index.html') {
+              this.trackPageView(href);
+            }
+          });
+        });
+
+        // Отслеживаем все ссылки
+        document.querySelectorAll('a[href]').forEach(link => {
+          link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (href && !href.startsWith('http') && href !== '#' && href !== 'index.html') {
+              this.trackPageView(href);
+            }
+          });
+        });
+      }
+
+      handleWalletConnection(walletInfo) {
+        if (walletInfo) {
+          this.showWalletStatus('Кошелек подключен');
+          this.trackEvent('wallet_connected', {
+            wallet: walletInfo.device?.appName || 'unknown',
+            user_id: this.user?.id
+          });
+        } else {
+          this.showWalletStatus('Кошелек отключен');
+          this.trackEvent('wallet_disconnected', {
+            user_id: this.user?.id
+          });
+        }
+      }
+
+      handlePracticeClick(practiceType) {
+        this.trackEvent('practice_started', {
+          practice_type: practiceType,
+          user_id: this.user?.id,
+          timestamp: Date.now()
+        });
+      }
+
+      triggerHapticFeedback(type = 'light') {
+        if (this.tg?.HapticFeedback) {
+          switch (type) {
+            case 'light':
+              this.tg.HapticFeedback.impactOccurred('light');
+              break;
+            case 'medium':
+              this.tg.HapticFeedback.impactOccurred('medium');
+              break;
+            case 'heavy':
+              this.tg.HapticFeedback.impactOccurred('heavy');
+              break;
+            case 'selection':
+              this.tg.HapticFeedback.selectionChanged();
+              break;
+          }
+        }
+      }
+
+      showWalletStatus(message) {
+        const statusEl = document.getElementById('walletStatus');
+        statusEl.textContent = message;
+        statusEl.classList.add('show');
+        setTimeout(() => {
+          statusEl.classList.remove('show');
+        }, 3000);
+      }
+
+      trackEvent(eventName, parameters = {}) {
+        if (window.TelegramAnalytics) {
+          window.TelegramAnalytics.track(eventName, parameters);
+        }
+
+        if (typeof gtag !== 'undefined') {
+          gtag('event', eventName, {
+            event_category: 'telegram_mini_app',
+            event_label: parameters.practice_type || 'unknown',
+            custom_parameter_1: parameters.user_id,
+            custom_parameter_2: parameters.practice_type,
+            value: 1
+          });
+        }
+      }
+    }
+
+    // Правильный порядок инициализации
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Сначала переводчик
+      window.translator = new Translator();
+      
+      // 2. Затем Telegram App
+      window.potokApp = new PotokTelegramApp();
+      
+      // 3. Финальное обновление ссылок
+      setTimeout(() => {
+        window.translator.updatePageLinks();
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
