@@ -751,7 +751,7 @@
     // Translations для article2.html
     const translations = {
       en: {
-        page_title: "Potok — 10 tracks without climaxes",
+        page_title: "spokspace — 10 tracks without climaxes",
         tag_music: "MUSIC",
         tag_collection: "COLLECTION",
         tag_article: "ARTICLE",
@@ -788,7 +788,7 @@
         tab_journal: "Journal"
       },
       ru: {
-        page_title: "Potok — 10 треков без кульминаций",
+        page_title: "spokspace — 10 треков без кульминаций",
         tag_music: "МУЗЫКА",
         tag_collection: "ПОДБОРКА",
         tag_article: "СТАТЬЯ",
@@ -869,7 +869,7 @@
         if (!this.localStorageAvailable) return null;
         
         try {
-          const langFromStorage = localStorage.getItem('potok_language');
+          const langFromStorage = localStorage.getItem('sokspace_language');
           console.log(`💾 Язык из localStorage: ${langFromStorage}`);
           return langFromStorage;
         } catch (error) {
@@ -914,7 +914,7 @@
         // Сохранение в localStorage (если доступен)
         if (this.localStorageAvailable) {
           try {
-            localStorage.setItem('potok_language', lang);
+            localStorage.setItem('spokspace_language', lang);
             console.log(`✅ Язык ${lang} сохранен в localStorage`);
           } catch (error) {
             console.log(`❌ Не удалось сохранить в localStorage: ${error.message}`);
