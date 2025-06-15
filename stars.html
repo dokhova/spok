@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title data-translate="page_title">Potok — Language of the Stars</title>
   
   <!-- Google tag (gtag.js) - ОБЯЗАТЕЛЬНО ПЕРВЫМ -->
@@ -538,18 +538,28 @@
     }
 
     .tab-bar {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      max-width: 375px;
-      background-color: var(--main);
-      border-top: 1px solid rgba(255, 255, 255, 0.15);
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-    }
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 375px;
+  background-color: var(--main);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 1000;
+  
+  /* Добавляем поддержку iPhone safe area */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  
+  /* Дополнительный отступ для старых iPhone без env() */
+  padding-bottom: calc(12px + 20px);
+  
+  /* Поддержка современных iPhone с safe area */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 20px));
+}
 
     .tab {
       display: flex;
