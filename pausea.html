@@ -646,8 +646,312 @@
     }
 
     // ===== STREAK MANAGER ДЛЯ PAUSE.HTML ===== 
-    // [ВСЁ СОДЕРЖИМОЕ ИЗ ПЕРВОГО АРТЕФАКТА - PracticeStreakManager, showStreakNotification, инициализация]
     
+    // Firebase Configuration (та же что и на index.html)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDB1ePgeJVXB_Qcy0UZDIKHA8i1GpOOQAU",
+      authDomain: "spokspacebot.firebaseapp.com", 
+      projectId: "spokspacebot",
+      storageBucket: "spokspacebot.firebasestorage.app",
+      messagingSenderId: "545573700538",
+      appId: "1:545573700538:web:efa309ffbe902cab081383"
+    };
+
+    // Simplified Streak Manager для страниц практик
+    class PracticeStreakManager {
+      constructor(userId) {
+        this.userId = userId;
+        this.useFirebase = false;
+        this.storageKey = `potok_streak_${this.userId}`;
+        this.localStorageAvailable = this.checkLocalStorageAvailability();
+        this.initFirebase();
+      }
+
+      checkLocalStorageAvailability() {
+        try {
+          const testKey = 'test_storage_' + Date.now();
+          localStorage.setItem(testKey, 'test');
+          localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      async initFirebase() {
+        try {
+          const { initializeApp } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
+          const { getFirestore, doc, getDoc, setDoc } = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js');
+          
+          this.firebaseApp = initializeApp(firebaseConfig);
+          this.firebaseDb = getFirestore(this.firebaseApp);
+          this.firebaseApi = { doc, getDoc, setDoc };
+          this.useFirebase = true;
+          
+          console.log('✅ Firebase streak manager готов');
+        } catch (error) {
+          console.error('❌ Firebase недоступен, используем localStorage:', error);
+        }
+      }
+
+      getUserId() {
+        // Получаем из Telegram Web App
+        const tg = window.Telegram?.WebApp;
+        if (tg?.initDataUnsafe?.user?.id) {
+          return tg.initDataUnsafe.user.id;
+        }
+        
+        // Fallback для тестирования
+        if (this.localStorageAvailable) {
+          try {
+            let devUserId = localStorage.getItem('potok_dev_user_id');
+            if (!devUserId) {
+              devUserId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+              localStorage.setItem('potok_dev_user_id', devUserId);
+            }
+            return devUserId;
+          } catch (error) {
+            return 'dev_' + Date.now();
+          }
+        } else {
+          return 'dev_' + Date.now();
+        }
+      }
+
+      async loadStreak() {
+        try {
+          let streakData = null;
+          
+          // Пытаемся загрузить из Firebase
+          if (this.useFirebase && this.firebaseDb) {
+            streakData = await this.loadFromFirebase();
+          }
+          
+          // Fallback на localStorage
+          if (!streakData && this.localStorageAvailable) {
+            streakData = this.loadFromLocalStorage();
+          }
+          
+          return streakData || { streak: 0, lastPracticeDate: null, startDate: null, isFirstLaunch: true };
+        } catch (error) {
+          console.error('❌ Ошибка загрузки streak:', error);
+          return { streak: 0, lastPracticeDate: null, startDate: null, isFirstLaunch: true };
+        }
+      }
+
+      async loadFromFirebase() {
+        try {
+          const docRef = this.firebaseApi.doc(this.firebaseDb, 'telegram_users', this.userId.toString());
+          const docSnap = await this.firebaseApi.getDoc(docRef);
+          
+          if (docSnap.exists()) {
+            console.log('✅ Streak загружен из Firebase');
+            return docSnap.data();
+          }
+          return null;
+        } catch (error) {
+          console.error('❌ Ошибка загрузки из Firebase:', error);
+          return null;
+        }
+      }
+
+      loadFromLocalStorage() {
+        try {
+          const data = localStorage.getItem(this.storageKey);
+          if (data) {
+            console.log('✅ Streak загружен из localStorage');
+            return JSON.parse(data);
+          }
+          return null;
+        } catch (error) {
+          console.error('❌ Ошибка загрузки из localStorage:', error);
+          return null;
+        }
+      }
+
+      async recordPractice(practiceType) {
+        console.log(`🧘 Записываем завершение практики: ${practiceType}`);
+
+        // Загружаем текущий streak
+        const streakData = await this.loadStreak();
+        let { streak, lastPracticeDate, startDate, isFirstLaunch } = streakData;
+
+        const today = new Date().toDateString();
+        
+        // Если уже практиковались сегодня, ничего не делаем
+        if (lastPracticeDate === today) {
+          console.log('💡 Практика уже засчитана сегодня');
+          return streak;
+        }
+
+        // Проверяем непрерывность
+        const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+        
+        if (streak === 0 || lastPracticeDate === yesterday) {
+          // Увеличиваем streak
+          streak += 1;
+          lastPracticeDate = today;
+          
+          if (!startDate) {
+            startDate = today;
+          }
+        } else {
+          // Streak прервался, начинаем заново
+          streak = 1;
+          lastPracticeDate = today;
+          startDate = today;
+        }
+
+        // После первой практики это уже не первый запуск
+        isFirstLaunch = false;
+
+        // Ограничиваем максимум 90 дней
+        if (streak > 90) {
+          streak = 90;
+        }
+
+        // Сохраняем обновленный streak
+        await this.saveStreak({
+          streak,
+          lastPracticeDate,
+          startDate,
+          isFirstLaunch,
+          lastUpdate: new Date().toISOString(),
+          userId: this.userId
+        });
+        
+        console.log(`🔥 Практика засчитана! Новый streak: ${streak} дней`);
+        return streak;
+      }
+
+      async saveStreak(streakData) {
+        // Сохраняем в Firebase (если доступен)
+        if (this.useFirebase && this.firebaseDb) {
+          await this.saveToFirebase(streakData);
+        }
+        
+        // Всегда сохраняем в localStorage как backup
+        if (this.localStorageAvailable) {
+          this.saveToLocalStorage(streakData);
+        }
+      }
+
+      async saveToFirebase(streakData) {
+        try {
+          const docRef = this.firebaseApi.doc(this.firebaseDb, 'telegram_users', this.userId.toString());
+          
+          await this.firebaseApi.setDoc(docRef, {
+            ...streakData,
+            totalPractices: (streakData.totalPractices || 0) + 1
+          }, { merge: true });
+          
+          console.log('✅ Streak сохранен в Firebase:', streakData.streak);
+        } catch (error) {
+          console.error('❌ Ошибка сохранения в Firebase:', error);
+        }
+      }
+
+      saveToLocalStorage(streakData) {
+        try {
+          localStorage.setItem(this.storageKey, JSON.stringify(streakData));
+          console.log('✅ Streak сохранен в localStorage:', streakData.streak);
+        } catch (error) {
+          console.error('❌ Ошибка сохранения в localStorage:', error);
+        }
+      }
+    }
+
+    // Функция показа уведомления о завершении
+    function showStreakNotification(streak, language = 'ru') {
+      const messages = {
+        ru: {
+          completed: '🎉 Практика завершена!',
+          streak: streak === 1 ? `${streak} день подряд` : `${streak} дней подряд`
+        },
+        en: {
+          completed: '🎉 Practice completed!',
+          streak: streak === 1 ? `${streak} day in a row` : `${streak} days in a row`
+        }
+      };
+      
+      const msg = messages[language] || messages.ru;
+      
+      // Создаем уведомление
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(52, 168, 83, 0.95);
+        color: white;
+        padding: 20px 32px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        z-index: 2000;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        backdrop-filter: blur(10px);
+        text-align: center;
+        animation: streakNotification 3s ease-in-out forwards;
+        font-family: 'Inter', sans-serif;
+      `;
+      
+      notification.innerHTML = `
+        <div style="margin-bottom: 8px;">${msg.completed}</div>
+        <div style="font-size: 14px; opacity: 0.9; font-weight: 400;">
+          ${msg.streak}
+        </div>
+      `;
+      
+      // Добавляем CSS анимацию если её ещё нет
+      if (!document.getElementById('streak-notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'streak-notification-styles';
+        style.textContent = `
+          @keyframes streakNotification {
+            0% { 
+              opacity: 0; 
+              transform: translate(-50%, -50%) scale(0.8); 
+            }
+            15% { 
+              opacity: 1; 
+              transform: translate(-50%, -50%) scale(1.05); 
+            }
+            25% { 
+              opacity: 1; 
+              transform: translate(-50%, -50%) scale(1); 
+            }
+            85% { 
+              opacity: 1; 
+              transform: translate(-50%, -50%) scale(1); 
+            }
+            100% { 
+              opacity: 0; 
+              transform: translate(-50%, -50%) scale(0.9); 
+            }
+          }
+        `;
+        document.head.appendChild(style);
+      }
+      
+      document.body.appendChild(notification);
+      
+      // Удаляем уведомление через 3 секунды
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 3000);
+    }
+
+    // Инициализируем streak manager
+    const tg = window.Telegram?.WebApp;
+    const userId = tg?.initDataUnsafe?.user?.id || 'dev_user_' + Date.now();
+    window.practiceStreakManager = new PracticeStreakManager(userId);
+
+    console.log('🚀 Streak Manager инициализирован для практики pause');
+
     // Initialize translator
     window.translator = new Translator();
 
