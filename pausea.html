@@ -958,7 +958,20 @@ function handleBackButton() {
           if (currentCycle > lastTrackedCycle) {
             trackCycleCompletion(5);
           }
+          // Отслеживаем завершение для Google Analytics
           trackPracticeCompletion();
+
+          // Записываем практику в streak и показываем уведомление
+          if (window.practiceStreakManager) {
+            window.practiceStreakManager.recordPractice('pause').then(newStreak => {
+              if (newStreak > 0) {
+                const currentLang = window.translator ? window.translator.currentLang : 'ru';
+                showStreakNotification(newStreak, currentLang);
+              }
+            }).catch(error => {
+              console.error('❌ Ошибка записи streak:', error);
+            });
+          }
           
           pausePrompt.style.display = 'none';
           resumePrompt.style.display = 'none';
