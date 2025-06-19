@@ -800,41 +800,47 @@ function handleBackButton() {
 
     // Функция запуска практики
     async function startPractice() {
-      if (isStarted || !userInteracted) return;
-      
-      startButton.textContent = window.translator.translate('preparing');
-      startButton.classList.add('preparing');
-      
-      try {
-        await checkAudioReady();
-        
-        isStarted = true;
-        startTime = Date.now();
-        
-        trackPracticeActualStart();
-        
-        // Запускаем только анимацию (БЕЗ текста дыхания и счетчика этапов)
-        startPrompt.style.display = 'none';
-        pausePrompt.style.display = 'block';
-        
-        // Запуск анимации волн
-        const waves = document.querySelectorAll('.wave');
-        waves.forEach(wave => {
-          wave.classList.add('started');
-        });
-        
-        // Запуск аудио
-        await tryStartAudio();
-        
-        console.log('Медитация началась');
-        
-      } catch (error) {
-        console.error('Ошибка запуска практики:', error);
-        
-        startButton.textContent = window.translator.translate('button_start');
-        startButton.classList.remove('preparing');
-      }
+  if (isStarted || !userInteracted) return;
+  
+  startButton.textContent = window.translator.translate('preparing');
+  startButton.classList.add('preparing');
+  
+  try {
+    await checkAudioReady();
+    
+    isStarted = true;
+    startTime = Date.now();
+    
+    trackPracticeActualStart();
+    
+    // 🔥 ДОБАВЛЯЕМ ЗАПИСЬ ПРАКТИКИ ЗДЕСЬ
+    if (window.practiceStreakManager) {
+      await window.practiceStreakManager.recordPractice('pause');
+      console.log('🎯 Практика "pause" записана в streak!');
     }
+    
+    // Запускаем только анимацию (БЕЗ текста дыхания и счетчика этапов)
+    startPrompt.style.display = 'none';
+    pausePrompt.style.display = 'block';
+    
+    // Запуск анимации волн
+    const waves = document.querySelectorAll('.wave');
+    waves.forEach(wave => {
+      wave.classList.add('started');
+    });
+    
+    // Запуск аудио
+    await tryStartAudio();
+    
+    console.log('Медитация началась');
+    
+  } catch (error) {
+    console.error('Ошибка запуска практики:', error);
+    
+    startButton.textContent = window.translator.translate('button_start');
+    startButton.classList.remove('preparing');
+  }
+}
 
     function pausePractice() {
       if (!isStarted || isPaused) return;
