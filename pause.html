@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#19191B" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title data-translate="page_title">Potok — Mindful pauses</title>
+  
+  <!-- Telegram Web App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NBWRD903C5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NBWRD903C5', {
+      enhanced_measurement: true
+    });
+
+    // Функции для отслеживания событий медитативной практики
+    function trackPracticeOpened() {
+      console.log('Медитативная практика открыта:', 'Осознанные паузы');
+      gtag('event', 'practice_opened', {
+        event_category: 'meditation_practice',
+        event_label: 'Осознанные паузы',
+        practice_type: 'meditation',
+        value: 1
+      });
+    }
+
+    function trackPracticeStarted() {
+      console.log('Медитативная практика начата:', 'Осознанные паузы');
+      gtag('event', 'practice_started', {
+        event_category: 'meditation_engagement',
+        event_label: 'Осознанные паузы',
+        practice_type: 'meditation',
+        value: 1
+      });
+    }
+
+    function trackPreviewAnimationView() {
+      console.log('Просмотр превью анимации медитации');
+      gtag('event', 'preview_animation_view', {
+        event_category: 'practice_preview',
+        event_label: 'pause_meditation_preview',
+        value: 1
+      });
+    }
+
+    function trackPracticeTypeView(practiceType) {
+      console.log('Просмотр типа практики:', practiceType);
+      gtag('event', 'practice_type_view', {
+        event_category: 'practice_discovery',
+        event_label: practiceType,
+        value: 1
+      });
+    }
+
+    function trackRelatedPracticeClick(practiceName) {
+      console.log('Клик по связанной практике:', practiceName);
+      gtag('event', 'related_practice_click', {
+        event_category: 'practice_navigation',
+        event_label: practiceName,
+        practice_type: 'meditation',
+        value: 1
+      });
+    }
+
+    function trackNavigation(navItem) {
+      console.log('Навигация:', navItem);
+      gtag('event', 'navigation', {
+        event_category: 'tab_bar',
+        event_label: navItem,
+        value: 1
+      });
+    }
+
+    function trackCloseButton() {
+      console.log('Клик по кнопке назад');
+      gtag('event', 'practice_back', {
+        event_category: 'practice_action',
+        event_label: 'back_button',
+        practice_type: 'meditation',
+        value: 1
+      });
+    }
+
+    function trackPracticeEngagement() {
+      console.log('Длительное взаимодействие с практикой');
+      gtag('event', 'practice_engagement', {
+        event_category: 'meditation_engagement',
+        event_label: 'stayed_30_seconds',
+        practice_type: 'meditation',
+        value: 30
+      });
+    }
+
+    function trackPracticeReadiness() {
+      console.log('Готовность к практике (1+ минута на странице)');
+      gtag('event', 'practice_readiness', {
+        event_category: 'meditation_preparation',
+        event_label: 'preparation_time_1_minute',
+        practice_type: 'meditation',
+        value: 60
+      });
+    }
+
+    // ИСПРАВЛЕННАЯ функция перехода
+    function startFullScreenBreathing(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      console.log('startFullScreenBreathing вызвана');
+      
+      // Отслеживаем начало полной практики
+      trackPracticeStarted();
+      
+      // Переходим к полноэкранной анимации с языком
+      console.log('Попытка перехода к pausea.html');
+      
+      const currentLang = window.translator?.currentLang || 'en';
+      setTimeout(function() {
+        window.location.href = `pausea.html?lang=${currentLang}`;
+      }, 100);
+    }
+
+    // Инициализация отслеживания
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Google Analytics загружается на медитативной практике...');
+      
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает на медитативной практике!');
+        trackPracticeOpened();
+      } else {
+        console.log('❌ Google Analytics НЕ работает!');
+      }
+
+      // Отслеживание кнопки назад
+      const backButton = document.querySelector('.back-button');
+      if (backButton) {
+        backButton.addEventListener('click', function() {
+          console.log('Клик по кнопке назад');
+          trackCloseButton();
+        });
+      }
+
+      // ИСПРАВЛЕННОЕ отслеживание превью анимации
+      const previewContainer = document.querySelector('#previewContainer');
+      if (previewContainer) {
+        console.log('Preview container найден');
+        
+        // Просмотр превью
+        setTimeout(trackPreviewAnimationView, 2000);
+        
+        // Клик по превью (начало практики) - ИСПРАВЛЕНО
+        previewContainer.addEventListener('click', startFullScreenBreathing);
+        
+        // Добавляем обработчик для touch событий на мобильных
+        previewContainer.addEventListener('touchend', function(e) {
+          e.preventDefault();
+          startFullScreenBreathing(e);
+        });
+      } else {
+        console.log('Preview container НЕ найден');
+      }
+
+      // Отслеживание кликов по связанным практикам
+      const relatedPractices = document.querySelectorAll('.practice-card');
+      relatedPractices.forEach(function(practice) {
+        practice.addEventListener('click', function() {
+          const practiceName = practice.querySelector('.practice-card-title')?.textContent || 'Unknown Practice';
+          trackRelatedPracticeClick(practiceName);
+        });
+      });
+
+      // Отслеживание навигации
+      const tabs = document.querySelectorAll('.tab');
+      tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+          const tabName = tab.querySelector('div')?.textContent || 'Unknown';
+          trackNavigation(tabName);
+        });
+      });
+
+      // Отслеживание просмотра типа практики
+      setTimeout(function() {
+        trackPracticeTypeView('МЕДИТАЦИЯ • ПАУЗА');
+      }, 3000);
+    });
+  </script>
+
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+      --yellow: #FFD527;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      position: fixed;
+      top: 24px;
+      right: calc(50vw - 163.5px);
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Для маленьких экранов */
+    @media (max-width: 425px) {
+      .language-switcher {
+        right: 24px;
+      }
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Inter", sans-serif;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      color: white;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lang-btn.active:hover {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+    }
+
+    .container {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 105px 24px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 96px;
+      box-sizing: border-box;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 375px;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--main);
+      padding: 24px 24px 24px 24px;
+      box-sizing: border-box;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      border: none;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .back-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+
+    .tags {
+      font-size: 10px;
+      line-height: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0 0 4px 0;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin-bottom: 48px;
+    }
+
+    .preview-container {
+      width: 100%;
+      max-width: 327px;
+      height: 207px;
+      background-color: var(--yellow);
+      border-radius: 8px;
+      margin: 0 auto 48px auto;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    .preview-container:active {
+      transform: scale(0.98);
+    }
+
+    .preview-animation {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .other-practices {
+      margin-top: 16px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 24px;
+    }
+
+    .practice-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      width: 100%;
+      height: 80px;
+      padding-right: 16px;
+      box-sizing: border-box;
+      transition: background-color 0.2s;
+      margin-bottom: 24px;
+    }
+
+    .practice-card:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .practice-card img:first-child {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 12px 0 0 12px;
+      flex-shrink: 0;
+    }
+
+    .practice-card-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .practice-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .practice-card-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 18px;
+    }
+
+    .practice-card .arrow {
+      width: 5px;
+      height: 10px;
+      margin-left: 16px;
+      fill: var(--white);
+    }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      z-index: 1000;
+      
+      /* Добавляем поддержку iPhone safe area */
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      
+      /* Дополнительный отступ для старых iPhone без env() */
+      padding-bottom: calc(12px + 20px);
+      
+      /* Поддержка современных iPhone с safe area */
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 20px));
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="lang-btn active" id="enBtn">EN</button>
+    <button class="lang-btn" id="ruBtn">RU</button>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <button class="back-button" onclick="goBackWithLanguage()">
+        <svg class="back-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div></div>
+    </div>
+
+    <div class="tags">
+      <span data-translate="tag_meditation">MEDITATION</span>
+      <span>•</span>
+      <span data-translate="tag_pause">FOCUS</span>
+      <span>•</span>
+      <span data-translate="tag_duration">5 MIN</span>
+    </div>
+
+    <h1 class="title" data-translate="practice_title">Mindful pauses</h1>
+    <div class="subtitle" data-translate="practice_subtitle">Stop for a moment to bring attention back to the present moment.</div>
+
+    <div class="preview-container" id="previewContainer">
+      <svg class="preview-animation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 327 207">
+        <!-- Background -->
+        <rect width="327" height="207" fill="#FFD527" rx="8" />
+        
+        <!-- Random white dots -->
+        <circle cx="60" cy="40" r="1.5" fill="white" opacity="0.7">
+          <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="270" cy="50" r="2" fill="white" opacity="0.5">
+          <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="250" cy="160" r="1" fill="white" opacity="0.6">
+          <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="80" cy="150" r="1.8" fill="white" opacity="0.4">
+          <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="180" cy="30" r="1.2" fill="white" opacity="0.8">
+          <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="300" cy="120" r="1.4" fill="white" opacity="0.6">
+          <animate attributeName="opacity" values="0.6;0.9;0.6" dur="2.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="40" cy="100" r="2.2" fill="white" opacity="0.3">
+          <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="200" cy="180" r="1.6" fill="white" opacity="0.7">
+          <animate attributeName="opacity" values="0.7;0.2;0.7" dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+        
+        <!-- 5 концентрических волн -->
+        <!-- Wave 1 -->
+        <circle cx="163.5" cy="103.5" r="75" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+          <animate 
+            attributeName="r" 
+            values="75;15" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="0s"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0;0.5;0.9" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="0s"
+          />
+        </circle>
+        
+        <!-- Wave 2 -->
+        <circle cx="163.5" cy="103.5" r="75" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+          <animate 
+            attributeName="r" 
+            values="75;15" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="1.6s"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0;0.5;0.9" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="1.6s"
+          />
+        </circle>
+        
+        <!-- Wave 3 -->
+        <circle cx="163.5" cy="103.5" r="75" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+          <animate 
+            attributeName="r" 
+            values="75;15" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="3.2s"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0;0.5;0.9" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="3.2s"
+          />
+        </circle>
+        
+        <!-- Wave 4 -->
+        <circle cx="163.5" cy="103.5" r="75" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+          <animate 
+            attributeName="r" 
+            values="75;15" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="4.8s"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0;0.5;0.9" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="4.8s"
+          />
+        </circle>
+        
+        <!-- Wave 5 -->
+        <circle cx="163.5" cy="103.5" r="75" fill="rgba(255, 255, 255, 0.3)" opacity="0">
+          <animate 
+            attributeName="r" 
+            values="75;15" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="6.4s"
+          />
+          <animate 
+            attributeName="opacity" 
+            values="0;0.5;0.9" 
+            dur="8s" 
+            repeatCount="indefinite"
+            begin="6.4s"
+          />
+        </circle>
+        
+        <!-- Play button overlay -->
+        <g transform="translate(163.5, 103.5)">
+          <!-- Button background -->
+          <circle r="24" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.1)" stroke-width="1"/>
+          <!-- Play icon -->
+          <path d="M-6 -8 L-6 8 L8 0 Z" fill="white" opacity="0.9"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="other-practices">
+      <div class="section-title" data-translate="other_practices">Other practices</div>
+      
+      <a href="body.html" class="practice-card">
+        <img src="img/body.jpg" alt="Body as anchor">
+        <div class="practice-card-content">
+          <div class="practice-card-title" data-translate="practice_body_title">Body as anchor</div>
+          <div class="practice-card-subtitle" data-translate="practice_body_subtitle">Feeling of support</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+
+      <a href="pond.html" class="practice-card">
+        <img src="img/pond.jpg" alt="Leaves in the pond">
+        <div class="practice-card-content">
+          <div class="practice-card-title" data-translate="practice_pond_title">Leaves in the pond</div>
+          <div class="practice-card-subtitle" data-translate="practice_pond_subtitle">Working with thoughts</div>
+        </div>
+        <img class="arrow" src="img/arrow.svg" alt="arrow">
+      </a>
+    </div>
+  </div>
+
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Today">
+      <div data-translate="tab_today">Today</div>
+    </a>
+    <a href="practices.html" class="tab active">
+      <img src="img/practices-active.svg" alt="Practices">
+      <div data-translate="tab_practices">Practices</div>
+    </a>
+    <a href="journal.html" class="tab">
+      <img src="img/journal.svg" alt="Journal">
+      <div data-translate="tab_journal">Journal</div>
+    </a>
+  </footer>
+
+  <script>
+    // ИСПРАВЛЕННАЯ система переводов с приоритетом Telegram
+    const translations = {
+      en: {
+        page_title: "Potok — Mindful pauses",
+        tag_meditation: "MEDITATION",
+        tag_pause: "FOCUS",
+        tag_duration: "5 MIN",
+        practice_title: "Mindful pauses",
+        practice_subtitle: "Stop for a moment to bring attention back to the present moment.",
+        other_practices: "Other practices",
+        practice_body_title: "Body as anchor",
+        practice_body_subtitle: "Feeling of support",
+        practice_pond_title: "Leaves in the pond",
+        practice_pond_subtitle: "Working with thoughts",
+        tab_today: "Today",
+        tab_practices: "Practices",
+        tab_journal: "Journal"
+      },
+      ru: {
+        page_title: "Potok — Осознанные паузы",
+        tag_meditation: "МЕДИТАЦИЯ",
+        tag_pause: "ФОКУС",
+        tag_duration: "5 МИН",
+        practice_title: "Осознанные паузы",
+        practice_subtitle: "Остановитесь на мгновение, чтобы вернуть внимание в настоящий момент.",
+        other_practices: "Другие практики",
+        practice_body_title: "Тело как якорь",
+        practice_body_subtitle: "Ощущение опоры",
+        practice_pond_title: "Листья в пруду",
+        practice_pond_subtitle: "Работа с мыслями",
+        tab_today: "Сегодня",
+        tab_practices: "Практики",
+        tab_journal: "Журнал"
+      }
+    };
+
+    // ИСПРАВЛЕННЫЙ Translator class - точно такой же как в index.html
+    class Translator {
+      constructor() {
+        this.localStorageAvailable = this.checkLocalStorageAvailability();
+        
+        // ИСПРАВЛЕНО: Приоритет языка теперь следующий:
+        // 1. Язык из настроек Telegram пользователя
+        // 2. Язык из URL параметра
+        // 3. Язык из localStorage 
+        // 4. Английский по умолчанию
+        this.currentLang = this.getTelegramLanguage() || 
+                          this.getLanguageFromURL() || 
+                          (this.localStorageAvailable ? this.getLanguageFromStorage() : null) || 
+                          'en';
+        
+        console.log('🌐 Определенный язык (pause):', this.currentLang);
+        this.init();
+      }
+
+      // НОВАЯ функция для получения языка из Telegram
+      getTelegramLanguage() {
+        try {
+          // Проверяем данные пользователя Telegram
+          if (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code) {
+            const telegramLang = window.Telegram.WebApp.initDataUnsafe.user.language_code;
+            console.log('📱 Язык из Telegram (pause):', telegramLang);
+            
+            // Поддерживаем только ru и en
+            if (telegramLang === 'ru' || telegramLang.startsWith('ru')) {
+              return 'ru';
+            }
+            // Все остальные языки используют английский
+            return 'en';
+          }
+          
+          console.log('⚠️ Данные языка Telegram недоступны (pause)');
+          return null;
+        } catch (error) {
+          console.log('❌ Ошибка получения языка Telegram (pause):', error);
+          return null;
+        }
+      }
+
+      checkLocalStorageAvailability() {
+        try {
+          const testKey = 'test_storage_' + Date.now();
+          localStorage.setItem(testKey, 'test');
+          localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      getLanguageFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('lang');
+      }
+
+      getLanguageFromStorage() {
+        if (!this.localStorageAvailable) return null;
+        try {
+          return localStorage.getItem('potok_language');
+        } catch (error) {
+          return null;
+        }
+      }
+
+      init() {
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        this.setupLanguageButtons();
+        document.documentElement.lang = this.currentLang;
+        
+        // ИСПРАВЛЕНО: Обновляем заголовок страницы тоже
+        document.title = this.translate('page_title');
+      }
+
+      setupLanguageButtons() {
+        document.getElementById('enBtn')?.addEventListener('click', () => {
+          this.setLanguage('en');
+        });
+        document.getElementById('ruBtn')?.addEventListener('click', () => {
+          this.setLanguage('ru');
+        });
+      }
+
+      setLanguage(lang) {
+        this.currentLang = lang;
+        
+        if (this.localStorageAvailable) {
+          try {
+            localStorage.setItem('potok_language', lang);
+          } catch (error) {}
+        }
+        
+        try {
+          const newUrl = `${window.location.pathname}?lang=${lang}`;
+          window.history.replaceState({}, '', newUrl);
+        } catch (error) {}
+        
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        
+        document.documentElement.lang = lang;
+        
+        // ИСПРАВЛЕНО: Обновляем заголовок при смене языка
+        document.title = this.translate('page_title');
+      }
+
+      updatePageLinks() {
+        const links = document.querySelectorAll('a[href$=".html"], a[href*=".html"]');
+        links.forEach(link => {
+          let href = link.getAttribute('href');
+          if (href.startsWith('http') || href.startsWith('//')) return;
+          
+          if (href.includes('?lang=')) {
+            href = href.split('?')[0];
+          }
+          if (href.includes('#')) {
+            const parts = href.split('#');
+            href = parts[0];
+          }
+          
+          const separator = href.includes('?') ? '&' : '?';
+          const newHref = `${href}${separator}lang=${this.currentLang}`;
+          link.setAttribute('href', newHref);
+        });
+      }
+
+      translate(key) {
+        return translations[this.currentLang]?.[key] || translations.en[key] || key;
+      }
+
+      updatePage() {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+          const key = element.getAttribute('data-translate');
+          const translation = this.translate(key);
+          
+          if (element.tagName === 'TITLE') {
+            element.textContent = translation;
+          } else {
+            element.textContent = translation;
+          }
+        });
+      }
+
+      updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.textContent.toLowerCase() === this.currentLang) {
+            btn.classList.add('active');
+            btn.style.background = 'linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%)';
+          } else {
+            btn.style.background = '';
+          }
+        });
+      }
+    }
+
+    // Функция для кнопки "Назад" с сохранением языка
+    function goBackWithLanguage() {
+      const currentLang = window.translator?.currentLang || 'en';
+      window.location.href = `practices.html?lang=${currentLang}`;
+    }
+
+    // ИСПРАВЛЕННЫЙ порядок инициализации - теперь сначала ждем Telegram WebApp
+    function initializeApp() {
+      // 1. Инициализируем переводчик (теперь он учитывает Telegram язык)
+      window.translator = new Translator();
+      
+      // 2. Финальное обновление ссылок
+      setTimeout(() => {
+        window.translator.updatePageLinks();
+      }, 500);
+    }
+
+    // ИСПРАВЛЕНО: Ждем готовности Telegram WebApp или запускаем через DOMContentLoaded
+    if (window.Telegram?.WebApp) {
+      // Если Telegram WebApp доступен, ждем его готовности
+      window.Telegram.WebApp.ready();
+      setTimeout(initializeApp, 100);
+    } else {
+      // Если нет Telegram WebApp, запускаем обычным способом
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+      } else {
+        initializeApp();
+      }
+    }
+  </script>
+</body>
+</html>
