@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title data-translate="page_title">Potok — Profile</title>
+  
+  <!-- Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <!-- Firebase SDK через CDN (стабильная версия) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+  
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4834XVE45Z"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4834XVE45Z', {
+      enhanced_measurement: true
+    });
+
+    // Функции для отслеживания событий профиля
+    function trackNotificationToggle(type, enabled) {
+      console.log('Переключение уведомления:', type, enabled ? 'включено' : 'выключено');
+      gtag('event', 'notification_toggle', {
+        event_category: 'profile',
+        event_label: type,
+        value: enabled ? 1 : 0
+      });
+    }
+
+    function trackSupportClick() {
+      console.log('Клик по поддержке');
+      gtag('event', 'support_click', {
+        event_category: 'profile',
+        event_label: 'telegram_support',
+        value: 1
+      });
+    }
+
+    function trackInstallPrompt() {
+      console.log('Клик по установке PWA');
+      gtag('event', 'pwa_install_prompt', {
+        event_category: 'profile',
+        event_label: 'add_to_homescreen',
+        value: 1
+      });
+    }
+
+    function trackNavigation(navItem) {
+      console.log('Клик по табу:', navItem);
+      gtag('event', 'navigation', {
+        event_category: 'tab_bar',
+        event_label: navItem,
+        value: 1
+      });
+    }
+
+    // Инициализация отслеживания
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Google Analytics загружается на странице Профиль...');
+      
+      if (typeof gtag !== 'undefined') {
+        console.log('✅ Google Analytics работает на Профиле!');
+        gtag('event', 'profile_page_loaded', {
+          event_category: 'page',
+          event_label: 'profile'
+        });
+      } else {
+        console.log('❌ Google Analytics НЕ работает!');
+      }
+
+      // Отслеживание навигации
+      setTimeout(() => {
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(function(tab) {
+          tab.addEventListener('click', function() {
+            const tabName = tab.querySelector('div')?.textContent || 'Unknown';
+            trackNavigation(tabName);
+          });
+        });
+      }, 1000);
+
+      // Отслеживание времени на странице
+      setTimeout(function() {
+        gtag('event', 'profile_time_spent', {
+          event_category: 'engagement',
+          event_label: 'stayed_15_seconds',
+          value: 15
+        });
+      }, 15000);
+    });
+  </script>
+
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.15);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      position: fixed;
+      top: 24px;
+      right: calc(50vw - 163.5px);
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 425px) {
+      .language-switcher {
+        right: 24px;
+      }
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Inter", sans-serif;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      color: white;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lang-btn.active:hover {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+    }
+
+    /* Header with back button */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 375px;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--main);
+      padding: 24px 24px 24px 24px;
+      box-sizing: border-box;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      border: none;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .back-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+
+    /* Main container */
+    .container {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 105px 24px 24px 24px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 72px;
+      box-sizing: border-box;
+    }
+
+    /* User Profile Section */
+    .user-profile {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 48px;
+    }
+
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .user-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .user-avatar-fallback {
+      font-size: 32px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .user-name {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0;
+      text-align: center;
+    }
+
+    /* Navigation Items */
+    .nav-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      height: 80px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .nav-item:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .nav-item:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0px;
+    }
+
+    .nav-item-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--white);
+      margin: 0;
+    }
+
+    .nav-item-subtitle {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 16px;
+      margin: 0;
+    }
+
+    .nav-arrow {
+      width: 12px;
+      height: 12px;
+      color: var(--text-2);
+      transition: transform 0.2s;
+    }
+
+    .nav-item:hover .nav-arrow {
+      transform: translateX(2px);
+    }
+
+    /* PWA Install Button */
+    .pwa-install {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      color: white;
+      border: none;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .pwa-install:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
+    }
+
+    .pwa-install:active {
+      transform: translateY(0);
+    }
+
+    .pwa-install.show {
+      display: block;
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      z-index: 1000;
+      
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      padding-bottom: calc(12px + 20px);
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 20px));
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+
+    /* Loading state */
+    .loading {
+      text-align: center;
+      color: var(--text-2);
+      font-size: 14px;
+      margin: 24px 0;
+      display: none;
+    }
+
+    /* Modal for notifications */
+    .notifications-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+
+    .notifications-modal.active {
+      display: flex;
+    }
+
+    .notifications-content {
+      background-color: var(--main);
+      border-radius: 16px;
+      padding: 24px 20px 20px 20px;
+      max-width: 320px;
+      width: 85%;
+      border: 1px solid var(--border);
+      position: relative;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .notifications-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .notifications-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0;
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      cursor: pointer;
+      padding: 8px;
+      margin: -8px -8px -8px 8px;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-size: 18px;
+      line-height: 1;
+      min-width: 32px;
+      min-height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .notification-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .notification-item:last-child {
+      border-bottom: none;
+    }
+
+    .notification-label {
+      font-size: 14px;
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .toggle-switch.active {
+      background: var(--green);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: var(--white);
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(20px);
+    }
+
+    /* Bottom spacer */
+    .bottom-spacer {
+      height: 32px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="lang-btn active" id="enBtn">EN</button>
+    <button class="lang-btn" id="ruBtn">RU</button>
+  </div>
+
+  <!-- Header with back button -->
+  <div class="header">
+    <button class="back-button" onclick="window.location.href='index.html'">
+      <svg class="back-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div></div>
+  </div>
+
+  <div class="container">
+    <!-- User Profile Section -->
+    <div class="user-profile">
+      <div class="user-avatar" id="userAvatar">
+        <div class="user-avatar-fallback" id="userAvatarFallback">U</div>
+      </div>
+      <h1 class="user-name" id="userName" data-translate="guest_user">Guest User</h1>
+    </div>
+
+    <!-- Support Section -->
+    <div class="nav-item" onclick="openSupport()">
+      <div class="nav-item-content">
+        <h3 class="nav-item-title" data-translate="support">Поддержка</h3>
+        <p class="nav-item-subtitle" data-translate="contact_support">Связаться с поддержкой</p>
+      </div>
+      <svg class="nav-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- Notifications Section -->
+    <div class="nav-item" onclick="openNotificationsModal()">
+      <div class="nav-item-content">
+        <h3 class="nav-item-title" data-translate="notifications">Оповещения</h3>
+        <p class="nav-item-subtitle" data-translate="notification_settings">Настроить напоминания</p>
+      </div>
+      <svg class="nav-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- PWA Install Button -->
+    <button class="pwa-install" id="pwaInstall" data-translate="add_to_homescreen">Добавить на главный экран</button>
+
+    <!-- Terms of Use Section -->
+    <div class="nav-item" onclick="window.location.href='privacy.html'">
+      <div class="nav-item-content">
+        <h3 class="nav-item-title" data-translate="terms_of_use">Условия использования</h3>
+        <p class="nav-item-subtitle" data-translate="read_terms">Прочитать правила</p>
+      </div>
+      <svg class="nav-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="bottom-spacer"></div>
+  </div>
+
+  <!-- Notifications Modal -->
+  <div class="notifications-modal" id="notificationsModal">
+    <div class="notifications-content">
+      <div class="notifications-header">
+        <h3 class="notifications-title" data-translate="notifications">Оповещения</h3>
+        <button class="close-button" id="closeNotifications">✕</button>
+      </div>
+      
+      <div class="notification-item">
+        <div class="notification-label" data-translate="emotion_calendar">Календарь эмоций</div>
+        <div class="toggle-switch active" id="emotionToggle"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab bar -->
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Today">
+      <div data-translate="tab_today">Today</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Practices">
+      <div data-translate="tab_practices">Practices</div>
+    </a>
+    <a href="journal.html" class="tab active">
+      <img src="img/journal-active.svg" alt="Profile">
+      <div data-translate="tab_profile">Profile</div>
+    </a>
+  </footer>
+
+  <script>
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBtmTRKNwiOUoqqzzgsWGwNhoRK4a38hls",
+      authDomain: "spokspace-calendar.firebaseapp.com",
+      projectId: "spokspace-calendar",
+      storageBucket: "spokspace-calendar.firebasestorage.app",
+      messagingSenderId: "285027675276",
+      appId: "1:285027675276:web:9bf7ff69a74b9eecca5fa9",
+      measurementId: "G-QS4304BN1X"
+    };
+
+    // Profile Service for handling user data and notifications
+    class ProfileService {
+      constructor() {
+        this.app = null;
+        this.db = null;
+        this.auth = null;
+        this.isOnline = false;
+        this.userId = null;
+        this.isInitialized = false;
+        this.isFirebaseReady = false;
+        
+        // User data
+        this.userInfo = {
+          userType: 'guest',
+          telegramId: null,
+          telegramData: null,
+          verified: false,
+          userName: '',
+          avatarUrl: null
+        };
+        
+        // Notification settings
+        this.notificationSettings = {
+          emotions: true    // только календарь эмоций
+        };
+        
+        // Storage keys
+        this.STORAGE_KEYS = {
+          USER_ID: 'potok_stable_user_id',
+          USER_INFO: 'potok_user_info',
+          NOTIFICATIONS: 'potok_notification_settings'
+        };
+        
+        this.initializeUserData();
+        this.loadNotificationSettings();
+        this.isInitialized = true;
+        
+        this.initFirebaseInBackground();
+      }
+
+      initializeUserData() {
+        console.log('🔍 Инициализация данных пользователя...');
+        
+        const telegramData = this.getTelegramUserData();
+        
+        if (telegramData) {
+          this.userInfo.userType = 'telegram';
+          this.userInfo.telegramId = telegramData.id;
+          this.userInfo.telegramData = telegramData;
+          this.userInfo.verified = true;
+          this.userInfo.userName = `${telegramData.first_name || ''} ${telegramData.last_name || ''}`.trim();
+          this.userInfo.avatarUrl = telegramData.photo_url;
+          this.userId = `tg_${telegramData.id}`;
+          
+          console.log('🎯 Telegram пользователь:', this.userInfo.userName, 'ID:', this.userId);
+          this.saveUserInfoToLocalStorage();
+        } else {
+          console.log('👤 Гостевой пользователь');
+          this.loadUserInfoFromLocalStorage();
+          
+          if (!this.userId) {
+            this.userId = this.generateGuestUserId();
+          }
+        }
+        
+        console.log('✅ Данные пользователя инициализированы:', {
+          userId: this.userId,
+          userType: this.userInfo.userType,
+          verified: this.userInfo.verified
+        });
+      }
+
+      getTelegramUserData() {
+        try {
+          if (typeof window.Telegram !== 'undefined' && 
+              window.Telegram.WebApp?.initDataUnsafe?.user?.id) {
+            
+            const user = window.Telegram.WebApp.initDataUnsafe.user;
+            console.log('📱 Данные Telegram пользователя:', user);
+            
+            return {
+              id: user.id,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              username: user.username,
+              language_code: user.language_code,
+              photo_url: user.photo_url,
+              is_premium: user.is_premium || false
+            };
+          }
+          
+          console.log('⚠️ Telegram WebApp данные недоступны');
+          return null;
+        } catch (error) {
+          console.log('❌ Ошибка получения Telegram данных:', error);
+          return null;
+        }
+      }
+
+      generateGuestUserId() {
+        try {
+          const savedId = localStorage.getItem(this.STORAGE_KEYS.USER_ID);
+          if (savedId && !savedId.startsWith('tg_')) {
+            console.log('💾 Найден сохраненный гостевой ID:', savedId);
+            return savedId;
+          }
+        } catch (error) {
+          console.log('⚠️ Ошибка чтения localStorage:', error);
+        }
+
+        const newId = `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        try {
+          localStorage.setItem(this.STORAGE_KEYS.USER_ID, newId);
+          console.log('🆕 Создан новый гостевой ID:', newId);
+        } catch (error) {
+          console.log('⚠️ Не удалось сохранить ID в localStorage');
+        }
+        
+        return newId;
+      }
+
+      saveUserInfoToLocalStorage() {
+        try {
+          const userInfoToSave = {
+            ...this.userInfo,
+            lastSeen: new Date().toISOString()
+          };
+          
+          localStorage.setItem(this.STORAGE_KEYS.USER_INFO, JSON.stringify(userInfoToSave));
+          localStorage.setItem(this.STORAGE_KEYS.USER_ID, this.userId);
+          
+          console.log('💾 Информация о пользователе сохранена в localStorage');
+        } catch (error) {
+          console.error('❌ Ошибка сохранения информации о пользователе:', error);
+        }
+      }
+
+      loadUserInfoFromLocalStorage() {
+        try {
+          const savedUserInfo = localStorage.getItem(this.STORAGE_KEYS.USER_INFO);
+          const savedUserId = localStorage.getItem(this.STORAGE_KEYS.USER_ID);
+          
+          if (savedUserInfo) {
+            const parsedInfo = JSON.parse(savedUserInfo);
+            this.userInfo = { ...this.userInfo, ...parsedInfo };
+            console.log('💾 Информация о пользователе загружена из localStorage');
+          }
+          
+          if (savedUserId) {
+            this.userId = savedUserId;
+            console.log('💾 User ID загружен из localStorage:', this.userId);
+          }
+        } catch (error) {
+          console.error('❌ Ошибка загрузки информации о пользователе:', error);
+        }
+      }
+
+      loadNotificationSettings() {
+        try {
+          const savedSettings = localStorage.getItem(this.STORAGE_KEYS.NOTIFICATIONS);
+          if (savedSettings) {
+            this.notificationSettings = { ...this.notificationSettings, ...JSON.parse(savedSettings) };
+            console.log('💾 Настройки уведомлений загружены:', this.notificationSettings);
+          }
+        } catch (error) {
+          console.error('❌ Ошибка загрузки настроек уведомлений:', error);
+        }
+      }
+
+      saveNotificationSettings() {
+        try {
+          localStorage.setItem(this.STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(this.notificationSettings));
+          console.log('💾 Настройки уведомлений сохранены:', this.notificationSettings);
+          
+          // Синхронизируем с Firebase
+          if (this.isFirebaseReady && this.db) {
+            this.syncNotificationSettingsToFirebase();
+          }
+        } catch (error) {
+          console.error('❌ Ошибка сохранения настроек уведомлений:', error);
+        }
+      }
+
+      async initFirebaseInBackground() {
+        try {
+          console.log('🔥 Инициализация Firebase в фоне...');
+          
+          this.app = firebase.initializeApp(firebaseConfig);
+          this.db = firebase.firestore();
+          this.auth = firebase.auth();
+          
+          await this.signInAnonymously();
+          this.isOnline = true;
+          this.isFirebaseReady = true;
+          
+          console.log('✅ Firebase успешно инициализирован');
+          
+          await this.verifyUserInFirebase();
+          await this.syncNotificationSettingsFromFirebase();
+          
+        } catch (error) {
+          console.error('❌ Ошибка инициализации Firebase:', error);
+          this.isOnline = false;
+          this.isFirebaseReady = false;
+        }
+      }
+
+      async signInAnonymously() {
+        try {
+          const userCredential = await this.auth.signInAnonymously();
+          console.log('👤 Анонимная аутентификация успешна:', userCredential.user.uid);
+        } catch (error) {
+          console.error('❌ Ошибка аутентификации:', error);
+        }
+      }
+
+      async verifyUserInFirebase() {
+        if (!this.isFirebaseReady || !this.isOnline || !this.db) {
+          console.log('🚫 Firebase не готов для верификации пользователя');
+          return;
+        }
+
+        try {
+          console.log('🔐 Верификация пользователя в Firebase...');
+          
+          const userDocRef = this.db.collection('users').doc(this.userId);
+          const userDoc = await userDocRef.get();
+          
+          const currentTime = new Date();
+          const userData = {
+            userId: this.userId,
+            userType: this.userInfo.userType,
+            verified: this.userInfo.verified,
+            lastSeen: currentTime,
+            updatedAt: currentTime
+          };
+
+          if (this.userInfo.userType === 'telegram' && this.userInfo.telegramData) {
+            userData.telegramId = this.userInfo.telegramId;
+            userData.telegramData = {
+              first_name: this.userInfo.telegramData.first_name,
+              last_name: this.userInfo.telegramData.last_name,
+              username: this.userInfo.telegramData.username,
+              language_code: this.userInfo.telegramData.language_code
+            };
+            userData.userName = this.userInfo.userName;
+            userData.avatarUrl = this.userInfo.avatarUrl;
+          }
+
+          if (userDoc.exists) {
+            await userDocRef.update(userData);
+            console.log('✅ Данные пользователя обновлены в Firebase');
+          } else {
+            userData.createdAt = currentTime;
+            await userDocRef.set(userData);
+            console.log('✅ Новый пользователь создан в Firebase');
+          }
+          
+        } catch (error) {
+          console.error('❌ Ошибка верификации пользователя в Firebase:', error);
+        }
+      }
+
+      async syncNotificationSettingsToFirebase() {
+        if (!this.isFirebaseReady || !this.db) return;
+
+        try {
+          const settingsDocRef = this.db.collection('notification_settings').doc(this.userId);
+          await settingsDocRef.set({
+            ...this.notificationSettings,
+            userId: this.userId,
+            updatedAt: new Date()
+          });
+          console.log('✅ Настройки уведомлений синхронизированы с Firebase');
+        } catch (error) {
+          console.error('❌ Ошибка синхронизации настроек с Firebase:', error);
+        }
+      }
+
+      async syncNotificationSettingsFromFirebase() {
+        if (!this.isFirebaseReady || !this.db) return;
+
+        try {
+          const settingsDocRef = this.db.collection('notification_settings').doc(this.userId);
+          const doc = await settingsDocRef.get();
+          
+          if (doc.exists) {
+            const firebaseSettings = doc.data();
+            this.notificationSettings = {
+              emotions: firebaseSettings.emotions !== undefined ? firebaseSettings.emotions : true
+            };
+            
+            // Сохраняем локально
+            localStorage.setItem(this.STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(this.notificationSettings));
+            console.log('✅ Настройки уведомлений загружены из Firebase:', this.notificationSettings);
+            
+            // Обновляем UI
+            this.updateNotificationToggles();
+          }
+        } catch (error) {
+          console.error('❌ Ошибка загрузки настроек из Firebase:', error);
+        }
+      }
+
+      toggleNotification(type) {
+        this.notificationSettings[type] = !this.notificationSettings[type];
+        this.saveNotificationSettings();
+        trackNotificationToggle(type, this.notificationSettings[type]);
+        console.log(`🔔 Уведомление ${type} ${this.notificationSettings[type] ? 'включено' : 'выключено'}`);
+      }
+
+      updateNotificationToggles() {
+        const emotionToggle = document.getElementById('emotionToggle');
+
+        if (emotionToggle) {
+          emotionToggle.classList.toggle('active', this.notificationSettings.emotions);
+        }
+      }
+    }
+
+    // PWA Installation
+    class PWAInstaller {
+      constructor() {
+        this.deferredPrompt = null;
+        this.setupInstallPrompt();
+      }
+
+      setupInstallPrompt() {
+        window.addEventListener('beforeinstallprompt', (e) => {
+          console.log('🎯 PWA установка доступна');
+          e.preventDefault();
+          this.deferredPrompt = e;
+          this.showInstallButton();
+        });
+
+        window.addEventListener('appinstalled', () => {
+          console.log('✅ PWA установлено');
+          this.hideInstallButton();
+        });
+      }
+
+      showInstallButton() {
+        const installButton = document.getElementById('pwaInstall');
+        if (installButton) {
+          installButton.classList.add('show');
+        }
+      }
+
+      hideInstallButton() {
+        const installButton = document.getElementById('pwaInstall');
+        if (installButton) {
+          installButton.classList.remove('show');
+        }
+      }
+
+      async install() {
+        if (!this.deferredPrompt) {
+          console.log('⚠️ PWA установка недоступна');
+          return;
+        }
+
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+        
+        if (outcome === 'accepted') {
+          console.log('✅ Пользователь принял установку PWA');
+        } else {
+          console.log('❌ Пользователь отклонил установку PWA');
+        }
+        
+        this.deferredPrompt = null;
+        this.hideInstallButton();
+      }
+    }
+
+    // Translations
+    const translations = {
+      en: {
+        page_title: "Potok — Profile",
+        guest_user: "Guest User",
+        support: "Support",
+        contact_support: "Contact support",
+        notifications: "Notifications",
+        notification_settings: "Configure reminders",
+        terms_of_use: "Terms of Use",
+        read_terms: "Read the rules",
+        add_to_homescreen: "Add to Home Screen",
+        emotion_calendar: "Emotion Calendar",
+        tab_today: "Today",
+        tab_practices: "Practices", 
+        tab_profile: "Profile"
+      },
+      ru: {
+        page_title: "Potok — Профиль",
+        guest_user: "Гостевой пользователь",
+        support: "Поддержка",
+        contact_support: "Связаться с поддержкой",
+        notifications: "Оповещения",
+        notification_settings: "Настроить напоминания",
+        terms_of_use: "Условия использования",
+        read_terms: "Прочитать правила",
+        add_to_homescreen: "Добавить на главный экран",
+        emotion_calendar: "Календарь эмоций",
+        tab_today: "Сегодня",
+        tab_practices: "Практики",
+        tab_profile: "Профиль"
+      }
+    };
+
+    // Translator class
+    class Translator {
+      constructor() {
+        console.log('🔄 Инициализация переводчика PROFILE.HTML...');
+        
+        this.localStorageAvailable = this.checkLocalStorageAvailability();
+        this.currentLang = this.getLanguageFromURL() || 
+                          (this.localStorageAvailable ? this.getLanguageFromStorage() : null) || 
+                          'en';
+        
+        console.log(`🌐 Выбранный язык: ${this.currentLang}`);
+        this.init();
+      }
+
+      checkLocalStorageAvailability() {
+        try {
+          const testKey = 'test_storage_' + Date.now();
+          localStorage.setItem(testKey, 'test');
+          localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+
+      getLanguageFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langFromUrl = urlParams.get('lang');
+        console.log(`🔗 Язык из URL: ${langFromUrl}`);
+        return langFromUrl;
+      }
+
+      getLanguageFromStorage() {
+        if (!this.localStorageAvailable) return null;
+        
+        try {
+          const langFromStorage = localStorage.getItem('potok_language');
+          console.log(`💾 Язык из localStorage: ${langFromStorage}`);
+          return langFromStorage;
+        } catch (error) {
+          console.log(`❌ Ошибка чтения localStorage: ${error.message}`);
+          return null;
+        }
+      }
+
+      init() {
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        this.setupLanguageButtons();
+        document.documentElement.lang = this.currentLang;
+        
+        console.log(`✅ Переводчик PROFILE.HTML инициализирован с языком: ${this.currentLang}`);
+      }
+
+      setupLanguageButtons() {
+        document.getElementById('enBtn')?.addEventListener('click', () => {
+          console.log('🔘 Клик по EN в PROFILE.HTML');
+          this.setLanguage('en');
+        });
+        
+        document.getElementById('ruBtn')?.addEventListener('click', () => {
+          console.log('🔘 Клик по RU в PROFILE.HTML');
+          this.setLanguage('ru');
+        });
+      }
+
+      setLanguage(lang) {
+        console.log(`🔄 Смена языка на: ${lang} в PROFILE.HTML`);
+        
+        this.currentLang = lang;
+        
+        if (this.localStorageAvailable) {
+          try {
+            localStorage.setItem('potok_language', lang);
+            console.log(`✅ Язык ${lang} сохранен в localStorage`);
+          } catch (error) {
+            console.log(`❌ Не удалось сохранить в localStorage: ${error.message}`);
+          }
+        }
+        
+        try {
+          const newUrl = `${window.location.pathname}?lang=${lang}`;
+          window.history.replaceState({}, '', newUrl);
+          console.log(`✅ URL обновлен: ${newUrl}`);
+        } catch (error) {
+          console.log(`❌ Не удалось обновить URL: ${error.message}`);
+        }
+        
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        
+        document.documentElement.lang = lang;
+        
+        console.log(`🌐 Язык изменен на: ${lang} в PROFILE.HTML`);
+      }
+
+      updatePageLinks() {
+        const links = document.querySelectorAll('a[href$=".html"], a[href*=".html"]');
+        let updateCount = 0;
+        
+        links.forEach(link => {
+          let href = link.getAttribute('href');
+          
+          if (href.startsWith('http') || href.startsWith('//')) return;
+          
+          if (href.includes('?lang=')) {
+            href = href.split('?')[0];
+          }
+          
+          if (href.includes('#')) {
+            const parts = href.split('#');
+            href = parts[0];
+          }
+          
+          const separator = href.includes('?') ? '&' : '?';
+          const newHref = `${href}${separator}lang=${this.currentLang}`;
+          link.setAttribute('href', newHref);
+          updateCount++;
+        });
+        
+        console.log(`🔗 Обновлено ${updateCount} ссылок с lang=${this.currentLang}`);
+      }
+
+      translate(key) {
+        return translations[this.currentLang]?.[key] || translations.en[key] || key;
+      }
+
+      updatePage() {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+          const key = element.getAttribute('data-translate');
+          const translation = this.translate(key);
+          
+          if (element.tagName === 'TITLE') {
+            element.textContent = translation;
+          } else {
+            element.textContent = translation;
+          }
+        });
+        
+        console.log(`🔄 Обновлено ${document.querySelectorAll('[data-translate]').length} элементов перевода`);
+      }
+
+      updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.textContent.toLowerCase() === this.currentLang) {
+            btn.classList.add('active');
+            btn.style.background = 'linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%)';
+          } else {
+            btn.style.background = '';
+          }
+        });
+      }
+    }
+
+    // Global functions
+    function openSupport() {
+      trackSupportClick();
+      window.open('https://t.me/spoksupport_bot', '_blank');
+    }
+
+    function openNotificationsModal() {
+      document.getElementById('notificationsModal').classList.add('active');
+    }
+
+    function closeNotificationsModal() {
+      document.getElementById('notificationsModal').classList.remove('active');
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('📱 DOM загружен для Profile.html');
+      
+      // Initialize Telegram WebApp if available
+      if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
+        console.log('📱 Telegram WebApp доступен');
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+      }
+      
+      // Initialize translator
+      window.translator = new Translator();
+      
+      // Initialize profile service
+      window.profileService = new ProfileService();
+      
+      // Initialize PWA installer
+      window.pwaInstaller = new PWAInstaller();
+      
+      // Update user UI
+      updateUserUI();
+      
+      // Setup event listeners
+      setupEventListeners();
+      
+      console.log('✅ Профиль приложения инициализирован');
+    });
+
+    function updateUserUI() {
+      const userNameElement = document.getElementById('userName');
+      const userAvatarElement = document.getElementById('userAvatar');
+      const userAvatarFallback = document.getElementById('userAvatarFallback');
+      
+      if (window.profileService.userInfo.userType === 'telegram') {
+        // Telegram user
+        const userName = window.profileService.userInfo.userName || 'Telegram User';
+        userNameElement.textContent = userName;
+        
+        if (window.profileService.userInfo.avatarUrl) {
+          const img = document.createElement('img');
+          img.src = window.profileService.userInfo.avatarUrl;
+          img.alt = userName;
+          img.onerror = () => {
+            // Fallback if image fails to load
+            userAvatarFallback.textContent = userName.charAt(0).toUpperCase();
+          };
+          userAvatarElement.appendChild(img);
+          userAvatarFallback.style.display = 'none';
+        } else {
+          userAvatarFallback.textContent = userName.charAt(0).toUpperCase();
+        }
+      } else {
+        // Guest user
+        userNameElement.textContent = window.translator.translate('guest_user');
+        userAvatarFallback.textContent = 'G';
+      }
+    }
+
+    function setupEventListeners() {
+      // Notification modal
+      document.getElementById('closeNotifications').addEventListener('click', closeNotificationsModal);
+      
+      document.getElementById('notificationsModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('notificationsModal')) {
+          closeNotificationsModal();
+        }
+      });
+      
+      // Notification toggles
+      document.getElementById('emotionToggle').addEventListener('click', () => {
+        window.profileService.toggleNotification('emotions');
+        window.profileService.updateNotificationToggles();
+      });
+      
+      // PWA install
+      document.getElementById('pwaInstall').addEventListener('click', () => {
+        trackInstallPrompt();
+        window.pwaInstaller.install();
+      });
+      
+      // Update notification toggles UI
+      window.profileService.updateNotificationToggles();
+    }
+  </script>
+</body>
+</html>
