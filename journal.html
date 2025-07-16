@@ -767,18 +767,46 @@
       }
 
       async saveNotificationSettings(userId, notificationEnabled, chatId = null) {
-        const params = {
-          user_id: userId,
-          notification_enabled: notificationEnabled,
-          timezone: this.userTimezone
-        };
+  console.log('🔔 ОТЛАДКА: Начинаем сохранение настроек уведомлений');
+  console.log('📋 Параметры:', {
+    userId: userId,
+    notificationEnabled: notificationEnabled,
+    chatId: chatId,
+    timezone: this.userTimezone
+  });
 
-        if (chatId) {
-          params.chat_id = chatId;
-        }
+  const params = {
+    user_id: userId,
+    notification_enabled: notificationEnabled,
+    timezone: this.userTimezone
+  };
 
-        return await this.makeRequest('save-notification-settings', params);
-      }
+  if (chatId) {
+    params.chat_id = chatId;
+  }
+
+  try {
+    console.log('📤 Отправляем запрос к Google Sheets...');
+    console.log('🔗 URL:', GOOGLE_SHEETS_API);
+    console.log('📋 Параметры запроса:', params);
+
+    const response = await this.makeRequest('save-notification-settings', params);
+    
+    console.log('📥 Ответ от Google Sheets:', response);
+    
+    if (response && response.success) {
+      console.log('✅ Настройки сохранены успешно');
+      return response;
+    } else {
+      console.error('❌ Ошибка сохранения настроек:', response);
+      throw new Error(response?.error || 'Неизвестная ошибка сервера');
+    }
+    
+  } catch (error) {
+    console.error('❌ Сетевая ошибка при сохранении настроек:', error);
+    throw error;
+  }
+}
 
       async loadNotificationSettings(userId) {
         return await this.makeRequest('get-notification-settings', { user_id: userId });
