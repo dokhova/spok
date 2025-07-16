@@ -676,95 +676,170 @@
     // Google Sheets API Configuration
     const GOOGLE_SHEETS_API = 'https://script.google.com/macros/s/AKfycbxv5oC2VuD49vTpeGt8BHXrqXwGw8OjqJV7R63x1PXaOyxtqj1YP6wJRQbm3vin1laPKQ/exec';
 
-    // Google Sheets Service for handling user data and notifications
-    class GoogleSheetsService {
-      constructor() {
-        this.isOnline = navigator.onLine;
-        this.userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        this.retryCount = 3;
-        this.retryDelay = 1000;
-        console.log('🌍 Пользователь находится в часовом поясе:', this.userTimezone);
+    // ИСПРАВЛЕННЫЙ GoogleSheetsService в journal.html - замените на это:
+
+class GoogleSheetsService {
+  constructor() {
+    this.isOnline = navigator.onLine;
+    this.userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    this.retryCount = 3;
+    this.retryDelay = 1000;
+    console.log('🌍 Пользователь находится в часовом поясе:', this.userTimezone);
+    
+    // Monitor online status
+    window.addEventListener('online', () => {
+      this.isOnline = true;
+      console.log('🌐 Соединение восстановлено');
+    });
+    
+    window.addEventListener('offline', () => {
+      this.isOnline = false;
+      console.log('🔴 Соединение потеряно');
+    });
+  }
+
+  // ИСПРАВЛЕНО: Используем GET запросы вместо POST для CORS
+  async makeRequest(action, params = {}) {
+    console.log('📤 Начинаем GET запрос:', action, params);
+    
+    for (let attempt = 1; attempt <= this.retryCount; attempt++) {
+      try {
+        console.log(`🔄 Попытка ${attempt}/${this.retryCount} для действия: ${action}`);
         
-        // Monitor online status
-        window.addEventListener('online', () => {
-          this.isOnline = true;
-          console.log('🌐 Соединение восстановлено');
+        // ИСПРАВЛЕНО: Формируем GET URL с параметрами
+        const url = new URL(GOOGLE_SHEETS_API);
+        url.searchParams.append('action', action);
+        
+        Object.keys(params).forEach(key => {
+          if (params[key] !== null && params[key] !== undefined) {
+            url.searchParams.append(key, params[key].toString());
+          }
         });
+
+        console.log('📤 Отправляем GET запрос к:', url.toString());
         
-        window.addEventListener('offline', () => {
-          this.isOnline = false;
-          console.log('🔴 Соединение потеряно');
+        // ИСПРАВЛЕНО: Используем GET вместо POST
+        const response = await fetch(url.toString(), {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-cache'
         });
-      }
 
-      async makeRequest(action, params = {}) {
-        console.log('📤 Начинаем запрос:', action, params);
-        
-        // Сбрасываем задержку для нового запроса
-        this.retryDelay = 1000;
-        
-        for (let attempt = 1; attempt <= this.retryCount; attempt++) {
-          try {
-            console.log(`🔄 Попытка ${attempt}/${this.retryCount} для действия: ${action}`);
-            
-            // Формируем данные для POST запроса
-            const formData = new FormData();
-            formData.append('action', action);
-            
-            Object.keys(params).forEach(key => {
-              if (params[key] !== null && params[key] !== undefined) {
-                formData.append(key, params[key]);
-              }
-            });
+        console.log('📡 Статус ответа:', response.status, response.statusText);
 
-            console.log('📤 Отправляем POST запрос к:', GOOGLE_SHEETS_API);
-            
-            const response = await fetch(GOOGLE_SHEETS_API, {
-              method: 'POST',
-              body: formData,
-              mode: 'cors',
-              cache: 'no-cache',
-              redirect: 'follow'
-            });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
 
-            console.log('📡 Статус ответа:', response.status, response.statusText);
+        // Получаем текст ответа для диагностики
+        const responseText = await response.text();
+        console.log('📄 Текст ответа:', responseText);
 
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            // Получаем текст ответа для диагностики
-            const responseText = await response.text();
-            console.log('📄 Текст ответа:', responseText);
-
-            // Пытаемся парсить JSON
-            let data;
-            try {
-              data = JSON.parse(responseText);
-            } catch (parseError) {
-              console.error('❌ Ошибка парсинга JSON:', parseError);
-              console.log('📄 Содержимое ответа:', responseText);
-              throw new Error('Сервер вернул некорректный JSON');
-            }
-
-            console.log('📥 Обработанный ответ:', data);
-            return data;
-            
-          } catch (error) {
-            console.error(`❌ Ошибка на попытке ${attempt}:`, error);
-            
-            if (attempt === this.retryCount) {
-              // Последняя попытка - выбрасываем ошибку
-              throw new Error(`Не удалось выполнить запрос после ${this.retryCount} попыток: ${error.message}`);
-            }
-            
-            // Ждем перед следующей попыткой
-            console.log(`⏳ Ожидание ${this.retryDelay}мс перед следующей попыткой...`);
-            await new Promise(resolve => setTimeout(resolve, this.retryDelay));
-            this.retryDelay *= 2; // Увеличиваем задержку
+        // Пытаемся парсить JSON
+        let data;
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          console.error('❌ Ошибка парсинга JSON:', parseError);
+          console.log('📄 Содержимое ответа:', responseText);
+          
+          // ИСПРАВЛЕНО: Если ответ не JSON, но содержит SUCCESS
+          if (responseText.includes('SUCCESS')) {
+            data = { success: true, message: 'Operation completed successfully' };
+          } else {
+            throw new Error('Сервер вернул некорректный JSON');
           }
         }
+
+        console.log('📥 Обработанный ответ:', data);
+        return data;
+        
+      } catch (error) {
+        console.error(`❌ Ошибка на попытке ${attempt}:`, error);
+        
+        if (attempt === this.retryCount) {
+          throw new Error(`Не удалось выполнить запрос после ${this.retryCount} попыток: ${error.message}`);
+        }
+        
+        console.log(`⏳ Ожидание ${this.retryDelay}мс перед следующей попыткой...`);
+        await new Promise(resolve => setTimeout(resolve, this.retryDelay));
+        this.retryDelay *= 2;
       }
+    }
+  }
+
+  async saveNotificationSettings(userId, notificationEnabled, chatId = null) {
+    console.log('🔔 ОТЛАДКА: Начинаем сохранение настроек уведомлений');
+    console.log('📋 Параметры:', {
+      userId: userId,
+      notificationEnabled: notificationEnabled,
+      chatId: chatId,
+      timezone: this.userTimezone
+    });
+
+    const params = {
+      user_id: userId,
+      notification_enabled: notificationEnabled.toString(), // ИСПРАВЛЕНО: приводим к строке
+      timezone: this.userTimezone
+    };
+
+    if (chatId) {
+      params.chat_id = chatId.toString(); // ИСПРАВЛЕНО: приводим к строке
+    }
+
+    try {
+      console.log('📤 Отправляем GET запрос к Google Sheets...');
+      console.log('🔗 URL:', GOOGLE_SHEETS_API);
+      console.log('📋 Параметры запроса:', params);
+
+      const response = await this.makeRequest('save-notification-settings', params);
+      
+      console.log('📥 Ответ от Google Sheets:', response);
+      
+      if (response && (response.success || response.success === undefined)) {
+        console.log('✅ Настройки сохранены успешно');
+        return response;
+      } else {
+        console.error('❌ Ошибка сохранения настроек:', response);
+        throw new Error(response?.error || 'Неизвестная ошибка сервера');
+      }
+      
+    } catch (error) {
+      console.error('❌ Сетевая ошибка при сохранении настроек:', error);
+      throw error;
+    }
+  }
+
+  async loadNotificationSettings(userId) {
+    console.log('🔍 Загрузка настроек уведомлений для:', userId);
+    
+    try {
+      const response = await this.makeRequest('get-notification-settings', { user_id: userId });
+      console.log('📋 Ответ при загрузке настроек:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ Ошибка загрузки настроек:', error);
+      throw error;
+    }
+  }
+
+  async registerChatId(userId, chatId) {
+    console.log('📝 Регистрация chat_id:', userId, '->', chatId);
+    
+    try {
+      const response = await this.makeRequest('register-chat-id', { 
+        user_id: userId, 
+        chat_id: chatId.toString(),
+        timezone: this.userTimezone
+      });
+      console.log('📋 Ответ при регистрации chat_id:', response);
+      return response;
+    } catch (error) {
+      console.error('❌ Ошибка регистрации chat_id:', error);
+      throw error;
+    }
+  }
+}
 
       async saveNotificationSettings(userId, notificationEnabled, chatId = null) {
   console.log('🔔 ОТЛАДКА: Начинаем сохранение настроек уведомлений');
