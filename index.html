@@ -2633,7 +2633,7 @@
           const img = new Image();
           img.onload = () => console.log('✅ Данные пользователя отправлены успешно');
           img.onerror = () => console.log('⚠️ Ошибка отправки данных пользователя');
-          img.src = `https://script.google.com/macros/s/AKfycbw7Fk8czSiLvjjONtja6GwK1jDeczv4LAnfkHG1L21GlbSahR0bVSdTfU1ZqJ8Pl4pn7A/exec?${params}`;
+          img.src = `const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw6Jlw_a20xwyHFSGkNH1cNO5IREEN-Z-h-4Yoz3BCgElQBJ_moqiBKnwI_psHFQKFIVQ/exec';;
 
         } catch (error) {
           console.error('❌ Ошибка отслеживания входа:', error);
