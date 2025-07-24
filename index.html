@@ -1289,19 +1289,16 @@ class DateUtils {
   }
 
   // 🔧 ИСПРАВЛЕННЫЙ метод: создание ключа даты согласованно с сервером
-  static createDateKey(date) {
-    // Сначала получаем местное время пользователя
-    const userDate = this.getCurrentDateInUserTimezone();
-    
-    // Затем создаем UTC дату на основе ЛОКАЛЬНОЙ даты пользователя
-    const utcDate = new Date(Date.UTC(
-      userDate.getFullYear(),
-      userDate.getMonth(), 
-      userDate.getDate()
-    ));
-    
-    return this.createDateKeyUTC(utcDate);
-  }
+static createDateKey(date) {
+  // 🔧 ИСПРАВЛЕНО: используем ПЕРЕДАННУЮ дату, а не текущую!
+  const utcDate = new Date(Date.UTC(
+    date.getFullYear(),  // ✅ Используем переданную дату
+    date.getMonth(),     // ✅ Используем переданную дату  
+    date.getDate()       // ✅ Используем переданную дату
+  ));
+  
+  return this.createDateKeyUTC(utcDate);
+}
 
   static isTodayInUserTimezone(date) {
     const today = this.getCurrentDateInUserTimezone();
