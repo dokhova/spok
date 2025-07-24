@@ -1250,39 +1250,52 @@
       }
     };
 
-    // DateUtils класс из journal.html
-    class DateUtils {
-      static getUserTimezone() {
-        try {
-          return Intl.DateTimeFormat().resolvedOptions().timeZone;
-        } catch (error) {
-          console.log('⚠️ Не удалось определить часовой пояс:', error);
-          return 'UTC';
-        }
-      }
-
-      static getCurrentDateInUserTimezone() {
-        const timezone = this.getUserTimezone();
-        console.log(`🌍 Часовой пояс пользователя: ${timezone}`);
-        
-        try {
-          const now = new Date();
-          const userDate = new Date(now.toLocaleString("en-US", {timeZone: timezone}));
-          console.log(`📅 Текущая дата в часовом поясе пользователя: ${userDate.toDateString()}`);
-          return userDate;
-        } catch (error) {
-          console.log('⚠️ Ошибка при работе с часовым поясом, используем локальное время:', error);
-          return new Date();
-        }
-      }
-
-      static isTodayInUserTimezone(date) {
-        const today = this.getCurrentDateInUserTimezone();
-        return date.getFullYear() === today.getFullYear() &&
-               date.getMonth() === today.getMonth() &&
-               date.getDate() === today.getDate();
-      }
+    // 🔧 ИСПРАВЛЕННЫЙ DateUtils класс - СОХРАНЯЕТ СТАРЫЙ ФОРМАТ!
+class DateUtils {
+  static getUserTimezone() {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch (error) {
+      console.log('⚠️ Не удалось определить часовой пояс:', error);
+      return 'UTC';
     }
+  }
+
+  static getCurrentDateInUserTimezone() {
+    const timezone = this.getUserTimezone();
+    console.log(`🌍 Часовой пояс пользователя: ${timezone}`);
+    
+    try {
+      const now = new Date();
+      const userDate = new Date(now.toLocaleString("en-US", {timeZone: timezone}));
+      console.log(`📅 Текущая дата в часовом поясе пользователя: ${userDate.toDateString()}`);
+      return userDate;
+    } catch (error) {
+      console.log('⚠️ Ошибка при работе с часовым поясом, используем локальное время:', error);
+      return new Date();
+    }
+  }
+
+  // 🔧 КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: ДОБАВЛЯЕМ МЕТОД createDateKey со СТАРЫМ ФОРМАТОМ!
+  // Используем ТОЧНО ТОТ ЖЕ формат что и в old.html: ${date.getFullYear()}-${date.getMonth()}-${date.getDate()}
+  static createDateKey(date) {
+    const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    
+    console.log(`📅 createDateKey (СТАРЫЙ ФОРМАТ - СОХРАНЯЕТ ДАННЫЕ!):`);
+    console.log(`   Входная дата: ${date.toString()}`);
+    console.log(`   Год: ${date.getFullYear()}, Месяц: ${date.getMonth()}, День: ${date.getDate()}`);
+    console.log(`   Результат: "${dateKey}"`);
+    
+    return dateKey;
+  }
+
+  static isTodayInUserTimezone(date) {
+    const today = this.getCurrentDateInUserTimezone();
+    return date.getFullYear() === today.getFullYear() &&
+           date.getMonth() === today.getMonth() &&
+           date.getDate() === today.getDate();
+  }
+}
 
     // ИСПРАВЛЕННЫЙ Google Sheets Service - устраняет проблему обнуления эмоций
     class GoogleSheetsService {
