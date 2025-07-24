@@ -2120,7 +2120,7 @@ class DateUtils {
           return dayElement;
         }
 
-        const dateKey = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        const dateKey = DateUtils.createDateKey(date);
         dayElement.setAttribute('data-date', dateKey);
         
         const isToday = DateUtils.isTodayInUserTimezone(date);
