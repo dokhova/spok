@@ -2561,11 +2561,11 @@
         if (!this.user) return;
         
         const currentLang = window.translator ? window.translator.currentLang : 'en';
-        const journalUrl = `journal.html?lang=${currentLang}`;
+        const profileUrl = `profile.html?lang=${currentLang}`;
         
         const headerLogo = document.getElementById('headerLogo');
         headerLogo.innerHTML = `
-          <a href="${journalUrl}" class="user-header">
+          <a href="${profileUrl}" class="user-header">
             <div class="user-avatar">
               ${this.user.photo_url ? 
                 `<img src="${this.user.photo_url}" alt="${this.user.first_name}" class="avatar-image">` :
