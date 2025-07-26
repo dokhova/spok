@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title data-translate="page_title">Calm Dots</title>
+  
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+      
+      --color-green: #34A853;
+      --color-yellow: #FFD527;
+      --color-blue: #4285F4;
+      --color-pink: #FF7DB0;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      position: relative;
+    }
+
+    /* Фикс для WebView приложений */
+    @supports (-webkit-touch-callout: none) {
+      html, body {
+        height: -webkit-fill-available;
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      position: fixed;
+      top: 24px;
+      right: calc(50vw - 163.5px);
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 425px) {
+      .language-switcher {
+        right: 24px;
+      }
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Inter", sans-serif;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      color: white;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lang-btn.active:hover {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+    }
+
+    /* Header with back button */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 375px;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--main);
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      border: none;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .back-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+
+    /* Main container */
+    .container {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 100px 24px 96px 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 196px);
+      box-sizing: border-box;
+    }
+
+    @supports (-webkit-touch-callout: none) {
+      .container {
+        min-height: calc(-webkit-fill-available - 196px);
+      }
+    }
+
+    /* Game header */
+    .game-header {
+      margin-bottom: 40px;
+      text-align: left;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUpFade 0.8s ease-out 0.5s forwards;
+    }
+
+    .game-title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0 0 4px 0;
+      padding: 0;
+    }
+
+    .game-subtitle {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Game board */
+    .game-board {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 8px 15px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: slideUpFade 0.8s ease-out 0.9s forwards;
+      max-height: min(70vh, 500px);
+    }
+
+    .dots-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 350px;
+      aspect-ratio: 1;
+    }
+
+    .dot {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      border: 3px solid transparent;
+      box-sizing: border-box;
+      width: 85%;
+      height: 85%;
+      margin: auto;
+    }
+
+    .dot:hover {
+      transform: scale(1.05);
+    }
+
+    .dot.selected {
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.1);
+      z-index: 10;
+    }
+
+    .dot.green { background-color: var(--color-green); }
+    .dot.yellow { background-color: var(--color-yellow); }
+    .dot.blue { background-color: var(--color-blue); }
+    .dot.pink { background-color: var(--color-pink); }
+
+    .dot.falling {
+      animation: fall 0.5s ease-in-out;
+    }
+
+    @keyframes fall {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .dot.removing {
+      animation: remove 0.3s ease-in-out forwards;
+    }
+
+    @keyframes remove {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+
+    /* Game stats */
+    .game-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 40px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUpFade 0.8s ease-out 0.7s forwards;
+    }
+
+    .stat-item {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 12px 16px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0 0 4px 0;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Game Over Modal */
+    .game-over-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .game-over-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .game-over-content {
+      background-color: var(--main);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      max-width: 300px;
+      width: 90%;
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+
+    .game-over-modal.show .game-over-content {
+      transform: scale(1);
+    }
+
+    .game-over-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin: 0 0 8px 0;
+    }
+
+    .game-over-score {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--white);
+      margin: 0 0 24px 0;
+    }
+
+    .play-again-button {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 12px;
+      padding: 16px 32px;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: "Inter", sans-serif;
+      width: 100%;
+    }
+
+    .play-again-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .play-again-button:active {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      z-index: 1000;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 20px));
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+
+    /* Анимации появления */
+    @keyframes slideUpFade {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Connection line */
+    .connection-line {
+      position: absolute;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .line-segment {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 2px;
+      transform-origin: left center;
+    }
+
+    /* Индикатор автоскролла */
+    .scroll-indicator {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.5;
+      z-index: 50;
+      animation: fadeInOut 3s ease-in-out;
+    }
+
+    .scroll-arrow {
+      width: 20px;
+      height: 20px;
+      color: var(--white);
+      animation: bounce 2s infinite;
+    }
+
+    .scroll-text {
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      color: var(--text-2);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0; }
+      20%, 80% { opacity: 0.5; }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-5px); }
+      60% { transform: translateY(-3px); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="lang-btn active" id="enBtn">EN</button>
+    <button class="lang-btn" id="ruBtn">RU</button>
+  </div>
+
+  <!-- Header with back button -->
+  <div class="header">
+    <button class="back-button" onclick="window.history.back()">
+      <svg class="back-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div></div>
+  </div>
+
+  <!-- Индикатор автоскролла -->
+  <div class="scroll-indicator" id="scrollIndicator">
+    <svg class="scroll-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="scroll-text" data-translate="scroll">SCROLL</div>
+  </div>
+
+  <div class="container">
+    <!-- Game header -->
+    <div class="game-header">
+      <h1 class="game-title" data-translate="game_title">Calm Dots</h1>
+      <p class="game-subtitle" data-translate="game_subtitle">Connect dots of the same color</p>
+    </div>
+
+    <!-- Game board -->
+    <div class="game-board">
+      <div class="dots-grid" id="dotsGrid"></div>
+    </div>
+
+    <!-- Game stats -->
+    <div class="game-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="movesCount">20</div>
+        <div class="stat-label" data-translate="moves">MOVES</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="scoreCount">0</div>
+        <div class="stat-label" data-translate="score">SCORE</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="lastResult">-</div>
+        <div class="stat-label" data-translate="last_result">BEST</div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="game-over-modal" id="gameOverModal">
+      <div class="game-over-content">
+        <div class="game-over-title" data-translate="result_title">Your score</div>
+        <div class="game-over-score" id="finalScore">0</div>
+        <button class="play-again-button" id="playAgainButton" data-translate="play_again">Play Again</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab bar -->
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Today">
+      <div data-translate="tab_today">Today</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Practices">
+      <div data-translate="tab_practices">Practices</div>
+    </a>
+    <a href="journal.html" class="tab active">
+      <img src="img/journal-active.svg" alt="Journal">
+      <div data-translate="tab_journal">Calendar</div>
+    </a>
+  </footer>
+
+  <script>
+    // Translations
+    const translations = {
+      en: {
+        page_title: "Calm Dots",
+        game_title: "Calm Dots",
+        game_subtitle: "Connect dots of the same color",
+        moves: "MOVES",
+        score: "SCORE",
+        last_result: "BEST",
+        result_title: "Your score",
+        play_again: "Play Again",
+        tab_today: "Today",
+        tab_practices: "Practices",
+        tab_journal: "Calendar",
+        scroll: "SCROLL"
+      },
+      ru: {
+        page_title: "Спокойные Точки",
+        game_title: "Спокойные Точки", 
+        game_subtitle: "Соединяйте точки одного цвета",
+        moves: "ХОДЫ",
+        score: "СЧЁТ",
+        last_result: "ЛУЧШИЙ",
+        result_title: "Ваш результат",
+        play_again: "Начать заново",
+        tab_today: "Сегодня",
+        tab_practices: "Практики",
+        tab_journal: "Календарь",
+        scroll: "СКРОЛЛ"
+      }
+    };
+
+    // Translator class
+    class Translator {
+      constructor() {
+        console.log('🔄 Инициализация переводчика JOURNAL.HTML...');
+        
+        // Проверяем доступность localStorage
+        this.localStorageAvailable = this.checkLocalStorageAvailability();
+        
+        const urlLang = this.getLanguageFromURL();
+        const storedLang = this.localStorageAvailable ? this.getLanguageFromStorage() : null;
+        const telegramLang = this.getTelegramLanguage();
+        
+        if (urlLang) {
+          this.currentLang = urlLang;
+          console.log(`🔗 Используем язык из URL: ${urlLang}`);
+        } else if (storedLang) {
+          this.currentLang = storedLang;
+          console.log(`💾 Используем сохраненный язык пользователя: ${storedLang}`);
+        } else if (telegramLang) {
+          this.currentLang = telegramLang;
+          console.log(`📱 Используем язык из Telegram: ${telegramLang}`);
+        } else {
+          this.currentLang = 'en';
+          console.log(`🌐 Используем язык по умолчанию: en`);
+        }
+        
+        console.log(`✅ Итоговый язык JOURNAL: ${this.currentLang}`);
+        this.init();
+      }
+
+      checkLocalStorageAvailability() {
+        try {
+          const testKey = 'test_storage_' + Date.now();
+          localStorage.setItem(testKey, 'test');
+          localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          console.log(`⚠️ localStorage недоступен: ${error.message}`);
+          return false;
+        }
+      }
+
+      getLanguageFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langFromUrl = urlParams.get('lang');
+        console.log(`🔗 Язык из URL: ${langFromUrl}`);
+        return langFromUrl;
+      }
+
+      getLanguageFromStorage() {
+        if (!this.localStorageAvailable) return null;
+        
+        try {
+          const langFromStorage = localStorage.getItem('potok_language');
+          console.log(`💾 Язык из localStorage: ${langFromStorage}`);
+          return langFromStorage;
+        } catch (error) {
+          console.log(`❌ Ошибка чтения localStorage: ${error.message}`);
+          return null;
+        }
+      }
+
+      getTelegramLanguage() {
+        try {
+          if (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code) {
+            const telegramLang = window.Telegram.WebApp.initDataUnsafe.user.language_code;
+            console.log('📱 Язык из Telegram:', telegramLang);
+            
+            if (telegramLang === 'ru' || telegramLang.startsWith('ru')) {
+              return 'ru';
+            }
+            return 'en';
+          }
+          
+          console.log('⚠️ Данные языка Telegram недоступны');
+          return null;
+        } catch (error) {
+          console.log('❌ Ошибка получения языка Telegram:', error);
+          return null;
+        }
+      }
+
+      init() {
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        this.setupLanguageButtons();
+        document.documentElement.lang = this.currentLang;
+        document.title = this.translate('page_title');
+        
+        console.log(`✅ Переводчик JOURNAL.HTML инициализирован с языком: ${this.currentLang}`);
+      }
+
+      setupLanguageButtons() {
+        const enBtn = document.getElementById('enBtn');
+        const ruBtn = document.getElementById('ruBtn');
+        
+        if (enBtn) {
+          enBtn.addEventListener('click', () => {
+            console.log('🔘 Клик по EN в JOURNAL.HTML');
+            this.setLanguage('en');
+          });
+        }
+        
+        if (ruBtn) {
+          ruBtn.addEventListener('click', () => {
+            console.log('🔘 Клик по RU в JOURNAL.HTML');
+            this.setLanguage('ru');
+          });
+        }
+      }
+
+      setLanguage(lang) {
+        console.log(`🔄 ПОЛЬЗОВАТЕЛЬ ВРУЧНУЮ сменил язык на: ${lang} в JOURNAL.HTML`);
+        
+        this.currentLang = lang;
+        
+        if (this.localStorageAvailable) {
+          try {
+            localStorage.setItem('potok_language', lang);
+            console.log(`✅ Язык ${lang} сохранен в localStorage (выбор пользователя)`);
+          } catch (error) {
+            console.log(`❌ Не удалось сохранить в localStorage: ${error.message}`);
+          }
+        } else {
+          console.log(`⚠️ localStorage недоступен, используем только URL синхронизацию`);
+        }
+        
+        try {
+          const newUrl = `${window.location.pathname}?lang=${lang}`;
+          window.history.replaceState({}, '', newUrl);
+          console.log(`✅ URL обновлен: ${newUrl}`);
+        } catch (error) {
+          console.log(`❌ Не удалось обновить URL: ${error.message}`);
+        }
+        
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        
+        document.documentElement.lang = lang;
+        document.title = this.translate('page_title');
+        
+        console.log(`🌐 Язык изменен на: ${lang} в JOURNAL.HTML (выбор пользователя сохранен)`);
+      }
+
+      updatePageLinks() {
+        const links = document.querySelectorAll('a[href$=".html"], a[href*=".html"]');
+        let updateCount = 0;
+        
+        links.forEach(link => {
+          let href = link.getAttribute('href');
+          
+          if (href.startsWith('http') || href.startsWith('//')) return;
+          
+          if (href.includes('?lang=')) {
+            href = href.split('?')[0];
+          }
+          
+          if (href.includes('#')) {
+            const parts = href.split('#');
+            href = parts[0];
+          }
+          
+          const separator = href.includes('?') ? '&' : '?';
+          const newHref = `${href}${separator}lang=${this.currentLang}`;
+          link.setAttribute('href', newHref);
+          updateCount++;
+        });
+        
+        console.log(`🔗 Обновлено ${updateCount} ссылок с lang=${this.currentLang} в JOURNAL.HTML`);
+      }
+
+      translate(key) {
+        return translations[this.currentLang]?.[key] || translations.en[key] || key;
+      }
+
+      updatePage() {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+          const key = element.getAttribute('data-translate');
+          const translation = this.translate(key);
+          
+          if (element.tagName === 'TITLE') {
+            element.textContent = translation;
+          } else {
+            element.textContent = translation;
+          }
+        });
+        
+        console.log(`🔄 Обновлено ${document.querySelectorAll('[data-translate]').length} элементов перевода`);
+      }
+
+      updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.textContent.toLowerCase() === this.currentLang) {
+            btn.classList.add('active');
+            btn.style.background = 'linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%)';
+          } else {
+            btn.style.background = '';
+          }
+        });
+      }
+    }
+
+    // Analytics class для отправки статистики в Google Sheets
+    class GameAnalytics {
+      constructor() {
+        // URL вашего Google Apps Script Web App
+        this.ANALYTICS_URL = 'https://script.google.com/macros/s/AKfycbwSNLoJp2IzP2j8sRjvdc7g5eg-_Z3wvr8jYqr4pOyvZUEifDZIHPlM_91DQ-GfZxyE/exec';
+        this.gameStartTime = null;
+        this.isEnabled = true; // Можно отключить аналитику
+      }
+
+      getUserData() {
+        try {
+          if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+            const user = window.Telegram.WebApp.initDataUnsafe.user;
+            return {
+              id: user.id,
+              username: user.username || '',
+              first_name: user.first_name || '',
+              language_code: user.language_code || 'en'
+            };
+          }
+        } catch (error) {
+          console.log('Не удалось получить данные пользователя Telegram:', error);
+        }
+        
+        return {
+          id: 'anonymous_' + Date.now(),
+          username: '',
+          first_name: 'Anonymous',
+          language_code: navigator.language?.split('-')[0] || 'en'
+        };
+      }
+
+      getPlatform() {
+        if (window.Telegram?.WebApp) return 'telegram';
+        if (navigator.userAgent.includes('Mobile')) return 'mobile_web';
+        return 'desktop_web';
+      }
+
+      startGame() {
+        this.gameStartTime = Date.now();
+        console.log('🎮 Игра началась, аналитика активирована');
+      }
+
+      async sendGameResult(gameStats) {
+        if (!this.isEnabled || !this.gameStartTime) {
+          console.log('📊 Аналитика отключена или игра не была начата');
+          return;
+        }
+
+        try {
+          const userData = this.getUserData();
+          const gameDuration = Math.round((Date.now() - this.gameStartTime) / 1000);
+          
+          const analyticsData = {
+            user: userData,
+            gameStats: {
+              score: gameStats.score,
+              movesLeft: gameStats.moves,
+              bestScore: gameStats.bestResult,
+              duration: gameDuration
+            },
+            platform: this.getPlatform(),
+            timestamp: new Date().toISOString()
+          };
+
+          console.log('📊 Отправляем статистику:', analyticsData);
+
+          const response = await fetch(this.ANALYTICS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(analyticsData),
+            mode: 'no-cors'
+          });
+
+          console.log('✅ Статистика отправлена успешно');
+          
+        } catch (error) {
+          console.log('❌ Ошибка отправки статистики:', error);
+        }
+      }
+
+      async sendGameStart() {
+        if (!this.isEnabled) return;
+
+        try {
+          const userData = this.getUserData();
+          
+          const analyticsData = {
+            user: userData,
+            event: 'game_start',
+            platform: this.getPlatform(),
+            timestamp: new Date().toISOString()
+          };
+          
+          console.log('🎯 Событие начала игры зафиксировано');
+          
+        } catch (error) {
+          console.log('❌ Ошибка отправки события начала игры:', error);
+        }
+      }
+    }
+
+    // Auto scroll functionality
+    class AutoScroller {
+      constructor() {
+        this.isScrolling = false;
+        this.scrollSpeed = 2;
+        this.scrollTarget = window.innerHeight * 0.7;
+      }
+
+      startAutoScroll() {
+        if (this.isScrolling) return;
+        
+        const isWebView = navigator.userAgent.includes('wv') || window.Telegram;
+        this.scrollTarget = isWebView ? window.innerHeight * 0.5 : window.innerHeight * 0.7;
+        
+        this.isScrolling = true;
+        const startTime = performance.now();
+        const startPosition = window.pageYOffset;
+        const distance = this.scrollTarget - startPosition;
+        const duration = isWebView ? 1500 : 2000;
+
+        const animateScroll = (currentTime) => {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          const easeInOutQuad = progress < 0.5 
+            ? 2 * progress * progress 
+            : -1 + (4 - 2 * progress) * progress;
+          
+          const currentPosition = startPosition + (distance * easeInOutQuad);
+          window.scrollTo(0, currentPosition);
+          
+          if (progress < 1 && this.isScrolling) {
+            requestAnimationFrame(animateScroll);
+          } else {
+            this.isScrolling = false;
+            const indicator = document.getElementById('scrollIndicator');
+            if (indicator) {
+              indicator.style.opacity = '0';
+              setTimeout(() => {
+                indicator.style.display = 'none';
+              }, 500);
+            }
+          }
+        };
+
+        requestAnimationFrame(animateScroll);
+      }
+
+      stopAutoScroll() {
+        this.isScrolling = false;
+      }
+    }
+
+    // Game class
+    class CalmDotsGame {
+      constructor() {
+        this.gridSize = 7;
+        this.colors = ['green', 'yellow', 'blue', 'pink'];
+        this.grid = [];
+        this.moves = 20;
+        this.score = 0;
+        this.bestResult = 0;
+        this.isSelecting = false;
+        this.selectedDots = [];
+        this.currentPath = [];
+        
+        this.STORAGE_KEYS = {
+          BEST_RESULT: 'calmDotsBestResult',
+          GAME_STATE: 'calmDotsGameState'
+        };
+        
+        this.analytics = new GameAnalytics();
+        
+        this.initializeElements();
+        this.setupEventListeners();
+        this.loadGameState();
+      }
+
+      loadGameState() {
+        try {
+          const savedBestResult = localStorage.getItem(this.STORAGE_KEYS.BEST_RESULT);
+          this.bestResult = savedBestResult ? parseInt(savedBestResult) : 0;
+          console.log('💾 Загружен лучший результат:', this.bestResult);
+
+          const savedGameState = localStorage.getItem(this.STORAGE_KEYS.GAME_STATE);
+          if (savedGameState) {
+            const gameState = JSON.parse(savedGameState);
+            this.moves = gameState.moves || 20;
+            this.score = gameState.score || 0;
+            this.grid = gameState.grid || [];
+            console.log('💾 Загружено состояние игры:', { moves: this.moves, score: this.score });
+            
+            if (this.grid.length > 0) {
+              this.renderGrid();
+              this.updateStats();
+              return;
+            }
+          }
+          
+          this.initializeGame();
+        } catch (error) {
+          console.log('❌ Ошибка загрузки состояния игры:', error);
+          this.bestResult = 0;
+          this.initializeGame();
+        }
+      }
+
+      saveGameState() {
+        try {
+          const gameState = {
+            moves: this.moves,
+            score: this.score,
+            grid: this.grid,
+            timestamp: Date.now()
+          };
+          localStorage.setItem(this.STORAGE_KEYS.GAME_STATE, JSON.stringify(gameState));
+          console.log('💾 Состояние игры сохранено:', { moves: this.moves, score: this.score });
+        } catch (error) {
+          console.log('❌ Ошибка сохранения состояния игры:', error);
+        }
+      }
+
+      saveBestResult() {
+        try {
+          localStorage.setItem(this.STORAGE_KEYS.BEST_RESULT, this.bestResult.toString());
+          console.log('💾 Лучший результат сохранен:', this.bestResult);
+        } catch (error) {
+          console.log('❌ Ошибка сохранения лучшего результата:', error);
+        }
+      }
+
+      clearSavedGame() {
+        try {
+          localStorage.removeItem(this.STORAGE_KEYS.GAME_STATE);
+          console.log('🗑️ Сохраненная игра очищена');
+        } catch (error) {
+          console.log('❌ Ошибка очистки сохраненной игры:', error);
+        }
+      }
+
+      initializeElements() {
+        this.dotsGrid = document.getElementById('dotsGrid');
+        this.movesCount = document.getElementById('movesCount');
+        this.scoreCount = document.getElementById('scoreCount');
+        this.lastResultElement = document.getElementById('lastResult');
+        this.gameOverModal = document.getElementById('gameOverModal');
+        this.finalScore = document.getElementById('finalScore');
+      }
+
+      setupEventListeners() {
+        const playAgainButton = document.getElementById('playAgainButton');
+        if (playAgainButton) {
+          playAgainButton.addEventListener('click', () => {
+            this.startNewGame();
+          });
+        }
+
+        if (this.dotsGrid) {
+          this.dotsGrid.addEventListener('mousedown', (e) => this.startConnection(e));
+          this.dotsGrid.addEventListener('mousemove', (e) => this.updateConnection(e));
+          this.dotsGrid.addEventListener('mouseup', () => this.endConnection());
+          
+          this.dotsGrid.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.startConnection(e.touches[0]);
+          });
+          this.dotsGrid.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            this.updateConnection(e.touches[0]);
+          });
+          this.dotsGrid.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.endConnection();
+          });
+        }
+      }
+
+      initializeGame() {
+        this.generateGrid();
+        this.renderGrid();
+        this.updateStats();
+        this.saveGameState();
+        
+        this.analytics.startGame();
+        this.analytics.sendGameStart();
+      }
+
+      showGameOver() {
+        if (this.score > this.bestResult) {
+          this.bestResult = this.score;
+          this.saveBestResult();
+        }
+        
+        this.analytics.sendGameResult({
+          score: this.score,
+          moves: this.moves,
+          bestResult: this.bestResult
+        });
+        
+        if (this.finalScore) {
+          this.finalScore.textContent = this.score;
+        }
+        if (this.gameOverModal) {
+          this.gameOverModal.classList.add('show');
+        }
+        this.clearSavedGame();
+      }
+
+      hideGameOver() {
+        if (this.gameOverModal) {
+          this.gameOverModal.classList.remove('show');
+        }
+      }
+
+      startNewGame() {
+        this.moves = 20;
+        this.score = 0;
+        this.clearSelection();
+        this.hideGameOver();
+        
+        console.log('🔄 Начинаем новую игру');
+        this.initializeGame();
+      }
+
+      generateGrid() {
+        this.grid = [];
+        for (let i = 0; i < this.gridSize * this.gridSize; i++) {
+          const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+          this.grid.push(randomColor);
+        }
+      }
+
+      renderGrid() {
+        if (!this.dotsGrid) return;
+        
+        this.dotsGrid.innerHTML = '';
+        
+        for (let i = 0; i < this.grid.length; i++) {
+          const dot = document.createElement('div');
+          dot.className = `dot ${this.grid[i]}`;
+          dot.dataset.index = i;
+          this.dotsGrid.appendChild(dot);
+        }
+      }
+
+      getRowCol(index) {
+        return {
+          row: Math.floor(index / this.gridSize),
+          col: index % this.gridSize
+        };
+      }
+
+      getIndex(row, col) {
+        return row * this.gridSize + col;
+      }
+
+      areAdjacent(index1, index2) {
+        const pos1 = this.getRowCol(index1);
+        const pos2 = this.getRowCol(index2);
+        
+        const rowDiff = Math.abs(pos1.row - pos2.row);
+        const colDiff = Math.abs(pos1.col - pos2.col);
+        
+        return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+      }
+
+      startConnection(event) {
+        const dot = event.target.closest('.dot');
+        if (!dot) return;
+
+        this.isSelecting = true;
+        this.selectedDots = [parseInt(dot.dataset.index)];
+        this.currentPath = [parseInt(dot.dataset.index)];
+        this.updateSelectedVisuals();
+      }
+
+      updateConnection(event) {
+        if (!this.isSelecting) return;
+
+        const dot = document.elementFromPoint(event.clientX, event.clientY)?.closest('.dot');
+        if (!dot) return;
+
+        const dotIndex = parseInt(dot.dataset.index);
+        const lastSelected = this.selectedDots[this.selectedDots.length - 1];
+        
+        if (this.selectedDots.length > 1 && dotIndex === this.selectedDots[this.selectedDots.length - 2]) {
+          this.selectedDots.pop();
+          this.currentPath.pop();
+          this.updateSelectedVisuals();
+          return;
+        }
+
+        if (dotIndex !== lastSelected && 
+            this.areAdjacent(dotIndex, lastSelected) && 
+            this.grid[dotIndex] === this.grid[this.selectedDots[0]] &&
+            !this.selectedDots.includes(dotIndex)) {
+          
+          this.selectedDots.push(dotIndex);
+          this.currentPath.push(dotIndex);
+          this.updateSelectedVisuals();
+        }
+      }
+
+      endConnection() {
+        if (!this.isSelecting || this.selectedDots.length < 2) {
+          this.clearSelection();
+          return;
+        }
+
+        this.removeDots();
+        this.clearSelection();
+        this.moves--;
+        this.updateStats();
+        this.saveGameState();
+        
+        setTimeout(() => {
+          this.dropDots();
+          this.fillGrid();
+          this.renderGrid();
+          this.saveGameState();
+          
+          if (this.moves <= 0) {
+            this.showGameOver();
+          }
+        }, 300);
+      }
+
+      updateSelectedVisuals() {
+        document.querySelectorAll('.dot').forEach(dot => {
+          dot.classList.remove('selected');
+        });
+
+        this.selectedDots.forEach(index => {
+          const dot = document.querySelector(`[data-index="${index}"]`);
+          if (dot) {
+            dot.classList.add('selected');
+          }
+        });
+      }
+
+      clearSelection() {
+        this.isSelecting = false;
+        this.selectedDots = [];
+        this.currentPath = [];
+        document.querySelectorAll('.dot.selected').forEach(dot => {
+          dot.classList.remove('selected');
+        });
+      }
+
+      removeDots() {
+        const scoreGained = this.selectedDots.length;
+        this.score += scoreGained;
+
+        this.selectedDots.forEach(index => {
+          const dot = document.querySelector(`[data-index="${index}"]`);
+          if (dot) {
+            dot.classList.add('removing');
+          }
+        });
+
+        this.selectedDots.forEach(index => {
+          this.grid[index] = null;
+        });
+      }
+
+      dropDots() {
+        for (let col = 0; col < this.gridSize; col++) {
+          const column = [];
+          
+          for (let row = this.gridSize - 1; row >= 0; row--) {
+            const index = this.getIndex(row, col);
+            if (this.grid[index] !== null) {
+              column.push(this.grid[index]);
+            }
+          }
+          
+          for (let row = this.gridSize - 1; row >= 0; row--) {
+            const index = this.getIndex(row, col);
+            if (column.length > 0) {
+              this.grid[index] = column.shift();
+            } else {
+              this.grid[index] = null;
+            }
+          }
+        }
+      }
+
+      fillGrid() {
+        for (let i = 0; i < this.grid.length; i++) {
+          if (this.grid[i] === null) {
+            const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+            this.grid[i] = randomColor;
+          }
+        }
+      }
+
+      updateStats() {
+        if (this.movesCount) this.movesCount.textContent = this.moves;
+        if (this.scoreCount) this.scoreCount.textContent = this.score;
+        if (this.lastResultElement) this.lastResultElement.textContent = this.bestResult || '-';
+      }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('📱 Инициализация приложения Calm Dots Journal...');
+      
+      window.translator = new Translator();
+      window.game = new CalmDotsGame();
+      window.autoScroller = new AutoScroller();
+
+      // Запуск автоскролла только если контент не помещается на экране
+      setTimeout(() => {
+        const container = document.querySelector('.container');
+        if (container) {
+          const containerHeight = container.scrollHeight;
+          const viewportHeight = window.innerHeight;
+          
+          if (containerHeight > viewportHeight * 1.1) {
+            window.autoScroller.startAutoScroll();
+          } else {
+            const indicator = document.getElementById('scrollIndicator');
+            if (indicator) {
+              indicator.style.display = 'none';
+            }
+          }
+        }
+      }, 1000);
+
+      // Остановка автоскролла при пользовательском взаимодействии
+      let userInteracted = false;
+      const stopAutoScrollOnUserInteraction = () => {
+        if (!userInteracted) {
+          userInteracted = true;
+          window.autoScroller.stopAutoScroll();
+        }
+      };
+
+      window.addEventListener('wheel', stopAutoScrollOnUserInteraction);
+      window.addEventListener('touchstart', stopAutoScrollOnUserInteraction);
+      window.addEventListener('keydown', stopAutoScrollOnUserInteraction);
+      
+      console.log('✅ Приложение Calm Dots Journal инициализировано');
+    });
+  </script>
+</body>
+</html>
