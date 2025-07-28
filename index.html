@@ -1946,6 +1946,50 @@ constructor() {
   // ИСПРАВЛЕННАЯ ЛОГИКА: Правильное восстановление данных
   this.initializeEmotions();
 }
+    // ДОБАВЬТЕ этот метод ПОСЛЕ конструктора:
+async initializeEmotions() {
+  console.log('🚀 Правильная инициализация эмоций календаря...');
+  
+  // Проверяем есть ли данные в localStorage
+  const localEmotions = this.googleSheetsService.loadEmotionsInstantly();
+  
+  if (localEmotions && Object.keys(localEmotions).length > 0) {
+    // Данные есть - используем их
+    this.emotions = localEmotions;
+    this.renderCalendar();
+    console.log(`✅ Использованы данные из localStorage: ${Object.keys(localEmotions).length} эмоций`);
+    
+    // В фоне синхронизируемся для свежих данных
+    setTimeout(() => this.syncWithGoogleSheets(), 1000);
+    
+  } else {
+    // localStorage пустой - восстанавливаем из Google Sheets
+    console.log('💾 localStorage пустой - ВОССТАНАВЛИВАЕМ из Google Sheets...');
+    
+    // Показываем пустой календарь пока загружаем
+    this.emotions = {};
+    this.renderCalendar();
+    
+    try {
+      // Ждем восстановления данных
+      const restoredEmotions = await this.googleSheetsService.loadFromGoogleSheetsSync();
+      
+      if (restoredEmotions && Object.keys(restoredEmotions).length > 0) {
+        this.emotions = restoredEmotions;
+        this.renderCalendar(); // Перерисовываем с восстановленными данными
+        console.log(`🎉 УСПЕШНО ВОССТАНОВЛЕНО ${Object.keys(restoredEmotions).length} эмоций!`);
+      } else {
+        console.log('📭 Нет сохраненных эмоций для восстановления');
+      }
+      
+    } catch (error) {
+      console.error('❌ Ошибка восстановления данных:', error);
+    }
+    
+    // В фоне продолжаем синхронизацию
+    setTimeout(() => this.syncWithGoogleSheets(), 2000);
+  }
+}
 
       initializeElements() {
         this.calendarDaysGrid = document.getElementById('calendarDaysGrid');
