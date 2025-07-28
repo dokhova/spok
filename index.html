@@ -1932,23 +1932,20 @@ async loadFromGoogleSheetsSync() {
       }
     }
 
-    // ⚡ ИСПРАВЛЕННЫЙ компактный календарь с мгновенной реакцией на эмоции
-    class CompactCalendar {
-      constructor() {
-        this.emotions = {};
-        this.selectedDate = null;
-        this.googleSheetsService = new GoogleSheetsService(); // Заменили Firebase на Google Sheets
-        
-        // Добавляем переменную для отслеживания текущей недели
-        this.currentWeekOffset = 0; // 0 = текущая неделя, -1 = предыдущая, 1 = следующая
-        
-        this.initializeElements();
-        this.setupEventListeners();
-        
-        // МГНОВЕННО загружаем и показываем данные
-        this.loadEmotionsInstantly();
-        this.renderCalendar();
-      }
+    // НАЙДИТЕ и ЗАМЕНИТЕ весь конструктор:
+constructor() {
+  this.emotions = {};
+  this.selectedDate = null;
+  this.googleSheetsService = new GoogleSheetsService();
+  
+  this.currentWeekOffset = 0;
+  
+  this.initializeElements();
+  this.setupEventListeners();
+  
+  // ИСПРАВЛЕННАЯ ЛОГИКА: Правильное восстановление данных
+  this.initializeEmotions();
+}
 
       initializeElements() {
         this.calendarDaysGrid = document.getElementById('calendarDaysGrid');
