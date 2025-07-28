@@ -1533,25 +1533,28 @@
         });
       }
 
-      loadEmotionsInstantly() {
-        console.log('⚡ МГНОВЕННАЯ загрузка из localStorage...');
-        let emotions = {};
-        
-        try {
-          const localData = localStorage.getItem(this.STORAGE_KEYS.EMOTIONS);
-          if (localData) {
-            emotions = JSON.parse(localData);
-            const count = Object.keys(emotions).length;
-            console.log(`💾 Эмоции мгновенно загружены из localStorage: ${count}`);
-          } else {
-            console.log('💾 Нет данных в localStorage');
-          }
-        } catch (error) {
-          console.error('❌ Ошибка мгновенной загрузки из localStorage:', error);
-        }
-
-        return emotions;
-      }
+      // НАЙДИТЕ и ЗАМЕНИТЕ этот метод:
+loadEmotionsInstantly() {
+  console.log('⚡ МГНОВЕННАЯ загрузка эмоций...');
+  let emotions = {};
+  
+  try {
+    const localData = localStorage.getItem(this.STORAGE_KEYS.EMOTIONS);
+    if (localData) {
+      emotions = JSON.parse(localData);
+      const count = Object.keys(emotions).length;
+      console.log(`💾 Эмоции загружены из localStorage: ${count}`);
+      return emotions;
+    } else {
+      console.log('💾 localStorage пустой - возможно кэш очищен');
+      console.log('🔄 Будет загружено из Google Sheets...');
+      return {}; // Возвращаем пустой объект
+    }
+  } catch (error) {
+    console.error('❌ Ошибка загрузки из localStorage:', error);
+    return {};
+  }
+}
 
       // ИСПРАВЛЕННЫЙ метод syncWithGoogleSheets - НЕ ОБНУЛЯЕТ ДАННЫЕ
       async syncWithGoogleSheets() {
