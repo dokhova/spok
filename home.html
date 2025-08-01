@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spokspace Mini App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #4285F4;
+            height: 100vh;
+            color: white;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: #19191B;
+            z-index: 0;
+        }
+
+        /* Декоративные кружки */
+        .floating-circles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .circle-yellow-1 {
+            width: 100px;
+            height: 100px;
+            background: #ffd700;
+            top: 10%;
+            right: 12%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .circle-yellow-2 {
+            width: 80px;
+            height: 80px;
+            background: #ffd700;
+            top: 50%;
+            right: 45%;
+            animation: float 4s ease-in-out infinite reverse;
+        }
+
+        .circle-green {
+            width: 60px;
+            height: 60px;
+            background: #4caf50;
+            bottom: 25%;
+            right: 8%;
+            animation: float 5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        /* Основной контейнер */
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1920px;
+            height: calc(100vh - 120px);
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            padding: 60px 0 20px 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 0 60px;
+        }
+
+        .left-section {
+            max-width: 480px;
+            text-align: left;
+        }
+
+        /* Логотип */
+        .app-logo {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 32px;
+        }
+
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Заголовок с точными параметрами */
+        .main-title {
+            color: #FFF;
+            font-family: Inter, sans-serif;
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 60px; /* 125% */
+            letter-spacing: -0.96px;
+            margin-bottom: 24px;
+        }
+
+        /* Описание с точными параметрами */
+        .description {
+            color: #D1D5DB;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 30px; /* 150% */
+            margin-bottom: 40px;
+        }
+
+        /* Кнопка Telegram с точными параметрами */
+        .telegram-button {
+            display: flex;
+            width: 155px;
+            padding: 16px;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .telegram-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .telegram-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .telegram-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .right-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .phone-mockup {
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+        }
+
+        .phone-image {
+            width: 100%;
+            height: auto;
+            border-radius: 0;
+        }
+
+        .phone-image-mobile {
+            width: 100%;
+            height: auto;
+            border-radius: 0;
+            display: none;
+        }
+
+        /* Анимированная эмоция для мобильной версии */
+        .mobile-animation {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 400px;
+            width: 100%;
+        }
+
+        .emoji-container {
+            position: relative;
+            animation: floatEmoji 3s ease-in-out infinite;
+        }
+
+        .emoji-face {
+            width: 250px;
+            height: 250px;
+            background: #34A853;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: breathe 4s ease-in-out infinite;
+        }
+
+        .eye {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: #000;
+            border-radius: 50%;
+            top: 35%;
+            transform: translateY(-50%);
+            animation: blink 6s infinite;
+        }
+
+        .eye-left {
+            left: 35%;
+        }
+
+        .eye-right {
+            right: 35%;
+        }
+
+        .mouth {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 60 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 10 15 Q 30 25 50 15' stroke='%23000000' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* Маленькие круги */
+        .small-circle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatEmoji 3s ease-in-out infinite, twinkle 2s ease-in-out infinite;
+        }
+
+        .circle1 {
+            width: 35px;
+            height: 35px;
+            background: #FFD527;
+            top: 15%;
+            left: -95px;
+            animation-delay: 0.3s;
+        }
+
+        .circle2 {
+            width: 28px;
+            height: 28px;
+            background: #34A853;
+            top: 75%;
+            left: -45px;
+            animation-delay: 1.2s;
+        }
+
+        .circle3 {
+            width: 42px;
+            height: 42px;
+            background: #FFD527;
+            top: 35%;
+            right: -85px;
+            animation-delay: 2.1s;
+        }
+
+        /* Анимации */
+        @keyframes floatEmoji {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-10px) rotate(1deg);
+            }
+            50% {
+                transform: translateY(-5px) rotate(0deg);
+            }
+            75% {
+                transform: translateY(-15px) rotate(-1deg);
+            }
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% {
+                height: 18px;
+            }
+            95% {
+                height: 2px;
+            }
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Дополнительные эффекты */
+        .sparkle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: sparkle 3s infinite;
+        }
+
+        .sparkle1 {
+            top: 20%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .sparkle2 {
+            top: 30%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .sparkle3 {
+            bottom: 25%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Интерактивность */
+        .emoji-container:hover .emoji-face {
+            animation-duration: 2s;
+            background: #4CAF50;
+        }
+
+        .emoji-container:hover .eye {
+            animation-duration: 3s;
+        }
+
+        .emoji-container:hover .small-circle {
+            animation-duration: 1.5s;
+        }
+
+        /* Нижняя секция */
+        .bottom-section {
+            background: transparent;
+            padding: 20px 60px;
+            position: relative;
+            z-index: 3;
+            height: 120px;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            width: 100%;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-links span {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 1920px) {
+            .main-wrapper {
+                width: 100vw;
+                height: calc(100vh - 120px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .main-wrapper {
+                height: auto;
+                padding: 40px 20px 20px 20px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 0 20px;
+            }
+
+            .main-title {
+                font-size: 36px;
+                line-height: 45px;
+                letter-spacing: -0.72px;
+            }
+
+            .description {
+                font-size: 18px;
+                line-height: 27px;
+            }
+
+            .telegram-button {
+                width: 140px;
+                padding: 14px;
+            }
+
+            .phone-image {
+                display: none;
+            }
+
+            .phone-image-mobile {
+                display: none;
+            }
+
+            .mobile-animation {
+                display: flex;
+            }
+
+            .bottom-section {
+                position: relative;
+                padding: 20px;
+                height: auto;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .floating-circles .circle {
+                display: none;
+            }
+
+            /* Адаптивность анимации для мобильных */
+            .emoji-face {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .eye {
+                width: 15px;
+                height: 15px;
+            }
+
+            .mouth {
+                width: 50px;
+                height: 25px;
+            }
+            
+            .small-circle {
+                transform: scale(0.8);
+            }
+
+            .circle1 {
+                left: -70px;
+            }
+
+            .circle2 {
+                left: -35px;
+            }
+
+            .circle3 {
+                right: -65px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 28px;
+                line-height: 35px;
+                letter-spacing: -0.56px;
+            }
+
+            .description {
+                font-size: 16px;
+                line-height: 24px;
+            }
+
+            .telegram-button {
+                width: 130px;
+                padding: 12px;
+                font-size: 14px;
+            }
+
+            .emoji-face {
+                width: 180px;
+                height: 180px;
+            }
+
+            .mobile-animation {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Декоративные кружки -->
+    <div class="floating-circles">
+        <div class="circle circle-yellow-1"></div>
+        <div class="circle circle-yellow-2"></div>
+        <div class="circle circle-green"></div>
+    </div>
+
+    <!-- Основной контейнер -->
+    <div class="main-wrapper">
+        <div class="content-grid">
+            <!-- Левая часть -->
+            <div class="left-section">
+                <div class="app-logo">
+                    <img src="img/logo.jpg" alt="Spokspace Logo" class="logo-image">
+                </div>
+                
+                <h1 class="main-title">Spokspace Mini App</h1>
+                
+                <p class="description">
+                    A minimalist Telegram-based app with tools and techniques for a gentle flow of thoughts
+                </p>
+                
+                <a href="https://t.me/spokspacebot" class="telegram-button" target="_blank">
+                    <span class="telegram-icon">
+                        <img src="img/telegram.jpg" alt="Telegram Icon">
+                    </span>
+                    Telegram
+                </a>
+            </div>
+            
+            <!-- Правая часть с изображением -->
+            <div class="right-section">
+                <div class="phone-mockup">
+                    <img src="img/home.jpg" alt="Spokspace App Interface" class="phone-image">
+                    <img src="img/box.jpg" alt="Spokspace App Interface Mobile" class="phone-image-mobile">
+                    
+                    <!-- Анимированная эмоция для мобильной версии -->
+                    <div class="mobile-animation">
+                        <div class="emoji-container">
+                            <div class="emoji-face">
+                                <div class="eye eye-left"></div>
+                                <div class="eye eye-right"></div>
+                                <div class="mouth"></div>
+                                
+                                <!-- Блестки для дополнительного эффекта -->
+                                <div class="sparkle sparkle1"></div>
+                                <div class="sparkle sparkle2"></div>
+                                <div class="sparkle sparkle3"></div>
+                            </div>
+
+                            <!-- Маленькие круги -->
+                            <div class="small-circle circle1"></div>
+                            <div class="small-circle circle2"></div>
+                            <div class="small-circle circle3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижняя секция -->
+    <div class="bottom-section">
+        <div class="footer-content">
+            <div class="copyright">
+                © 2025 Spokspace
+            </div>
+            <div class="footer-links">
+                <a href="https://www.spokspace.com/privacy.html?lang=en">Privacy Policy</a>
+                <span>|</span>
+                <a href="mailto:info@spokspace.com">Email: info@spokspace.com</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
