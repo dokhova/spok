@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title data-translate="page_title">Calm Dots</title>
+  
+  <!-- Telegram WebApp Script -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <style>
+    :root {
+      --main: #19191B;
+      --white: #ffffff;
+      --text-2: #b3b3b3;
+      --green: #34A853;
+      
+      --color-green: #34A853;
+      --color-yellow: #FFD527;
+      --color-blue: #4285F4;
+      --color-pink: #FF7DB0;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: var(--main);
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      position: relative;
+    }
+
+    /* Фикс для WebView приложений */
+    @supports (-webkit-touch-callout: none) {
+      html, body {
+        height: -webkit-fill-available;
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* Language Switcher */
+    .language-switcher {
+      position: fixed;
+      top: 24px;
+      right: calc(50vw - 163.5px);
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+    }
+
+    @media (max-width: 425px) {
+      .language-switcher {
+        right: 24px;
+      }
+    }
+
+    .lang-btn {
+      background: none;
+      border: none;
+      color: var(--text-2);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: "Inter", sans-serif;
+    }
+
+    .lang-btn.active {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+      color: white;
+    }
+
+    .lang-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lang-btn.active:hover {
+      background: linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%);
+    }
+
+    /* Header with back button */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 375px;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--main);
+      padding: 24px;
+      box-sizing: border-box;
+    }
+
+    .back-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 32px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      border: none;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+
+    .back-button:active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .back-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--white);
+    }
+
+    /* Main container */
+    .container {
+      max-width: 375px;
+      margin: 0 auto;
+      padding: 100px 24px 96px 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 196px);
+      box-sizing: border-box;
+    }
+
+    @supports (-webkit-touch-callout: none) {
+      .container {
+        min-height: calc(-webkit-fill-available - 196px);
+      }
+    }
+
+    /* Tags - добавлено как в pond.html */
+    .tags {
+      font-size: 10px;
+      line-height: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      color: var(--text-2);
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Game header */
+    .game-header {
+      margin-bottom: 0;
+      text-align: left;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .game-title {
+      font-size: 24px;
+      line-height: 32px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0 0 4px 0;
+      padding: 0;
+    }
+
+    .game-subtitle {
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 400;
+      color: var(--text-2);
+      margin: 0 0 48px 0;
+      padding: 0;
+    }
+
+    /* Game board */
+    .game-board {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 8px 15px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      opacity: 1;
+      transform: translateY(0);
+      max-height: min(70vh, 500px);
+    }
+
+    .dots-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      width: 100%;
+      max-width: 350px;
+      aspect-ratio: 1;
+    }
+
+    .dot {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      border: 3px solid transparent;
+      box-sizing: border-box;
+      width: 85%;
+      height: 85%;
+      margin: auto;
+    }
+
+    .dot:hover {
+      transform: scale(1.05);
+    }
+
+    .dot.selected {
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: scale(1.1);
+      z-index: 10;
+    }
+
+    .dot.green { background-color: var(--color-green); }
+    .dot.yellow { background-color: var(--color-yellow); }
+    .dot.blue { background-color: var(--color-blue); }
+    .dot.pink { background-color: var(--color-pink); }
+
+    .dot.falling {
+      animation: fall 0.5s ease-in-out;
+    }
+
+    @keyframes fall {
+      from {
+        transform: translateY(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .dot.removing {
+      animation: remove 0.3s ease-in-out forwards;
+    }
+
+    @keyframes remove {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+
+    /* Game stats */
+    .game-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 40px;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .stat-item {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 12px 16px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--white);
+      margin: 0 0 4px 0;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Game Over Modal */
+    .game-over-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .game-over-modal.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .game-over-content {
+      background-color: var(--main);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 40px 32px; /* Увеличил отступы с 32px 24px до 40px 32px */
+      text-align: center;
+      max-width: 320px; /* Увеличил с 300px до 320px */
+      width: 85%; /* Уменьшил с 90% до 85% для больших боковых отступов */
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+      margin: 0 24px; /* Добавил внешние отступы */
+    }
+
+    .game-over-modal.show .game-over-content {
+      transform: scale(1);
+    }
+
+    .game-over-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin: 0 0 12px 0; /* Увеличил отступ снизу с 8px до 12px */
+      text-align: center;
+    }
+
+    .game-over-score {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--white);
+      margin: 0 0 32px 0; /* Увеличил отступ снизу с 24px до 32px */
+      text-align: center;
+    }
+
+    .play-again-button {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 12px;
+      padding: 16px 24px;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: "Inter", sans-serif;
+      width: auto;
+      max-width: 200px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .play-again-button:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .play-again-button:active {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Tab bar */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 375px;
+      background-color: var(--main);
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      z-index: 1000;
+      padding-bottom: calc(12px + env(safe-area-inset-bottom, 20px));
+    }
+
+    .tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 12px;
+      line-height: 18px;
+      font-weight: 400;
+      color: var(--text-2);
+      gap: 8px;
+    }
+
+    .tab.active {
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .tab.active img {
+      filter: brightness(1.5);
+    }
+
+    .tab img {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.1s, filter 0.1s;
+    }
+
+    .tab img:active {
+      transform: scale(0.9);
+      filter: brightness(1.5);
+    }
+
+    /* Connection line */
+    .connection-line {
+      position: absolute;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .line-segment {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 2px;
+      transform-origin: left center;
+    }
+  </style>
+</head>
+<body>
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="lang-btn active" id="enBtn">EN</button>
+    <button class="lang-btn" id="ruBtn">RU</button>
+  </div>
+
+  <!-- Header with back button -->
+  <div class="header">
+    <button class="back-button" onclick="window.history.back()">
+      <svg class="back-arrow" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div></div>
+  </div>
+
+  <div class="container">
+    <!-- Tags - добавлено как в pond.html -->
+    <div class="tags">
+      <span data-translate="tag_game">GAME</span>
+      <span>•</span>
+      <span data-translate="tag_focus">FOCUS</span>
+      <span>•</span>
+      <span data-translate="tag_duration">5-10 MIN</span>
+    </div>
+
+    <!-- Game header -->
+    <div class="game-header">
+      <h1 class="game-title" data-translate="game_title">Calm Dots</h1>
+      <p class="game-subtitle" data-translate="game_subtitle">Connect a line of same-colored dots to make a move</p>
+    </div>
+
+    <!-- Game board -->
+    <div class="game-board">
+      <div class="dots-grid" id="dotsGrid"></div>
+    </div>
+
+    <!-- Game stats -->
+    <div class="game-stats">
+      <div class="stat-item">
+        <div class="stat-value" id="movesCount">20</div>
+        <div class="stat-label" data-translate="moves">MOVES</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="scoreCount">0</div>
+        <div class="stat-label" data-translate="score">SCORE</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="lastResult">-</div>
+        <div class="stat-label" data-translate="last_result">BEST</div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div class="game-over-modal" id="gameOverModal">
+      <div class="game-over-content">
+        <div class="game-over-title" data-translate="result_title">That was the rhythm this time</div>
+        <div class="game-over-score" id="finalScore">0</div>
+        <button class="play-again-button" id="playAgainButton" data-translate="play_again">Play Again</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab bar -->
+  <footer class="tab-bar">
+    <a href="index.html" class="tab">
+      <img src="img/home.svg" alt="Today">
+      <div data-translate="tab_today">Today</div>
+    </a>
+    <a href="practices.html" class="tab">
+      <img src="img/practices.svg" alt="Practices">
+      <div data-translate="tab_practices">Practices</div>
+    </a>
+    <a href="journal.html" class="tab active">
+      <img src="img/journal-active.svg" alt="Journal">
+      <div data-translate="tab_journal">Game</div>
+    </a>
+  </footer>
+
+  <script>
+    // Translations
+    const translations = {
+      en: {
+        page_title: "Calm Dots",
+        tag_game: "GAME",
+        tag_focus: "FOCUS",
+        tag_duration: "5-10 MIN",
+        game_title: "Calm Dots",
+        game_subtitle: "Connect a line of same-colored dots to make a move",
+        moves: "MOVES",
+        score: "SCORE",
+        last_result: "PREVIOUS",
+        result_title: "That was the rhythm this time",
+        play_again: "Play Again",
+        tab_today: "Today",
+        tab_practices: "Practices",
+        tab_journal: "Game"
+      },
+      ru: {
+        page_title: "Спокойные Точки",
+        tag_game: "ИГРА",
+        tag_focus: "ФОКУС",
+        tag_duration: "5-10 МИН",
+        game_title: "Спокойные Точки", 
+        game_subtitle: "Соедините линию точек одного цвета, чтобы сделать ход",
+        moves: "ХОДЫ",
+        score: "СЧЁТ",
+        last_result: "РАНЕЕ",
+        result_title: "Таким был этот ритм",
+        play_again: "Начать заново",
+        tab_today: "Сегодня",
+        tab_practices: "Практики",
+        tab_journal: "Игра"
+      }
+    };
+
+    // Translator class
+    class Translator {
+      constructor() {
+        console.log('🔄 Инициализация переводчика JOURNAL.HTML...');
+        
+        // Проверяем доступность localStorage
+        this.localStorageAvailable = this.checkLocalStorageAvailability();
+        
+        const urlLang = this.getLanguageFromURL();
+        const storedLang = this.localStorageAvailable ? this.getLanguageFromStorage() : null;
+        const telegramLang = this.getTelegramLanguage();
+        
+        if (urlLang) {
+          this.currentLang = urlLang;
+          console.log(`🔗 Используем язык из URL: ${urlLang}`);
+        } else if (storedLang) {
+          this.currentLang = storedLang;
+          console.log(`💾 Используем сохраненный язык пользователя: ${storedLang}`);
+        } else if (telegramLang) {
+          this.currentLang = telegramLang;
+          console.log(`📱 Используем язык из Telegram: ${telegramLang}`);
+        } else {
+          this.currentLang = 'en';
+          console.log(`🌐 Используем язык по умолчанию: en`);
+        }
+        
+        console.log(`✅ Итоговый язык JOURNAL: ${this.currentLang}`);
+        this.init();
+      }
+
+      checkLocalStorageAvailability() {
+        try {
+          const testKey = 'test_storage_' + Date.now();
+          localStorage.setItem(testKey, 'test');
+          localStorage.removeItem(testKey);
+          return true;
+        } catch (error) {
+          console.log(`⚠️ localStorage недоступен: ${error.message}`);
+          return false;
+        }
+      }
+
+      getLanguageFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const langFromUrl = urlParams.get('lang');
+        console.log(`🔗 Язык из URL: ${langFromUrl}`);
+        return langFromUrl;
+      }
+
+      getLanguageFromStorage() {
+        if (!this.localStorageAvailable) return null;
+        
+        try {
+          const langFromStorage = localStorage.getItem('potok_language');
+          console.log(`💾 Язык из localStorage: ${langFromStorage}`);
+          return langFromStorage;
+        } catch (error) {
+          console.log(`❌ Ошибка чтения localStorage: ${error.message}`);
+          return null;
+        }
+      }
+
+      getTelegramLanguage() {
+        try {
+          if (window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code) {
+            const telegramLang = window.Telegram.WebApp.initDataUnsafe.user.language_code;
+            console.log('📱 Язык из Telegram:', telegramLang);
+            
+            if (telegramLang === 'ru' || telegramLang.startsWith('ru')) {
+              return 'ru';
+            }
+            return 'en';
+          }
+          
+          console.log('⚠️ Данные языка Telegram недоступны');
+          return null;
+        } catch (error) {
+          console.log('❌ Ошибка получения языка Telegram:', error);
+          return null;
+        }
+      }
+
+      init() {
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        this.setupLanguageButtons();
+        document.documentElement.lang = this.currentLang;
+        document.title = this.translate('page_title');
+        
+        console.log(`✅ Переводчик JOURNAL.HTML инициализирован с языком: ${this.currentLang}`);
+      }
+
+      setupLanguageButtons() {
+        const enBtn = document.getElementById('enBtn');
+        const ruBtn = document.getElementById('ruBtn');
+        
+        if (enBtn) {
+          enBtn.addEventListener('click', () => {
+            console.log('🔘 Клик по EN в JOURNAL.HTML');
+            this.setLanguage('en');
+          });
+        }
+        
+        if (ruBtn) {
+          ruBtn.addEventListener('click', () => {
+            console.log('🔘 Клик по RU в JOURNAL.HTML');
+            this.setLanguage('ru');
+          });
+        }
+      }
+
+      setLanguage(lang) {
+        console.log(`🔄 ПОЛЬЗОВАТЕЛЬ ВРУЧНУЮ сменил язык на: ${lang} в JOURNAL.HTML`);
+        
+        this.currentLang = lang;
+        
+        if (this.localStorageAvailable) {
+          try {
+            localStorage.setItem('potok_language', lang);
+            console.log(`✅ Язык ${lang} сохранен в localStorage (выбор пользователя)`);
+          } catch (error) {
+            console.log(`❌ Не удалось сохранить в localStorage: ${error.message}`);
+          }
+        } else {
+          console.log(`⚠️ localStorage недоступен, используем только URL синхронизацию`);
+        }
+        
+        try {
+          const newUrl = `${window.location.pathname}?lang=${lang}`;
+          window.history.replaceState({}, '', newUrl);
+          console.log(`✅ URL обновлен: ${newUrl}`);
+        } catch (error) {
+          console.log(`❌ Не удалось обновить URL: ${error.message}`);
+        }
+        
+        this.updatePage();
+        this.updateLanguageButtons();
+        this.updatePageLinks();
+        
+        document.documentElement.lang = lang;
+        document.title = this.translate('page_title');
+        
+        console.log(`🌐 Язык изменен на: ${lang} в JOURNAL.HTML (выбор пользователя сохранен)`);
+      }
+
+      updatePageLinks() {
+        const links = document.querySelectorAll('a[href$=".html"], a[href*=".html"]');
+        let updateCount = 0;
+        
+        links.forEach(link => {
+          let href = link.getAttribute('href');
+          
+          if (href.startsWith('http') || href.startsWith('//')) return;
+          
+          if (href.includes('?lang=')) {
+            href = href.split('?')[0];
+          }
+          
+          if (href.includes('#')) {
+            const parts = href.split('#');
+            href = parts[0];
+          }
+          
+          const separator = href.includes('?') ? '&' : '?';
+          const newHref = `${href}${separator}lang=${this.currentLang}`;
+          link.setAttribute('href', newHref);
+          updateCount++;
+        });
+        
+        console.log(`🔗 Обновлено ${updateCount} ссылок с lang=${this.currentLang} в JOURNAL.HTML`);
+      }
+
+      translate(key) {
+        return translations[this.currentLang]?.[key] || translations.en[key] || key;
+      }
+
+      updatePage() {
+        document.querySelectorAll('[data-translate]').forEach(element => {
+          const key = element.getAttribute('data-translate');
+          const translation = this.translate(key);
+          
+          if (element.tagName === 'TITLE') {
+            element.textContent = translation;
+          } else {
+            element.textContent = translation;
+          }
+        });
+        
+        console.log(`🔄 Обновлено ${document.querySelectorAll('[data-translate]').length} элементов перевода`);
+      }
+
+      updateLanguageButtons() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.textContent.toLowerCase() === this.currentLang) {
+            btn.classList.add('active');
+            btn.style.background = 'linear-gradient(135deg, #FFD527 8%, #34A853 85%, #4285F4 98%)';
+          } else {
+            btn.style.background = '';
+          }
+        });
+      }
+    }
+
+    // CloudSync класс для синхронизации с Google Sheets (БЕЗ УВЕДОМЛЕНИЙ ПОЛЬЗОВАТЕЛЯМ)
+    class CloudSync {
+      constructor() {
+        this.ANALYTICS_URL = 'https://script.google.com/macros/s/AKfycbxxV_QeB8EMTuB2mu_CD6GfTQISxGlIq9njMauq7_5K_t7Xe10-YYp5lb9AaFijbNsq/exec';
+        this.isEnabled = true;
+        this.retryCount = 0;
+        this.maxRetries = 3;
+        this.isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        
+        console.log('☁️ CloudSync инициализирован');
+      }
+
+      getUserData() {
+        try {
+          // Проверяем Telegram WebApp более тщательно
+          if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+            const user = window.Telegram.WebApp.initDataUnsafe.user;
+            const userData = {
+              id: user.id,
+              username: user.username || '',
+              first_name: user.first_name || '',
+              language_code: user.language_code || 'en'
+            };
+            console.log('👤 Telegram пользователь найден:', userData);
+            return userData;
+          }
+          
+          // Дополнительная проверка для Telegram
+          if (window.Telegram?.WebApp?.initData) {
+            console.log('📱 Telegram WebApp detected, но данные пользователя недоступны');
+            console.log('📱 InitData:', window.Telegram.WebApp.initData);
+          }
+          
+          // Проверяем наличие tgWebAppData в URL (альтернативный способ)
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('tgWebAppData') || window.location.href.includes('telegram')) {
+            console.log('📱 Обнаружен Telegram контекст через URL');
+          }
+          
+        } catch (error) {
+          console.log('⚠️ Ошибка получения данных Telegram:', error);
+        }
+        
+        // Создаем стабильный анонимный ID на основе fingerprint браузера
+        const anonymousId = this.generateStableAnonymousId();
+        const anonymousUser = {
+          id: anonymousId,
+          username: '',
+          first_name: 'Anonymous',
+          language_code: navigator.language?.split('-')[0] || 'en'
+        };
+        console.log('👤 Создан анонимный пользователь:', anonymousUser);
+        return anonymousUser;
+      }
+
+      generateStableAnonymousId() {
+        // Проверяем localStorage сначала
+        try {
+          const savedId = localStorage.getItem('calm_dots_anonymous_id');
+          if (savedId) {
+            console.log('💾 Используем сохраненный анонимный ID:', savedId);
+            return savedId;
+          }
+        } catch (error) {
+          console.log('⚠️ localStorage недоступен для анонимного ID');
+        }
+
+        // Создаем стабильный ID на основе характеристик браузера
+        const fingerprint = [
+          navigator.userAgent,
+          navigator.language,
+          screen.width + 'x' + screen.height,
+          new Date().getTimezoneOffset(),
+          window.location.hostname
+        ].join('|');
+
+        // Простая хеш-функция
+        let hash = 0;
+        for (let i = 0; i < fingerprint.length; i++) {
+          const char = fingerprint.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash; // Convert to 32-bit integer
+        }
+
+        const anonymousId = 'anon_' + Math.abs(hash).toString(36) + '_' + Date.now().toString(36).slice(-4);
+        
+        // Пытаемся сохранить ID
+        try {
+          localStorage.setItem('calm_dots_anonymous_id', anonymousId);
+          console.log('💾 Анонимный ID сохранен:', anonymousId);
+        } catch (error) {
+          console.log('⚠️ Не удалось сохранить анонимный ID');
+        }
+
+        return anonymousId;
+      }
+
+      // УБИРАЕМ ВСЕ УВЕДОМЛЕНИЯ ПОЛЬЗОВАТЕЛЯМ - только логи в консоль
+      showSyncIndicator(type, message) {
+        // Только логи в консоль для разработчиков
+        console.log(`☁️ CloudSync ${type}: ${message}`);
+      }
+
+      hideSyncIndicator() {
+        // Пустая функция - ничего не делаем
+      }
+
+      async sendAppVisit() {
+        console.log('🏠 === ОТПРАВКА СОБЫТИЯ ВХОДА В ПРИЛОЖЕНИЕ ===');
+        
+        if (!this.isEnabled) {
+          console.log('❌ CloudSync отключен');
+          return;
+        }
+
+        try {
+          const userData = this.getUserData();
+          const visitData = {
+            type: 'app_visit',
+            user: userData,
+            platform: this.getPlatform(),
+            timestamp: new Date().toISOString(),
+            page: 'journal'
+          };
+
+          console.log('🏠 Отправляем данные о входе:', {
+            user_id: visitData.user.id,
+            platform: visitData.platform,
+            page: visitData.page
+          });
+
+          await fetch(this.ANALYTICS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(visitData),
+            mode: 'no-cors'
+          });
+
+          console.log('✅ Событие входа в приложение отправлено');
+          
+        } catch (error) {
+          console.log('❌ Ошибка отправки события входа:', error);
+        }
+        
+        console.log('🏠 === КОНЕЦ ОТПРАВКИ СОБЫТИЯ ВХОДА ===');
+      }
+
+      async saveGameState(gameState) {
+        console.log('☁️ === СОХРАНЕНИЕ СОСТОЯНИЯ ИГРЫ В ОБЛАКО ===');
+        
+        if (!this.isEnabled) {
+          console.log('❌ CloudSync отключен');
+          return { success: false };
+        }
+
+        try {
+          const userData = this.getUserData();
+          const saveData = {
+            type: 'save_game_state',
+            user: userData,
+            gameState: gameState,
+            platform: this.getPlatform(),
+            timestamp: new Date().toISOString()
+          };
+
+          console.log('☁️ Сохраняем состояние игры:', {
+            user_id: saveData.user.id,
+            score: gameState.score,
+            moves: gameState.moves,
+            best: gameState.bestResult
+          });
+
+          await fetch(this.ANALYTICS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(saveData),
+            mode: 'no-cors'
+          });
+
+          console.log('✅ Состояние игры сохранено в облако');
+          return { success: true };
+          
+        } catch (error) {
+          console.log('❌ Ошибка сохранения состояния игры:', error);
+          return { success: false, error: error.message };
+        }
+        
+        console.log('☁️ === КОНЕЦ СОХРАНЕНИЯ ===');
+      }
+
+      async loadGameState() {
+        console.log('☁️ === ЗАГРУЗКА СОСТОЯНИЯ ИГРЫ ИЗ ОБЛАКА ===');
+        
+        if (!this.isEnabled) {
+          console.log('❌ CloudSync отключен');
+          return { success: false };
+        }
+
+        try {
+          const userData = this.getUserData();
+          console.log('☁️ Пытаемся загрузить данные для пользователя:', userData.id);
+
+          // Для загрузки данных используем GET запрос с параметрами
+          const url = `${this.ANALYTICS_URL}?action=load_game&user_id=${encodeURIComponent(userData.id)}`;
+          
+          const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log('☁️ Получены данные из облака:', data);
+
+          if (data.success && data.gameState) {
+            console.log('✅ Состояние игры загружено из облака');
+            return { success: true, gameState: data.gameState };
+          } else {
+            console.log('📭 Сохраненных данных в облаке нет');
+            return { success: false, message: 'No cloud data found' };
+          }
+          
+        } catch (error) {
+          console.log('❌ Ошибка загрузки состояния игры:', error);
+          return { success: false, error: error.message };
+        }
+        
+        console.log('☁️ === КОНЕЦ ЗАГРУЗКИ ===');
+      }
+
+      async sendGameResult(gameStats) {
+        console.log('📊 === ОТПРАВКА РЕЗУЛЬТАТА ИГРЫ (БЕЗ БЛОКИРОВКИ UI) ===');
+        
+        if (!this.isEnabled) {
+          console.log('❌ CloudSync отключен');
+          return;
+        }
+
+        try {
+          const userData = this.getUserData();
+          const resultData = {
+            type: 'game_result',
+            user: userData,
+            gameStats: gameStats,
+            platform: this.getPlatform(),
+            timestamp: new Date().toISOString()
+          };
+
+          console.log('📊 Отправляем результат игры:', {
+            user_id: resultData.user.id,
+            score: gameStats.score,
+            moves: gameStats.moves,
+            best: gameStats.bestResult
+          });
+
+          // Используем fetch без await чтобы не блокировать UI
+          fetch(this.ANALYTICS_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(resultData),
+            mode: 'no-cors'
+          }).then(() => {
+            console.log('✅ Результат игры отправлен');
+          }).catch(error => {
+            console.log('❌ Ошибка отправки результата игры:', error);
+          });
+          
+        } catch (error) {
+          console.log('❌ Ошибка отправки результата игры:', error);
+        }
+        
+        console.log('📊 === КОНЕЦ ОТПРАВКИ РЕЗУЛЬТАТА (НЕ БЛОКИРУЮЩИЙ) ===');
+      }
+
+      getPlatform() {
+        if (window.Telegram?.WebApp) return 'telegram';
+        if (navigator.userAgent.includes('Mobile')) return 'mobile_web';
+        return 'desktop_web';
+      }
+
+      // Тестовые функции
+      async testCloudSync() {
+        console.log('🧪 === ТЕСТ ОБЛАЧНОЙ СИНХРОНИЗАЦИИ ===');
+        
+        // Тест отправки события входа
+        await this.sendAppVisit();
+        
+        // Тест сохранения состояния игры
+        const testGameState = {
+          score: 100,
+          moves: 15,
+          bestResult: 150,
+          grid: ['green', 'blue', 'yellow', 'pink'],
+          timestamp: Date.now()
+        };
+        
+        const saveResult = await this.saveGameState(testGameState);
+        console.log('🧪 Результат сохранения:', saveResult);
+        
+        // Тест загрузки состояния игры
+        setTimeout(async () => {
+          const loadResult = await this.loadGameState();
+          console.log('🧪 Результат загрузки:', loadResult);
+        }, 2000);
+        
+        console.log('🧪 === КОНЕЦ ТЕСТА ===');
+      }
+    }
+
+    // Game class с поддержкой облачной синхронизации
+    class CalmDotsGame {
+      constructor() {
+        this.gridSize = 7;
+        this.colors = ['green', 'yellow', 'blue', 'pink'];
+        this.grid = [];
+        this.moves = 20;
+        this.score = 0;
+        this.bestResult = 0;
+        this.isSelecting = false;
+        this.selectedDots = [];
+        this.currentPath = [];
+        this.gameEnded = false; // Флаг окончания игры
+        
+        this.STORAGE_KEYS = {
+          BEST_RESULT: 'calmDotsBestResult',
+          GAME_STATE: 'calmDotsGameState'
+        };
+        
+        this.cloudSync = new CloudSync();
+        this.gameStartTime = null;
+        
+        this.initializeElements();
+        this.setupEventListeners();
+        this.loadGameState();
+      }
+
+      async loadGameState() {
+        console.log('🎮 === ЗАГРУЗКА СОСТОЯНИЯ ИГРЫ ===');
+        
+        // Сначала загружаем из localStorage для быстрого старта
+        try {
+          const savedBestResult = localStorage.getItem(this.STORAGE_KEYS.BEST_RESULT);
+          this.bestResult = savedBestResult ? parseInt(savedBestResult) : 0;
+
+          const savedGameState = localStorage.getItem(this.STORAGE_KEYS.GAME_STATE);
+          if (savedGameState) {
+            const gameState = JSON.parse(savedGameState);
+            this.moves = gameState.moves || 20;
+            this.score = gameState.score || 0;
+            this.grid = gameState.grid || [];
+            
+            if (this.grid.length > 0) {
+              console.log('💾 Быстрый старт из localStorage');
+              this.renderGrid();
+              this.updateStats();
+              
+              // В фоне синхронизируем с облаком
+              this.syncFromCloudInBackground();
+              return;
+            }
+          }
+        } catch (error) {
+          console.log('⚠️ Ошибка localStorage, начинаем новую игру');
+        }
+        
+        // Если локальных данных нет - сразу начинаем новую игру
+        console.log('🎮 Начинаем новую игру сразу');
+        this.initializeGame();
+        
+        // В фоне пытаемся загрузить из облака
+        this.syncFromCloudInBackground();
+        
+        console.log('🎮 === КОНЕЦ БЫСТРОЙ ЗАГРУЗКИ ===');
+      }
+
+      async syncFromCloudInBackground() {
+        try {
+          console.log('☁️ Фоновая синхронизация с облаком...');
+          const cloudResult = await this.cloudSync.loadGameState();
+          
+          if (cloudResult.success && cloudResult.gameState) {
+            const cloudState = cloudResult.gameState;
+            
+            // Проверяем, новее ли облачные данные
+            const cloudTimestamp = cloudState.timestamp || 0;
+            const localTimestamp = this.getLocalTimestamp();
+            
+            if (cloudTimestamp > localTimestamp) {
+              console.log('☁️ Обновляем данные из облака');
+              
+              this.moves = cloudState.moves || 20;
+              this.score = cloudState.score || 0;
+              this.bestResult = Math.max(this.bestResult, cloudState.bestResult || 0);
+              
+              // Если есть активная игра в облаке, обновляем
+              if (cloudState.grid && cloudState.grid.length > 0 && this.moves < 20) {
+                this.grid = cloudState.grid;
+                this.renderGrid();
+              }
+              
+              this.updateStats();
+              this.saveToLocalStorage();
+            }
+          }
+        } catch (error) {
+          console.log('⚠️ Ошибка фоновой синхронизации:', error);
+        }
+      }
+
+      getLocalTimestamp() {
+        try {
+          const savedGameState = localStorage.getItem(this.STORAGE_KEYS.GAME_STATE);
+          if (savedGameState) {
+            const gameState = JSON.parse(savedGameState);
+            return gameState.timestamp || 0;
+          }
+        } catch (error) {
+          console.log('⚠️ Ошибка получения локального timestamp');
+        }
+        return 0;
+      }
+
+      saveToLocalStorage() {
+        try {
+          const gameState = {
+            moves: this.moves,
+            score: this.score,
+            bestResult: this.bestResult,
+            grid: this.grid,
+            timestamp: Date.now()
+          };
+          localStorage.setItem(this.STORAGE_KEYS.GAME_STATE, JSON.stringify(gameState));
+          localStorage.setItem(this.STORAGE_KEYS.BEST_RESULT, this.bestResult.toString());
+          console.log('💾 Состояние сохранено в localStorage');
+        } catch (error) {
+          console.log('❌ Ошибка сохранения в localStorage:', error);
+        }
+      }
+
+      async syncToCloud() {
+        const gameState = {
+          moves: this.moves,
+          score: this.score,
+          bestResult: this.bestResult,
+          grid: this.grid,
+          timestamp: Date.now()
+        };
+        
+        const result = await this.cloudSync.saveGameState(gameState);
+        if (result.success) {
+          console.log('☁️ Состояние синхронизировано с облаком');
+        }
+      }
+
+      async saveGameState() {
+        // Сохраняем локально сразу
+        this.saveToLocalStorage();
+        
+        // Синхронизируем с облаком в фоне
+        try {
+          await this.syncToCloud();
+        } catch (error) {
+          console.log('⚠️ Ошибка синхронизации с облаком:', error);
+        }
+      }
+
+      initializeElements() {
+        this.dotsGrid = document.getElementById('dotsGrid');
+        this.movesCount = document.getElementById('movesCount');
+        this.scoreCount = document.getElementById('scoreCount');
+        this.lastResultElement = document.getElementById('lastResult');
+        this.gameOverModal = document.getElementById('gameOverModal');
+        this.finalScore = document.getElementById('finalScore');
+      }
+
+      setupEventListeners() {
+        const playAgainButton = document.getElementById('playAgainButton');
+        if (playAgainButton) {
+          playAgainButton.addEventListener('click', () => {
+            this.startNewGame();
+          });
+        }
+
+        if (this.dotsGrid) {
+          this.dotsGrid.addEventListener('mousedown', (e) => this.startConnection(e));
+          this.dotsGrid.addEventListener('mousemove', (e) => this.updateConnection(e));
+          this.dotsGrid.addEventListener('mouseup', () => this.endConnection());
+          
+          this.dotsGrid.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.startConnection(e.touches[0]);
+          });
+          this.dotsGrid.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            this.updateConnection(e.touches[0]);
+          });
+          this.dotsGrid.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.endConnection();
+          });
+        }
+      }
+
+      initializeGame() {
+        this.gameEnded = false; // Сбрасываем флаг окончания игры
+        this.generateGrid();
+        this.renderGrid(); // Сразу отображаем круги
+        this.updateStats(); // Сразу обновляем статистику
+        
+        this.gameStartTime = Date.now();
+        console.log('🎮 Игра началась сразу:', new Date(this.gameStartTime).toLocaleTimeString());
+        
+        // Сохраняем в фоне, не блокируя отображение
+        this.saveGameState().catch(error => {
+          console.log('⚠️ Ошибка сохранения состояния:', error);
+        });
+      }
+
+      // ИСПРАВЛЕНА ФУНКЦИЯ showGameOver - теперь НЕ БЛОКИРУЕТ UI
+      showGameOver() {
+        console.log('🏁 === ПОКАЗ ЭКРАНА ЗАВЕРШЕНИЯ ИГРЫ (БЕЗ БЛОКИРОВКИ) ===');
+        
+        if (this.score > this.bestResult) {
+          this.bestResult = this.score;
+        }
+        
+        // Сразу показываем модальное окно, не ждем отправки данных
+        if (this.finalScore) {
+          this.finalScore.textContent = this.score;
+        }
+        if (this.gameOverModal) {
+          this.gameOverModal.classList.add('show');
+        }
+        
+        // Отправляем результат игры в облако В ФОНЕ, не блокируя UI
+        this.cloudSync.sendGameResult({
+          score: this.score,
+          moves: this.moves,
+          bestResult: this.bestResult,
+          duration: this.gameStartTime ? Math.round((Date.now() - this.gameStartTime) / 1000) : 0
+        });
+        
+        // Очищаем сохраненную игру
+        this.clearSavedGame();
+        
+        console.log('✅ Экран завершения показан мгновенно');
+        console.log('🏁 === КОНЕЦ ПОКАЗА ЭКРАНА ===');
+      }
+
+      clearSavedGame() {
+        try {
+          localStorage.removeItem(this.STORAGE_KEYS.GAME_STATE);
+          console.log('🗑️ Сохраненная игра очищена');
+        } catch (error) {
+          console.log('❌ Ошибка очистки сохраненной игры:', error);
+        }
+      }
+
+      hideGameOver() {
+        if (this.gameOverModal) {
+          this.gameOverModal.classList.remove('show');
+        }
+      }
+
+      startNewGame() {
+        this.moves = 20;
+        this.score = 0;
+        this.gameEnded = false; // Сбрасываем флаг окончания игры
+        this.clearSelection();
+        this.hideGameOver();
+        
+        console.log('🔄 Начинаем новую игру');
+        this.initializeGame();
+      }
+
+      generateGrid() {
+        this.grid = [];
+        for (let i = 0; i < this.gridSize * this.gridSize; i++) {
+          const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+          this.grid.push(randomColor);
+        }
+      }
+
+      renderGrid() {
+        if (!this.dotsGrid) return;
+        
+        this.dotsGrid.innerHTML = '';
+        
+        for (let i = 0; i < this.grid.length; i++) {
+          const dot = document.createElement('div');
+          dot.className = `dot ${this.grid[i]}`;
+          dot.dataset.index = i;
+          this.dotsGrid.appendChild(dot);
+        }
+        
+        console.log('🎯 Круги отображены на экране');
+      }
+
+      getRowCol(index) {
+        return {
+          row: Math.floor(index / this.gridSize),
+          col: index % this.gridSize
+        };
+      }
+
+      getIndex(row, col) {
+        return row * this.gridSize + col;
+      }
+
+      areAdjacent(index1, index2) {
+        const pos1 = this.getRowCol(index1);
+        const pos2 = this.getRowCol(index2);
+        
+        const rowDiff = Math.abs(pos1.row - pos2.row);
+        const colDiff = Math.abs(pos1.col - pos2.col);
+        
+        return (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+      }
+
+      startConnection(event) {
+        if (this.gameEnded) return; // Блокируем взаимодействие после окончания игры
+        
+        const dot = event.target.closest('.dot');
+        if (!dot) return;
+
+        this.isSelecting = true;
+        this.selectedDots = [parseInt(dot.dataset.index)];
+        this.currentPath = [parseInt(dot.dataset.index)];
+        this.updateSelectedVisuals();
+      }
+
+      updateConnection(event) {
+        if (!this.isSelecting) return;
+
+        const dot = document.elementFromPoint(event.clientX, event.clientY)?.closest('.dot');
+        if (!dot) return;
+
+        const dotIndex = parseInt(dot.dataset.index);
+        const lastSelected = this.selectedDots[this.selectedDots.length - 1];
+        
+        if (this.selectedDots.length > 1 && dotIndex === this.selectedDots[this.selectedDots.length - 2]) {
+          this.selectedDots.pop();
+          this.currentPath.pop();
+          this.updateSelectedVisuals();
+          return;
+        }
+
+        if (dotIndex !== lastSelected && 
+            this.areAdjacent(dotIndex, lastSelected) && 
+            this.grid[dotIndex] === this.grid[this.selectedDots[0]] &&
+            !this.selectedDots.includes(dotIndex)) {
+          
+          this.selectedDots.push(dotIndex);
+          this.currentPath.push(dotIndex);
+          this.updateSelectedVisuals();
+        }
+      }
+
+      // ИСПРАВЛЕНА ФУНКЦИЯ endConnection - УБРАНА ЗАДЕРЖКА ПРИ ОКОНЧАНИИ ИГРЫ
+      endConnection() {
+        if (!this.isSelecting || this.selectedDots.length < 2 || this.gameEnded) {
+          this.clearSelection();
+          return;
+        }
+
+        this.removeDots();
+        this.clearSelection();
+        
+        // Уменьшаем ходы, но не позволяем уйти в минус
+        this.moves = Math.max(0, this.moves - 1);
+        
+        this.updateStats();
+        
+        // Сохраняем в фоне, не блокируя игру
+        this.saveGameState().catch(error => {
+          console.log('⚠️ Ошибка сохранения:', error);
+        });
+        
+        // Проверяем окончание игры сразу после уменьшения ходов
+        if (this.moves <= 0) {
+          this.gameEnded = true; // Блокируем дальнейшие ходы
+          
+          // УБРАНА ЗАДЕРЖКА - теперь игра заканчивается мгновенно
+          console.log('🏁 Игра закончена, показываем результат мгновенно');
+          this.dropDots();
+          this.fillGrid();
+          this.renderGrid();
+          
+          // Сохраняем финальное состояние в фоне
+          this.saveGameState().catch(error => {
+            console.log('⚠️ Ошибка сохранения финального состояния:', error);
+          });
+          
+          // Показываем экран завершения мгновенно
+          this.showGameOver();
+          return;
+        }
+        
+        // Для обычных ходов оставляем небольшую задержку для анимации
+        setTimeout(() => {
+          this.dropDots();
+          this.fillGrid();
+          this.renderGrid();
+          this.saveGameState().catch(error => {
+            console.log('⚠️ Ошибка сохранения после хода:', error);
+          });
+        }, 300);
+      }
+
+      updateSelectedVisuals() {
+        document.querySelectorAll('.dot').forEach(dot => {
+          dot.classList.remove('selected');
+        });
+
+        this.selectedDots.forEach(index => {
+          const dot = document.querySelector(`[data-index="${index}"]`);
+          if (dot) {
+            dot.classList.add('selected');
+          }
+        });
+      }
+
+      clearSelection() {
+        this.isSelecting = false;
+        this.selectedDots = [];
+        this.currentPath = [];
+        document.querySelectorAll('.dot.selected').forEach(dot => {
+          dot.classList.remove('selected');
+        });
+      }
+
+      removeDots() {
+        const scoreGained = this.selectedDots.length;
+        this.score += scoreGained;
+
+        this.selectedDots.forEach(index => {
+          const dot = document.querySelector(`[data-index="${index}"]`);
+          if (dot) {
+            dot.classList.add('removing');
+          }
+        });
+
+        this.selectedDots.forEach(index => {
+          this.grid[index] = null;
+        });
+      }
+
+      dropDots() {
+        for (let col = 0; col < this.gridSize; col++) {
+          const column = [];
+          
+          for (let row = this.gridSize - 1; row >= 0; row--) {
+            const index = this.getIndex(row, col);
+            if (this.grid[index] !== null) {
+              column.push(this.grid[index]);
+            }
+          }
+          
+          for (let row = this.gridSize - 1; row >= 0; row--) {
+            const index = this.getIndex(row, col);
+            if (column.length > 0) {
+              this.grid[index] = column.shift();
+            } else {
+              this.grid[index] = null;
+            }
+          }
+        }
+      }
+
+      fillGrid() {
+        for (let i = 0; i < this.grid.length; i++) {
+          if (this.grid[i] === null) {
+            const randomColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+            this.grid[i] = randomColor;
+          }
+        }
+      }
+
+      updateStats() {
+        if (this.movesCount) this.movesCount.textContent = Math.max(0, this.moves);
+        if (this.scoreCount) this.scoreCount.textContent = this.score;
+        if (this.lastResultElement) this.lastResultElement.textContent = this.bestResult || '-';
+      }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', async () => {
+      console.log('📱 Инициализация приложения Calm Dots Journal...');
+      
+      // Специальная инициализация для Telegram WebApp
+      if (window.Telegram?.WebApp) {
+        console.log('📱 Telegram WebApp обнаружен, инициализируем...');
+        try {
+          window.Telegram.WebApp.ready();
+          window.Telegram.WebApp.expand();
+          console.log('📱 Telegram WebApp инициализирован');
+          console.log('📱 User data:', window.Telegram.WebApp.initDataUnsafe?.user);
+        } catch (error) {
+          console.log('⚠️ Ошибка инициализации Telegram WebApp:', error);
+        }
+      }
+      
+      window.translator = new Translator();
+      window.cloudSync = new CloudSync();
+      
+      // Сразу инициализируем игру для быстрого старта
+      window.game = new CalmDotsGame();
+      
+      console.log('✅ Приложение готово к использованию! Игра загружена мгновенно');
+      
+      // Отправляем событие входа в фоне, не блокируя интерфейс
+      window.cloudSync.sendAppVisit().catch(error => {
+        console.log('⚠️ Ошибка отправки события входа:', error);
+      });
+    });
+
+    // Глобальные функции для тестирования
+    window.testCloudSync = async function() {
+      console.log('🧪 === ТЕСТ ОБЛАЧНОЙ СИНХРОНИЗАЦИИ ===');
+      
+      if (!window.cloudSync) {
+        console.log('❌ CloudSync не найден');
+        return;
+      }
+      
+      await window.cloudSync.testCloudSync();
+      
+      console.log('📋 Проверьте:');
+      console.log('1. Google Sheets - новые строки');
+      console.log('2. Google Apps Script - View → Executions');
+      console.log('3. Консоль браузера - логи');
+    };
+
+    window.forceCloudLoad = async function() {
+      console.log('🔄 Принудительная загрузка из облака...');
+      
+      if (window.game?.cloudSync) {
+        const result = await window.game.cloudSync.loadGameState();
+        console.log('📋 Результат загрузки:', result);
+      } else {
+        console.log('❌ Игра или CloudSync не найдены');
+      }
+    };
+
+    // Функция диагностики Telegram для разработчиков
+    window.diagnoseTelegram = function() {
+      console.log('🔍 === ДИАГНОСТИКА TELEGRAM WEBAPP ===');
+      
+      console.log('🌐 URL:', window.location.href);
+      console.log('🌐 User Agent:', navigator.userAgent);
+      
+      if (window.Telegram) {
+        console.log('✅ Объект Telegram найден');
+        console.log('📱 Telegram object:', window.Telegram);
+        
+        if (window.Telegram.WebApp) {
+          console.log('✅ Telegram.WebApp найден');
+          console.log('📱 WebApp object:', window.Telegram.WebApp);
+          console.log('📱 Platform:', window.Telegram.WebApp.platform);
+          console.log('📱 Version:', window.Telegram.WebApp.version);
+          console.log('📱 InitData:', window.Telegram.WebApp.initData);
+          console.log('📱 InitDataUnsafe:', window.Telegram.WebApp.initDataUnsafe);
+          
+          if (window.Telegram.WebApp.initDataUnsafe) {
+            console.log('📱 User data:', window.Telegram.WebApp.initDataUnsafe.user);
+            console.log('📱 Chat data:', window.Telegram.WebApp.initDataUnsafe.chat);
+            console.log('📱 Start param:', window.Telegram.WebApp.initDataUnsafe.start_param);
+          } else {
+            console.log('❌ InitDataUnsafe пустой - возможно приложение не авторизовано');
+          }
+        } else {
+          console.log('❌ Telegram.WebApp не найден');
+        }
+      } else {
+        console.log('❌ Объект Telegram не найден - приложение не в Telegram');
+      }
+      
+      // Проверяем текущего пользователя
+      if (window.cloudSync) {
+        const userData = window.cloudSync.getUserData();
+        console.log('👤 Текущий пользователь:', userData);
+      }
+      
+      console.log('🔍 === КОНЕЦ ДИАГНОСТИКИ ===');
+    };
+
+    window.forceCloudSave = async function() {
+      console.log('💾 Принудительное сохранение в облако...');
+      
+      if (window.game) {
+        await window.game.syncToCloud();
+        console.log('✅ Состояние игры отправлено в облако');
+      } else {
+        console.log('❌ Игра не найдена');
+      }
+    };
+
+    window.checkGameState = function() {
+      if (window.game) {
+        console.log('🎮 Текущее состояние игры:');
+        console.log('Очки:', window.game.score);
+        console.log('Ходы:', window.game.moves);
+        console.log('Лучший результат:', window.game.bestResult);
+        console.log('Время начала игры:', window.game.gameStartTime);
+      } else {
+        console.log('❌ Игра не найдена');
+      }
+    };
+
+    window.clearAllData = function() {
+      console.log('🗑️ Очистка всех данных...');
+      
+      try {
+        localStorage.clear();
+        console.log('✅ LocalStorage очищен');
+        
+        if (window.game) {
+          window.game.startNewGame();
+          console.log('✅ Игра перезапущена');
+        }
+      } catch (error) {
+        console.log('❌ Ошибка очистки:', error);
+      }
+    };
+
+    console.log('🧪 Доступные функции для тестирования:');
+    console.log('- testCloudSync() - полный тест облачной синхронизации');
+    console.log('- forceCloudLoad() - принудительная загрузка из облака');
+    console.log('- forceCloudSave() - принудительное сохранение в облако');
+    console.log('- checkGameState() - проверка текущего состояния игры');
+    console.log('- clearAllData() - очистка всех данных и перезапуск');
+    console.log('- diagnoseTelegram() - диагностика Telegram WebApp');
+    console.log('');
+    console.log('💡 Для диагностики Telegram выполните: diagnoseTelegram()');
+  </script>
+</body>
+</html>
