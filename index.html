@@ -2124,12 +2124,12 @@
         const previousMonday = new Date(targetMonday);
         previousMonday.setDate(targetMonday.getDate() - 7);
 
-        const middleDate = new Date(previousMonday);
-        middleDate.setDate(previousMonday.getDate() + 7);
+        const displayDate = new Date(today);
+        displayDate.setDate(today.getDate() + (this.currentWeekOffset * 7));
         
         const monthNames = this.getLocalizedMonthNames();
-        const currentMonth = monthNames[middleDate.getMonth()];
-        const currentYear = middleDate.getFullYear();
+        const currentMonth = monthNames[displayDate.getMonth()];
+        const currentYear = displayDate.getFullYear();
         console.log(`🔍 [ПРОФИЛЬ] Вычисления дат: ${(performance.now() - calcStart).toFixed(2)}ms`);
         
         // ЭТАП 3: Обновление заголовка
