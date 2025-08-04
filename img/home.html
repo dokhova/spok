@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spokspace Mini App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #4285F4;
+            height: 100vh;
+            color: white;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: #19191B;
+            z-index: 0;
+        }
+
+        /* Основной контейнер */
+        .main-wrapper {
+            display: flex;
+            width: 100%;
+            max-width: 1920px;
+            flex: 1;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            padding: 40px 0 0 0;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1344px;
+            gap: 60px;
+            align-items: center;
+            width: 100%;
+            max-width: 1400px;
+            padding: 0 60px;
+        }
+
+        .left-section {
+            max-width: 480px;
+            text-align: left;
+        }
+
+        /* Логотип */
+        .app-logo {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 32px;
+        }
+
+        .logo-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Заголовок */
+        .main-title {
+            color: #FFF;
+            font-family: Inter, sans-serif;
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 60px;
+            letter-spacing: -0.96px;
+            margin-bottom: 24px;
+        }
+
+        /* Описание */
+        .description {
+            color: #D1D5DB;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 30px;
+            margin-bottom: 40px;
+        }
+
+        /* Кнопка Telegram */
+        .telegram-button {
+            display: flex;
+            width: 155px;
+            padding: 16px;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .telegram-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .telegram-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .telegram-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .right-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-bottom: -60px;
+        }
+
+        .phone-mockup {
+            width: 1344px;
+            height: 1200px;
+            position: relative;
+        }
+
+        .phone-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+        }
+
+        /* Нижняя секция */
+        .bottom-section {
+            background: transparent;
+            padding: 20px 60px;
+            position: relative;
+            z-index: 3;
+            height: 120px;
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            width: 100%;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 60px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-links span {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 1920px) {
+            .main-wrapper {
+                width: 100vw;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr 1fr;
+                max-width: 1200px;
+            }
+            
+            .phone-mockup {
+                max-width: 600px;
+                height: auto;
+            }
+            
+            .phone-image {
+                object-fit: contain;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .main-wrapper {
+                height: auto;
+                padding: 40px 20px 20px 20px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 0 20px;
+            }
+
+            .main-title {
+                font-size: 36px;
+                line-height: 45px;
+                letter-spacing: -0.72px;
+            }
+
+            .description {
+                font-size: 18px;
+                line-height: 27px;
+            }
+
+            .telegram-button {
+                width: 140px;
+                padding: 14px;
+            }
+
+            .right-section {
+                margin-bottom: 0;
+            }
+
+            .phone-mockup {
+                width: 100%;
+                height: 400px;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .phone-image {
+                object-fit: contain;
+            }
+
+            .bottom-section {
+                position: relative;
+                padding: 20px;
+                height: auto;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 28px;
+                line-height: 35px;
+                letter-spacing: -0.56px;
+            }
+
+            .description {
+                font-size: 16px;
+                line-height: 24px;
+            }
+
+            .telegram-button {
+                width: 130px;
+                padding: 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Основной контейнер -->
+    <div class="main-wrapper">
+        <div class="content-grid">
+            <!-- Левая часть -->
+            <div class="left-section">
+                <div class="app-logo">
+                    <img src="img/logo.jpg" alt="Spokspace Logo" class="logo-image">
+                </div>
+                
+                <h1 class="main-title">Spokspace Mini App</h1>
+                
+                <p class="description">
+                    A minimalist Telegram-based app with tools and techniques for a gentle flow of thoughts
+                </p>
+                
+                <a href="https://t.me/spokspacebot" class="telegram-button" target="_blank">
+                    <span class="telegram-icon">
+                        <img src="img/telegram.jpg" alt="Telegram Icon">
+                    </span>
+                    Telegram
+                </a>
+            </div>
+            
+            <!-- Правая часть с изображением -->
+            <div class="right-section">
+                <div class="phone-mockup">
+                    <img src="img/intro.svg" alt="Spokspace App Interface" class="phone-image">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Нижняя секция -->
+    <div class="bottom-section">
+        <div class="footer-content">
+            <div class="copyright">
+                © 2025 Spokspace
+            </div>
+            <div class="footer-links">
+                <a href="https://www.spokspace.com/privacy.html?lang=en">Privacy Policy</a>
+                <span>|</span>
+                <a href="mailto:info@spokspace.com">Email: info@spokspace.com</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
