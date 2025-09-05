@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Интерактивная Музыкальная Терапия</title>
+    <!-- Подключение Tailwind CSS для стилизации -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключение Tone.js для работы со звуком -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
+    <style>
+        /* Стили для кастомного фона и общего вида */
+        html, body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent; /* Убираем подсветку при касании на мобильных */
+            position: relative; /* Для корректного позиционирования */
+            height: 100%;
+        }
+
+        /* Фикс для WebView приложений */
+        @supports (-webkit-touch-callout: none) {
+            html, body {
+                height: -webkit-fill-available;
+            }
+        }
+
+        /* Абстрактный фон, как в примере */
+        .background-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .handle {
+            touch-action: none; /* Улучшает отзывчивость перетаскивания на сенсорных устройствах */
+            position: absolute;
+            /* Начальное положение задается через JS */
+        }
+    </style>
+</head>
+<body class="bg-black text-gray-400 flex flex-col items-center justify-center min-h-screen p-4 overflow-hidden antialiased">
+
+    <!-- Абстрактный фон с SVG -->
+    <div class="background-lines">
+        <svg width="100%" height="100%" viewBox="0 0 1440 1024" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-200 100 Q 240 200, 720 512 T 1640 800" stroke="white" stroke-width="1" fill="none" />
+            <path d="M-200 900 Q 240 700, 720 512 T 1640 200" stroke="white" stroke-width="1" fill="none" />
+            <path d="M-200 512 Q 720 0, 1640 512" stroke="white" stroke-width="1" fill="none" />
+            <path d="M-200 512 Q 720 1024, 1640 512" stroke="white" stroke-width="1" fill="none" />
+        </svg>
+    </div>
+
+    <div class="text-center w-full max-w-sm mx-auto z-10">
+        <h1 class="text-3xl font-bold text-white mb-2">Настройте Звук</h1>
+        <p class="text-gray-400 mb-8">Двигайте круг, чтобы изменить энергию и ощущение звукового ландшафта.</p>
+
+        <!-- Контейнер для интерактивной панели -->
+        <div id="pad-container" class="relative w-full aspect-square bg-black bg-opacity-20 border border-gray-700 rounded-2xl flex items-center justify-center select-none cursor-pointer overflow-hidden">
+            <!-- Элементы-метки -->
+            <span class="absolute top-4 text-xs tracking-widest pointer-events-none">ПЛОТНЫЙ</span>
+            <span class="absolute bottom-4 text-xs tracking-widest pointer-events-none">РЕДКИЙ</span>
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 -rotate-90 text-xs tracking-widest pointer-events-none">ТУСКЛЫЙ</span>
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-xs tracking-widest pointer-events-none">ЯРКИЙ</span>
+            
+            <!-- Перемещаемый элемент -->
+            <div id="handle" class="handle w-20 h-20 bg-gray-200 rounded-full border-4 border-black shadow-lg" style="transition: left 0.2s, top 0.2s;"></div>
+        </div>
+        
+        <!-- Кнопка для запуска/остановки звука -->
+        <button id="start-stop-button" class="mt-8 bg-gray-800 text-white font-semibold py-3 px-8 rounded-full transition-all hover:bg-gray-700 active:scale-95">
+            Начать
+        </button>
+    </div>
+
+    <script>
+        // --- DOM Элементы ---
+        const padContainer = document.getElementById('pad-container');
+        const handle = document.getElementById('handle');
+        const startStopButton = document.getElementById('start-stop-button');
+
+        // --- Состояние приложения ---
+        let isDragging = false;
+        let isAudioStarted = false;
+        let audioContextInitialized = false;
+
+        // --- Настройки звука (Tone.js) ---
+        let filter, reverb, arp, padSynth, melodySynth, melodyLoop;
+        
+        // Гармоничная пентатоническая гамма для мелодии
+        const scale = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5'];
+
+        // --- Функции для работы со звуком ---
+        function initializeAudio() {
+            if (audioContextInitialized) return;
+            
+            filter = new Tone.AutoFilter({ frequency: '8m', baseFrequency: 200, octaves: 3 }).toDestination();
+            reverb = new Tone.Reverb({ decay: 4, wet: 0.4 }).connect(filter);
+
+            padSynth = new Tone.FMSynth({
+                harmonicity: 1, modulationIndex: 10,
+                envelope: { attack: 0.5, decay: 0.1, sustain: 1, release: 1 },
+                modulationEnvelope: { attack: 0.5, decay: 0.1, sustain: 1, release: 1 }
+            }).connect(reverb);
+            padSynth.volume.value = -18;
+
+            const arpSynth = new Tone.PluckSynth({ attackNoise: 0.5, dampening: 4000, resonance: 0.9 }).connect(reverb);
+            arpSynth.volume.value = -6;
+
+            arp = new Tone.Pattern((time, note) => {
+                arpSynth.triggerAttackRelease(note, '8n', time);
+            }, ['C3', 'E3', 'G3', 'B3'], 'random');
+            arp.interval = '4n';
+
+            melodySynth = new Tone.MembraneSynth({ octaves: 5, pitchDecay: 0.05 }).connect(reverb);
+            melodySynth.volume.value = -10;
+
+            melodyLoop = new Tone.Loop(time => {
+                const note = scale[Math.floor(Math.random() * scale.length)];
+                melodySynth.triggerAttackRelease(note, '8n', time);
+            }, '2n').start(0);
+
+            audioContextInitialized = true;
+            console.log('Аудиосистема инициализирована');
+        }
+
+        function updateSound(x, y) {
+            if (!audioContextInitialized || !isAudioStarted) return;
+            
+            const filterFreq = 200 + (x * x) * 4000;
+            filter.baseFrequency = filterFreq;
+            
+            arp.probability = y;
+            padSynth.volume.value = Tone.gainToDb(y * 0.5 + 0.1) - 12;
+            
+            if (melodyLoop) {
+                melodyLoop.interval = 2 - (y * 1.75); 
+            }
+        }
+
+        // --- НОВАЯ УЛУЧШЕННАЯ ЛОГИКА УПРАВЛЕНИЯ ---
+        function updateHandlePosition(clientX, clientY) {
+            const rect = padContainer.getBoundingClientRect();
+            const padSize = rect.width;
+            const handleSize = handle.offsetWidth;
+            const maxPos = padSize - handleSize;
+
+            let x = clientX - rect.left - handleSize / 2;
+            let y = clientY - rect.top - handleSize / 2;
+            
+            x = Math.max(0, Math.min(x, maxPos));
+            y = Math.max(0, Math.min(y, maxPos));
+
+            handle.style.left = `${x}px`;
+            handle.style.top = `${y}px`;
+
+            const normalizedX = x / maxPos;
+            const normalizedY = 1 - (y / maxPos);
+            updateSound(normalizedX, normalizedY);
+        }
+
+        function startDrag(event) {
+            isDragging = true;
+            handle.style.transition = 'none';
+            document.body.style.cursor = 'grabbing';
+            const pos = event.touches ? event.touches[0] : event;
+            updateHandlePosition(pos.clientX, pos.clientY);
+        }
+
+        function onDrag(event) {
+            if (!isDragging) return;
+            event.preventDefault();
+            const pos = event.touches ? event.touches[0] : event;
+            updateHandlePosition(pos.clientX, pos.clientY);
+        }
+
+        function stopDrag() {
+            if (isDragging) {
+                isDragging = false;
+                document.body.style.cursor = 'default';
+                handle.style.transition = 'left 0.2s, top 0.2s';
+            }
+        }
+
+        // --- Обработчики событий ---
+        startStopButton.addEventListener('click', async () => {
+            if (!audioContextInitialized) {
+                await Tone.start();
+                initializeAudio();
+            }
+
+            if (isAudioStarted) {
+                Tone.Transport.stop();
+                arp.stop();
+                padSynth.triggerRelease();
+                startStopButton.textContent = 'Начать';
+            } else {
+                Tone.Transport.start();
+                arp.start(0);
+                padSynth.triggerAttack('C2');
+                startStopButton.textContent = 'Остановить';
+            }
+            isAudioStarted = !isAudioStarted;
+        });
+
+        // События для мыши
+        padContainer.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('mouseup', stopDrag);
+        
+        // События для сенсорных экранов
+        padContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startDrag(e);
+        }, { passive: false });
+        document.addEventListener('touchmove', onDrag, { passive: false });
+        document.addEventListener('touchend', stopDrag);
+
+        // Устанавливаем начальное положение кружка в центр
+        function setInitialHandlePosition() {
+            const padSize = padContainer.offsetWidth;
+            const handleSize = handle.offsetWidth;
+            const centerPos = (padSize - handleSize) / 2;
+            handle.style.left = `${centerPos}px`;
+            handle.style.top = `${centerPos}px`;
+
+            const maxPos = padSize - handleSize;
+            if (maxPos > 0) {
+                 const normalizedY = 1 - (centerPos / maxPos);
+                 updateSound(0.5, normalizedY);
+            }
+        }
+        
+        window.onload = setInitialHandlePosition;
+        window.onresize = setInitialHandlePosition;
+
+    </script>
+</body>
+</html>
+
