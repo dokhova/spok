@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spokspace - Digital Wellbeing Ecosystem</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 64px;
+            background: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        nav {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: #a8d531;
+        }
+
+        .lang-btn {
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .hero {
+            position: relative;
+            padding: 120px 64px;
+            margin-top: 80px;
+            background: linear-gradient(180deg, 
+                #fef9e0 0%,
+                #ffd93d 15%,
+                #f9e45e 30%,
+                #d4d943 50%,
+                #a8d531 70%,
+                #6ab43e 100%
+            );
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, 
+                #fef9e0 0%,
+                #ffd93d 20%,
+                #f9e45e 40%,
+                #d4d943 60%,
+                #a8d531 80%,
+                #6ab43e 100%
+            );
+            background-size: 100% 300%;
+            animation: gradientFlow 15s ease-in-out infinite;
+            z-index: 0;
+            opacity: 0.7;
+        }
+
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 0% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #1a1a1a;
+        }
+
+        .hero p {
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 650px;
+            margin-bottom: 35px;
+            color: #2a2a2a;
+        }
+
+        .btn {
+            background: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: -0.312px;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .btn img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .section {
+            padding: 120px 64px;
+        }
+
+        .section-title {
+            font-size: 38px;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .context-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+        }
+
+        .context-header {
+            max-width: 800px;
+        }
+
+        .context-header h2 {
+            font-size: 56px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 0;
+        }
+
+        .context-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .context-block {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .context-block h3 {
+            font-size: 28px;
+            font-weight: 500;
+            color: #1a1a1a;
+            line-height: 1.3;
+        }
+
+        .context-block p {
+            line-height: 1.7;
+            color: #666;
+            font-size: 17px;
+        }
+
+        .integration-section {
+            background: #fafafa;
+        }
+
+        .integration-section {
+            background: #fafafa;
+        }
+
+        .integration-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+
+        .integration-header h2 {
+            font-size: 64px;
+            font-weight: 500;
+            line-height: 1.1;
+        }
+
+        .gradient-circle {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(135deg, #ffd93d, #a8d531, #6ab43e);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            border-radius: 50%;
+            box-shadow: 0 10px 40px rgba(168, 213, 49, 0.4);
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .integration-process {
+            margin-bottom: 80px;
+        }
+
+        .process-steps {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .process-step {
+            flex: 1;
+            text-align: center;
+        }
+
+        .process-step h3 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .process-bar {
+            width: 100%;
+            height: 8px;
+            background: #a8d531;
+            border-radius: 4px;
+        }
+
+        .integration-descriptions {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .integration-descriptions p {
+            color: #666;
+            line-height: 1.7;
+            font-size: 17px;
+        }
+
+        .example-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 120px;
+            align-items: center;
+        }
+
+        .example-text {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .example-text h2 {
+            font-size: 48px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .example-text p {
+            line-height: 1.8;
+            color: #555;
+            font-size: 17px;
+        }
+
+        .cta-section {
+            padding: 80px 64px;
+        }
+
+        .cta-content {
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            padding: 80px;
+            border-radius: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 60px;
+            color: white;
+        }
+
+        .cta-text {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+            flex: 1;
+        }
+
+        .cta-text p {
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .cta-text h2 {
+            font-size: 42px;
+            font-weight: 600;
+        }
+
+        .cta-button-wrapper {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 60px 64px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .fade-in-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.9);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .scale-in.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Tablet styles (768px - 1024px) */
+        @media (max-width: 1024px) {
+            header {
+                padding: 20px 40px;
+            }
+
+            nav {
+                gap: 25px;
+            }
+
+            .hero {
+                padding: 100px 40px;
+                margin-top: 80px;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+            }
+
+            .section {
+                padding: 100px 40px;
+            }
+
+            .context-header h2 {
+                font-size: 48px;
+            }
+
+            .context-content {
+                gap: 60px;
+            }
+
+            .context-block h3 {
+                font-size: 24px;
+            }
+
+            .integration-header h2 {
+                font-size: 52px;
+            }
+
+            .gradient-circle {
+                width: 160px;
+                height: 160px;
+            }
+
+            .process-steps {
+                gap: 15px;
+            }
+
+            .example-section {
+                gap: 80px;
+            }
+
+            .example-text h2 {
+                font-size: 42px;
+            }
+
+            .cta-content {
+                padding: 60px;
+                gap: 50px;
+            }
+
+            .cta-text h2 {
+                font-size: 36px;
+            }
+        }
+
+        /* Mobile styles (max-width: 768px) */
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 24px;
+                flex-wrap: wrap;
+            }
+
+            .logo {
+                width: 32px;
+                height: 32px;
+            }
+
+            nav {
+                gap: 15px;
+                flex-wrap: wrap;
+            }
+
+            nav a {
+                font-size: 12px;
+            }
+
+            .lang-btn {
+                padding: 6px 16px;
+                font-size: 12px;
+            }
+
+            .hero {
+                padding: 80px 24px 60px;
+                margin-top: 70px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+                margin-bottom: 20px;
+            }
+
+            .hero p {
+                font-size: 15px;
+                margin-bottom: 25px;
+            }
+
+            .btn {
+                padding: 10px 24px;
+                font-size: 14px;
+            }
+
+            .section {
+                padding: 60px 24px;
+            }
+
+            .section-title {
+                font-size: 32px;
+            }
+
+            .context-grid {
+                gap: 50px;
+            }
+
+            .context-header h2 {
+                font-size: 36px;
+            }
+
+            .context-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .context-block h3 {
+                font-size: 22px;
+            }
+
+            .context-block p {
+                font-size: 15px;
+            }
+
+            .integration-section {
+                padding: 60px 24px;
+            }
+
+            .integration-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 30px;
+                margin-bottom: 50px;
+            }
+
+            .integration-header h2 {
+                font-size: 36px;
+            }
+
+            .gradient-circle {
+                width: 120px;
+                height: 120px;
+                align-self: center;
+            }
+
+            .process-steps {
+                flex-wrap: wrap;
+                gap: 20px;
+                justify-content: center;
+            }
+
+            .process-step {
+                min-width: 120px;
+                max-width: 150px;
+            }
+
+            .process-step h3 {
+                font-size: 16px;
+            }
+
+            .process-bar {
+                height: 6px;
+            }
+
+            .integration-descriptions {
+                gap: 25px;
+            }
+
+            .integration-descriptions p {
+                font-size: 15px;
+            }
+
+            .example-section {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .example-visual img {
+                max-width: 100% !important;
+            }
+
+            .example-text h2 {
+                font-size: 32px;
+            }
+
+            .example-text p {
+                font-size: 15px;
+            }
+
+            .cta-section {
+                padding: 40px 24px;
+            }
+
+            .cta-content {
+                flex-direction: column;
+                padding: 40px 30px;
+                gap: 30px;
+                border-radius: 24px;
+            }
+
+            .cta-text {
+                text-align: left;
+            }
+
+            .cta-text p {
+                font-size: 14px;
+            }
+
+            .cta-text h2 {
+                font-size: 28px;
+            }
+
+            .cta-button-wrapper {
+                justify-content: flex-start;
+            }
+
+            footer {
+                padding: 40px 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+                margin-bottom: 30px;
+            }
+
+            .footer-links {
+                flex-direction: row;
+                gap: 20px;
+                flex-wrap: wrap;
+            }
+
+            .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 20px;
+                align-items: center;
+            }
+        }
+
+        /* Small mobile styles (max-width: 480px) */
+        @media (max-width: 480px) {
+            header {
+                padding: 12px 20px;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .hero {
+                padding: 60px 20px 50px;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero p {
+                font-size: 14px;
+            }
+
+            .section {
+                padding: 50px 20px;
+            }
+
+            .context-header h2 {
+                font-size: 28px;
+            }
+
+            .context-block h3 {
+                font-size: 20px;
+            }
+
+            .integration-header h2 {
+                font-size: 28px;
+            }
+
+            .gradient-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .process-steps {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .process-step {
+                min-width: auto;
+            }
+
+            .example-text h2 {
+                font-size: 28px;
+            }
+
+            .cta-content {
+                padding: 30px 24px;
+            }
+
+            .cta-text h2 {
+                font-size: 24px;
+            }
+        }
+
+            .process-icons {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .cta-section {
+                padding: 60px 24px;
+            }
+
+            .cta-text h2 {
+                font-size: 32px;
+            }
+
+            footer {
+                padding: 40px 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+                align-items: flex-start;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+    <script>
+        let currentLang = 'ru';
+        
+        const translations = {
+            en: {
+                nav: {
+                    context: 'Context and Approach',
+                    model: 'Integration Model',
+                    example: 'Example of Integration',
+                    contact: 'Contact'
+                },
+                hero: {
+                    title: 'Digital Wellbeing Ecosystem',
+                    description: 'Spokspace is a digital balance ecosystem that helps companies improve the interaction between people and technology. We integrate elements of digital comfort and sustainability into existing products without altering the familiar user experience',
+                    button: 'Get in touch'
+                },
+                context: {
+                    title: 'Context and Approach',
+                    block1Title: 'The Digital Overload Challenge',
+                    p1: 'The constant flow of notifications, updates, and information increases anxiety and reduces concentration. Products that take users\' emotional states into account increase audience retention by up to 30% and strengthen brand loyalty by nearly 40%',
+                    block2Title: 'Our Approach',
+                    p2: 'Many digital wellbeing solutions create new barriers and require extra user effort. Spokspace supports balance differently: we embed short practices and elements of calm directly into familiar digital routines'
+                },
+                integration: {
+                    title: 'Integration Model',
+                    step1: 'Audit',
+                    step2: 'Research',
+                    step3: 'Development',
+                    step4: 'Testing',
+                    step5: 'Launch',
+                    desc1: 'This format of work helps to understand the product\'s specifics and its audience more deeply, ensuring that solutions are implemented consistently and with full awareness of context. Depending on internal resources, Spokspace can guide the process through an internal team or engage its own specialists',
+                    desc2: 'Spokspace helps companies not only introduce digital wellbeing practices but also build a sustainable interaction system that reduces overload and increases user engagement'
+                },
+                example: {
+                    title: 'Example of Integration',
+                    p1: 'Spokspace demonstrates how a digital wellbeing system can exist within a familiar environment without changing the user experience',
+                    p2: 'As a Telegram Mini App, Spokspace integrates directly into the messenger, making access to recovery as simple as opening a chat',
+                    button: 'Open on Telegram'
+                },
+                cta: {
+                    subtitle: 'Want to find out more about how Spokspace can enhance your digital wellbeing?',
+                    title: 'Contact our team now',
+                    button: 'Get in touch'
+                },
+                footer: {
+                    terms: 'Terms of Use',
+                    contact: 'Contact Us',
+                    support: 'Support',
+                    copyright: '© 2025 Spokspace. All rights reserved.'
+                }
+            },
+            ru: {
+                nav: {
+                    context: 'Контекст и подход',
+                    model: 'Модель интеграции',
+                    example: 'Пример интеграции',
+                    contact: 'Контакты'
+                },
+                hero: {
+                    title: 'Экосистема цифрового баланса',
+                    description: 'Spokspace — это экосистема цифрового баланса, которая помогает компаниям улучшить взаимодействие между людьми и технологиями. Мы интегрируем элементы цифрового комфорта и устойчивости в существующие продукты, не изменяя привычный пользовательский опыт',
+                    button: 'Связаться с нами'
+                },
+                context: {
+                    title: 'Контекст и подход',
+                    block1Title: 'Вызов цифровой перегрузки',
+                    p1: 'Постоянный поток уведомлений, обновлений и информации повышает тревожность и снижает концентрацию. Продукты, учитывающие эмоциональное состояние пользователей, увеличивают удержание аудитории до 30% и укрепляют лояльность к бренду почти на 40%',
+                    block2Title: 'Наш подход',
+                    p2: 'Многие решения для цифрового благополучия создают новые барьеры и требуют дополнительных усилий от пользователя. Spokspace поддерживает баланс иначе: мы встраиваем короткие практики и элементы спокойствия непосредственно в привычные цифровые рутины'
+                },
+                integration: {
+                    title: 'Модель интеграции',
+                    step1: 'Аудит',
+                    step2: 'Исследование',
+                    step3: 'Разработка',
+                    step4: 'Тестирование',
+                    step5: 'Запуск',
+                    desc1: 'Такой формат работы помогает глубже понять специфику продукта и его аудиторию, чтобы внедрять решения системно и с учётом контекста. В зависимости от внутренних ресурсов, Spokspace может сопровождать процесс через внутреннюю команду или подключать собственных специалистов',
+                    desc2: 'Spokspace помогает компаниям не просто внедрять практики цифрового баланса, а выстраивать устойчивую систему взаимодействия с пользователями, которая снижает перегрузку и усиливает вовлечённость'
+                },
+                example: {
+                    title: 'Пример интеграции',
+                    p1: 'Spokspace демонстрирует, как система цифрового благополучия может существовать в привычной среде, не изменяя пользовательский опыт',
+                    p2: 'Как Telegram Mini App, Spokspace интегрируется непосредственно в мессенджер, делая доступ к восстановлению таким же простым, как открытие чата',
+                    button: 'Открыть в Telegram'
+                },
+                cta: {
+                    subtitle: 'Хотите узнать больше о том, как Spokspace может улучшить ваше цифровое благополучие?',
+                    title: 'Свяжитесь с нашей командой прямо сейчас',
+                    button: 'Связаться с нами'
+                },
+                footer: {
+                    terms: 'Условия использования',
+                    contact: 'Связаться с нами',
+                    support: 'Поддержка',
+                    copyright: '© 2025 Spokspace. Все права защищены.'
+                }
+            }
+        };
+
+        function switchLanguage() {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'EN' : 'RU';
+            updateContent();
+        }
+
+        function updateContent() {
+            const t = translations[currentLang];
+            
+            // Navigation
+            document.querySelectorAll('nav a').forEach((link, i) => {
+                const keys = ['context', 'model', 'example', 'contact'];
+                link.textContent = t.nav[keys[i]];
+            });
+
+            // Hero
+            document.getElementById('hero-title').textContent = t.hero.title;
+            document.getElementById('hero-desc').textContent = t.hero.description;
+            document.querySelector('#hero-btn span').textContent = t.hero.button;
+
+            // Context
+            document.getElementById('context-title').textContent = t.context.title;
+            document.getElementById('context-block1-title').textContent = t.context.block1Title;
+            document.getElementById('context-p1').textContent = t.context.p1;
+            document.getElementById('context-block2-title').textContent = t.context.block2Title;
+            document.getElementById('context-p2').textContent = t.context.p2;
+
+            // Integration
+            document.getElementById('integration-title').textContent = t.integration.title;
+            document.getElementById('step1-title').textContent = t.integration.step1;
+            document.getElementById('step2-title').textContent = t.integration.step2;
+            document.getElementById('step3-title').textContent = t.integration.step3;
+            document.getElementById('step4-title').textContent = t.integration.step4;
+            document.getElementById('step5-title').textContent = t.integration.step5;
+            document.getElementById('integration-desc1').textContent = t.integration.desc1;
+            document.getElementById('integration-desc2').textContent = t.integration.desc2;
+
+            // Example
+            document.getElementById('example-title').textContent = t.example.title;
+            document.getElementById('example-p1').textContent = t.example.p1;
+            document.getElementById('example-p2').textContent = t.example.p2;
+            document.querySelector('#example-btn span').textContent = t.example.button;
+
+            // CTA
+            document.getElementById('cta-subtitle').textContent = t.cta.subtitle;
+            document.getElementById('cta-title').textContent = t.cta.title;
+            document.querySelector('#cta-btn span').textContent = t.cta.button;
+
+            // Footer
+            document.querySelectorAll('.footer-links a').forEach((link, i) => {
+                const keys = ['terms', 'contact', 'support'];
+                link.textContent = t.footer[keys[i]];
+            });
+            document.getElementById('copyright').textContent = t.footer.copyright;
+        }
+
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Initialize content with Russian language on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            updateContent();
+            initScrollAnimations();
+        });
+
+        // Scroll animations
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe all elements with animation classes
+            document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .scale-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" style="text-decoration: none;">
+            <div class="logo">
+                <img src="img/logo.svg" alt="Spokspace Logo">
+            </div>
+        </a>
+        <nav>
+            <a onclick="scrollToSection('context')">Context and Approach</a>
+            <a onclick="scrollToSection('model')">Integration Model</a>
+            <a onclick="scrollToSection('example')">Example of Integration</a>
+            <a onclick="scrollToSection('contact')">Contact</a>
+            <button class="lang-btn" id="lang-btn" onclick="switchLanguage()">RU</button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1 id="hero-title" class="fade-in">Digital Wellbeing Ecosystem</h1>
+        <p id="hero-desc" class="fade-in">Spokspace is a digital balance ecosystem that helps companies improve the interaction between people and technology. We integrate elements of digital comfort and sustainability into existing products without altering the familiar user experience</p>
+        <a href="https://t.me/the_dokhova" target="_blank" style="text-decoration: none;">
+            <button class="btn fade-in" id="hero-btn"><span>Get in touch</span><img src="img/line.svg" alt=""></button>
+        </a>
+    </section>
+
+    <section class="section" id="context">
+        <div class="context-grid">
+            <div class="context-header fade-in">
+                <h2 id="context-title">Context and Approach</h2>
+            </div>
+            
+            <div class="context-content">
+                <div class="context-block fade-in-left">
+                    <h3 id="context-block1-title">The Digital Overload Challenge</h3>
+                    <p id="context-p1">The constant flow of notifications, updates, and information increases anxiety and reduces concentration. Products that take users' emotional states into account increase audience retention by up to 30% and strengthen brand loyalty by nearly 40%</p>
+                </div>
+                
+                <div class="context-block fade-in-right">
+                    <h3 id="context-block2-title">Our Approach</h3>
+                    <p id="context-p2">Many digital wellbeing solutions create new barriers and require extra user effort. Spokspace supports balance differently: we embed short practices and elements of calm directly into familiar digital routines</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section integration-section" id="model">
+        <div class="integration-header">
+            <h2 class="section-title fade-in-left" id="integration-title">Integration Model</h2>
+            <div class="gradient-circle scale-in"></div>
+        </div>
+        
+        <div class="integration-process">
+            <div class="process-steps fade-in">
+                <div class="process-step">
+                    <h3 id="step1-title">Audit</h3>
+                    <div class="process-bar"></div>
+                </div>
+                <div class="process-step">
+                    <h3 id="step2-title">Research</h3>
+                    <div class="process-bar"></div>
+                </div>
+                <div class="process-step">
+                    <h3 id="step3-title">Development</h3>
+                    <div class="process-bar"></div>
+                </div>
+                <div class="process-step">
+                    <h3 id="step4-title">Testing</h3>
+                    <div class="process-bar"></div>
+                </div>
+                <div class="process-step">
+                    <h3 id="step5-title">Launch</h3>
+                    <div class="process-bar"></div>
+                </div>
+            </div>
+            
+            <div class="integration-descriptions fade-in">
+                <p id="integration-desc1">This format of work helps to understand the product's specifics and its audience more deeply, ensuring that solutions are implemented consistently and with full awareness of context. Depending on internal resources, Spokspace can guide the process through an internal team or engage its own specialists</p>
+                <p id="integration-desc2">Spokspace helps companies not only introduce digital wellbeing practices but also build a sustainable interaction system that reduces overload and increases user engagement</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="example">
+        <div class="example-section">
+            <div class="example-visual fade-in-left">
+                <img src="img/telegram.jpg" alt="Telegram Integration" style="width: 100%; max-width: 480px; height: auto; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);">
+            </div>
+            <div class="example-text fade-in-right">
+                <h2 id="example-title">Example of Integration</h2>
+                <p id="example-p1">Spokspace demonstrates how a digital wellbeing system can exist within a familiar environment without changing the user experience</p>
+                <p id="example-p2">As a Telegram Mini App, Spokspace integrates directly into the messenger, making access to recovery as simple as opening a chat</p>
+                <a href="https://t.me/spokspacebot" target="_blank" style="text-decoration: none;">
+                    <button class="btn" id="example-btn"><span>Open on Telegram</span><img src="img/line.svg" alt=""></button>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+        <div class="cta-content scale-in">
+            <div class="cta-text">
+                <p id="cta-subtitle">Want to find out more about how Cadro can transform your investment journey?</p>
+                <h2 id="cta-title">Contact our client team now</h2>
+            </div>
+            <div class="cta-button-wrapper">
+                <a href="https://t.me/the_dokhova" target="_blank" style="text-decoration: none;">
+                    <button class="btn" id="cta-btn"><span>Get in touch</span><img src="img/line.svg" alt=""></button>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="logo">
+                    <img src="img/logo.svg" alt="Spokspace Logo">
+                </div>
+                <span>Spokspace</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Terms of Use</a>
+                <a href="https://t.me/the_dokhova" target="_blank">Contact Us</a>
+                <a href="https://t.me/spoksupport_bot" target="_blank">Support</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span id="copyright">© 2025 Spokspace. All rights reserved.</span>
+            <div class="social-icons">
+                <a href="https://ge.linkedin.com/company/spokspace" target="_blank" style="text-decoration: none; color: white; font-size: 20px; font-weight: 700;">in</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
