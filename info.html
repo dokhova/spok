@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spokspace - Digital Wellbeing Ecosystem</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            color: #333;
+            overflow-x: hidden;
+            background: #fff;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 64px;
+            background: #fff;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        nav {
+            display: flex;
+            gap: 35px;
+            align-items: center;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            font-weight: 400;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        nav a:hover {
+            color: #a8d531;
+        }
+
+        .lang-btn {
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            position: relative;
+            padding: 64px 64px 120px;
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, 
+                #fef9e0 0%,
+                #ffd93d 15%,
+                #f9e45e 30%,
+                #d4d943 50%,
+                #a8d531 70%,
+                #6ab43e 100%
+            );
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, 
+                #fef9e0 0%,
+                #ffd93d 20%,
+                #f9e45e 40%,
+                #d4d943 60%,
+                #a8d531 80%,
+                #6ab43e 100%
+            );
+            background-size: 100% 300%;
+            animation: gradientFlow 15s ease-in-out infinite;
+            z-index: 0;
+            opacity: 0.7;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 0% 100%; }
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            margin-top: auto;
+        }
+
+        .hero h1 {
+            color: #fff;
+            font-family: Inter;
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 60px;
+            letter-spacing: -0.96px;
+            max-width: 1065px;
+            margin-bottom: 0;
+        }
+
+        .hero .btn {
+            margin-bottom: 48px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            background: #fff;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: -0.312px;
+            color: #000;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn img {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            padding: 120px 64px;
+        }
+
+        .section-title {
+            font-size: 48px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 0;
+        }
+
+        /* ===== CONTEXT SECTION ===== */
+        .context-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 60px;
+            align-items: start;
+        }
+
+        .context-header h2 {
+            font-size: 48px;
+            font-weight: 500;
+            line-height: 1.1;
+            color: #333;
+        }
+
+        .context-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .context-block {
+            width: 100%;
+            padding: 0;
+            border-radius: 0;
+            background: none;
+        }
+
+        .context-block h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        .context-block h3:empty {
+            display: none;
+        }
+
+        .context-block p {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #666;
+        }
+
+        /* ===== PRODUCTS SECTION ===== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 60px;
+        }
+
+        .product-card {
+            perspective: 1500px;
+            height: 500px;
+            position: relative;
+        }
+
+        .product-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s ease;
+            transform-style: preserve-3d;
+            transform-origin: center center;
+        }
+
+        .product-card:hover .product-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .product-card-front,
+        .product-card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .product-card-front {
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        .product-card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.6) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px;
+            pointer-events: none;
+        }
+
+        .product-read-more {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 400;
+            color: #fff;
+            cursor: pointer;
+            align-self: flex-start;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .product-read-more:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .product-overlay h3 {
+            font-size: 20px;
+            font-weight: 500;
+            color: #fff;
+            margin: 0;
+        }
+
+        .product-card-back {
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            transform: rotateY(180deg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .product-card-back h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+            margin: 0 0 20px 0;
+        }
+
+        .product-card-back p {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.95);
+            margin: 0;
+        }
+
+        /* ===== HOW WE WORK SECTION ===== */
+        .how-we-work-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .gradient-circle-animated {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd93d, #a8d531, #6ab43e);
+            background-size: 200% 200%;
+            animation: gradientRotate 4s ease infinite;
+        }
+
+        @keyframes gradientRotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .separator-line {
+            width: 100%;
+            height: 1px;
+            background: #e0e0e0;
+            margin-bottom: 60px;
+        }
+
+        .how-we-work-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+        }
+
+        .work-block h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .work-block p {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #666;
+            margin: 0;
+        }
+
+        /* ===== EXAMPLE SECTION ===== */
+        .example-section {
+            display: flex;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .example-visual {
+            flex: 1;
+        }
+
+        .example-text {
+            flex: 1;
+        }
+
+        .example-text h2 {
+            font-size: 48px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .example-text p {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 80px 64px;
+        }
+
+        .cta-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 60px;
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            padding: 60px 80px;
+            border-radius: 32px;
+        }
+
+        .cta-text {
+            flex: 1;
+        }
+
+        .cta-text p {
+            font-size: 16px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .cta-text h2 {
+            font-size: 48px;
+            font-weight: 500;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        .cta-button-wrapper {
+            flex-shrink: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 60px 64px 40px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-logo span {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #fff;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-bottom span {
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in,
+        .fade-in-left,
+        .fade-in-right,
+        .scale-in {
+            opacity: 0;
+            transition: all 0.8s ease-out;
+        }
+
+        .fade-in {
+            transform: translateY(30px);
+        }
+
+        .fade-in-left {
+            transform: translateX(-30px);
+        }
+
+        .fade-in-right {
+            transform: translateX(30px);
+        }
+
+        .scale-in {
+            transform: scale(0.9);
+        }
+
+        .fade-in.visible,
+        .fade-in-left.visible,
+        .fade-in-right.visible,
+        .scale-in.visible {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            header {
+                display: none;
+            }
+
+            nav {
+                gap: 20px;
+            }
+
+            nav a {
+                font-size: 12px;
+            }
+
+            .lang-btn {
+                padding: 6px 16px;
+                font-size: 12px;
+            }
+
+            .hero {
+                padding: 80px 24px;
+                margin-top: 60px;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+                line-height: 40px;
+            }
+
+            .section {
+                padding: 60px 24px;
+            }
+
+            .section-title,
+            .context-header h2,
+            .integration-header h2,
+            .example-text h2,
+            .cta-text h2 {
+                font-size: 32px;
+            }
+
+            .context-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .context-content {
+                gap: 20px;
+            }
+
+            .context-block {
+                padding: 0;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin-top: 40px;
+            }
+
+            .product-card {
+                height: 400px;
+            }
+
+            .product-card-back {
+                padding: 32px;
+            }
+
+            .product-card-back h3 {
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+
+            .product-card-back p {
+                font-size: 14px;
+            }
+
+            .how-we-work-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 24px;
+                margin-bottom: 30px;
+            }
+
+            .gradient-circle-animated {
+                width: 80px;
+                height: 80px;
+            }
+
+            .separator-line {
+                margin-bottom: 40px;
+            }
+
+            .how-we-work-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .work-block h3 {
+                font-size: 20px;
+                margin-bottom: 16px;
+            }
+
+            .work-block p {
+                font-size: 14px;
+            }
+
+            .integration-header {
+                flex-direction: column;
+                gap: 30px;
+                margin-bottom: 50px;
+            }
+
+            .gradient-circle {
+                width: 80px;
+                height: 80px;
+            }
+
+            .integration-process {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .process-step {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .process-step h3 {
+                font-size: 20px;
+                min-width: auto;
+            }
+
+            .process-bar {
+                width: 100%;
+            }
+
+            .example-section {
+                flex-direction: column;
+                gap: 40px;
+            }
+
+            .cta-section {
+                padding: 60px 24px;
+            }
+
+            .cta-content {
+                flex-direction: column;
+                gap: 30px;
+                padding: 40px 32px;
+                border-radius: 24px;
+            }
+
+            .cta-text h2 {
+                font-size: 32px;
+            }
+
+            .cta-text p {
+                font-size: 14px;
+            }
+
+            footer {
+                padding: 40px 24px 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+                align-items: flex-start;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+    <script>
+        const translations = {
+            en: {
+                nav: {
+                    context: 'Why It Matters',
+                    products: 'Our Products',
+                    example: 'Example of Integration',
+                    contact: 'Contact'
+                },
+                hero: {
+                    title: 'We help companies improve human-technology interaction by embedding digital comfort elements directly into existing scenarios',
+                    button: 'Get in touch'
+                },
+                context: {
+                    title: 'Why It Matters',
+                    block1Title: '',
+                    p1: 'The digital environment is becoming increasingly saturated with signals, which increases tension and complicates interaction with products. Companies that take into account the user\'s state create a smoother experience and retain audience attention longer',
+                    block2Title: '',
+                    p2: 'Spokspace offers a system of solutions that help reduce overload and add calm points of recovery directly into existing scenarios. We work at the intersection of content, product integrations, and an expert approach to the sensory environment, so that technologies are perceived softer and more naturally'
+                },
+                products: {
+                    title: 'Our Products',
+                    readMore: 'Read More',
+                    product1Tag: 'Digital Materials',
+                    product1Title: 'Spokspace Content',
+                    product1Desc: 'We create video and audio materials that help improve sleep, reduce anxiety and restore attention. Such content can be integrated into applications, hotel TVs, onboard systems, guest screens and other digital touchpoints',
+                    product2Tag: 'Services and Connections',
+                    product2Title: 'Spokspace Integrations',
+                    product2Desc: 'We embed recovery practices into existing digital products. The integration format adapts to the logic of the service: it can be a library of calm sounds, a game element to reduce anxiety, or recovery practices within the application. Everything works in the familiar usage scenario',
+                    product3Tag: 'Knowledge and Experience',
+                    product3Title: 'Spokspace Expertise',
+                    product3Desc: 'We help companies adjust light, sound and visual elements so that physical space reduces tension and helps people feel calmer in everyday settings in offices, hotels, rest areas and other premises'
+                },
+                howWeWork: {
+                    title: 'How We Work',
+                    block1Title: 'Analysis and Diagnostics',
+                    block1Desc: 'Spokspace studies the product and key user scenarios to determine where additional tools are needed to reduce overload and improve service perception. Based on this, we propose a solution in the right format — content, digital integration, or physical environment setup',
+                    block2Title: 'Integration and Adaptation',
+                    block2Desc: 'All elements adapt to the technical logic of the product, do not change its core functionality, and work within the familiar user flow. This approach improves interaction quality, retention, and user satisfaction'
+                },
+                example: {
+                    title: 'Example of Integration',
+                    p1: 'Spokspace shows how digital balance tools can work within existing products without changing their logic and structure',
+                    p2: 'As a Telegram Mini App, our functionality is built directly into the messenger. Users access recovery tools through the familiar interface, just as they would open a regular chat',
+                    button: 'Open on Telegram'
+                },
+                cta: {
+                    subtitle: "We'd be happy to discuss details and options",
+                    title: 'Want to learn more?',
+                    button: 'Contact us'
+                },
+                footer: {
+                    terms: 'Terms of Use',
+                    contact: 'Contact Us',
+                    support: 'Support',
+                    copyright: '© 2025 Spokspace. All rights reserved.'
+                }
+            },
+            ru: {
+                nav: {
+                    context: 'Почему это важно',
+                    products: 'Наши продукты',
+                    example: 'Пример интеграции',
+                    contact: 'Контакты'
+                },
+                hero: {
+                    title: 'Помогаем компаниям улучшать взаимодействие человека и технологий, добавляя элементы цифрового комфорта прямо в существующие сценарии',
+                    button: 'Связаться'
+                },
+                context: {
+                    title: 'Почему это важно',
+                    block1Title: '',
+                    p1: 'Цифровая среда становится всё более насыщенной сигналами, что повышает напряжение и усложняет взаимодействие с продуктами. Компании, которые учитывают состояние пользователя, создают более плавный опыт и удерживают внимание аудитории дольше',
+                    block2Title: '',
+                    p2: 'Spokspace предлагает систему решений, помогающих снизить перегрузку и добавить спокойные точки восстановления прямо в существующие сценарии. Мы работаем на стыке контента, продуктовых интеграций и экспертного подхода к сенсорной среде, чтобы технологии воспринимались мягче и естественнее'
+                },
+                products: {
+                    title: 'Наши продукты',
+                    readMore: 'Подробнее',
+                    product1Tag: 'Цифровые материалы',
+                    product1Title: 'Контент Spokspace',
+                    product1Desc: 'Мы создаём видео и аудио материалы, которые помогают улучшить сон, снизить тревогу и вернуть внимание. Такой контент можно встроить в приложения, телевизоры в отелях, бортовые системы, гостевые экраны и другие цифровые точки контакта',
+                    product2Tag: 'Сервисы и подключения',
+                    product2Title: 'Интеграции Spokspace',
+                    product2Desc: 'Мы встраиваем практики восстановления в существующие цифровые продукты. Формат интеграции подстраивается под логику сервиса: это может быть библиотека спокойных звуков, игровой элемент для снижения тревожности или практики восстановления внутри приложения. Всё работает в привычном сценарии использования',
+                    product3Tag: 'Знания и опыт',
+                    product3Title: 'Экспертиза Spokspace',
+                    product3Desc: 'Мы помогаем компаниям настраивать свет, звук и визуальные элементы так, чтобы физическое пространство снижало напряжение и помогало людям чувствовать себя спокойнее в повседневной обстановке в офисах, отелях, зонах отдыха и других помещениях'
+                },
+                howWeWork: {
+                    title: 'Как мы работаем',
+                    block1Title: 'Анализ и диагностика',
+                    block1Desc: 'Spokspace изучает продукт и ключевые пользовательские сценарии, чтобы определить, где необходимы дополнительные инструменты для снижения перегрузки и улучшения восприятия сервиса. На основе этого мы предлагаем решение в нужном формате — контент, цифровую интеграцию или настройку физической среды',
+                    block2Title: 'Интеграция и адаптация',
+                    block2Desc: 'Все элементы подстраиваются под техническую логику продукта, не меняют его основной функционал и работают в привычном пользовательском потоке. Такой подход повышает качество взаимодействия, удержание и удовлетворённость пользователей'
+                },
+                example: {
+                    title: 'Пример интеграции',
+                    p1: 'Spokspace показывает, как инструменты цифрового баланса могут работать внутри уже существующих продуктов без изменения их логики и структуры',
+                    p2: 'В формате Telegram Mini App наш функционал встроен прямо в мессенджер. Пользователь получает доступ к инструментам восстановления через привычный интерфейс, так же как открывает обычный чат',
+                    button: 'Открыть в Telegram'
+                },
+                cta: {
+                    subtitle: 'Будем рады обсудить детали и варианты работы',
+                    title: 'Хотите узнать больше?',
+                    button: 'Связаться с нами'
+                },
+                footer: {
+                    terms: 'Условия использования',
+                    contact: 'Связаться с нами',
+                    support: 'Поддержка',
+                    copyright: '© 2025 Spokspace. Все права защищены.'
+                }
+            }
+        };
+
+        let currentLang = 'ru';
+
+        function switchLanguage() {
+            currentLang = currentLang === 'en' ? 'ru' : 'en';
+            document.getElementById('lang-btn').textContent = currentLang === 'en' ? 'RU' : 'EN';
+            updateContent();
+        }
+
+        function updateContent() {
+            const t = translations[currentLang];
+
+            document.querySelectorAll('nav a').forEach((link, i) => {
+                const keys = ['context', 'products', 'example', 'contact'];
+                link.textContent = t.nav[keys[i]];
+            });
+
+            document.getElementById('hero-title').textContent = t.hero.title;
+            document.querySelector('#hero-btn span').textContent = t.hero.button;
+
+            document.getElementById('context-title').textContent = t.context.title;
+            document.getElementById('context-block1-title').textContent = t.context.block1Title;
+            document.getElementById('context-p1').textContent = t.context.p1;
+            document.getElementById('context-block2-title').textContent = t.context.block2Title;
+            document.getElementById('context-p2').textContent = t.context.p2;
+
+            // Products
+            document.getElementById('products-title').textContent = t.products.title;
+            document.getElementById('product1-read-more').textContent = t.products.readMore;
+            document.getElementById('product2-read-more').textContent = t.products.readMore;
+            document.getElementById('product3-read-more').textContent = t.products.readMore;
+            document.getElementById('product1-tag').textContent = t.products.product1Tag;
+            document.getElementById('product1-title').textContent = t.products.product1Title;
+            document.getElementById('product1-desc').textContent = t.products.product1Desc;
+            document.getElementById('product2-tag').textContent = t.products.product2Tag;
+            document.getElementById('product2-title').textContent = t.products.product2Title;
+            document.getElementById('product2-desc').textContent = t.products.product2Desc;
+            document.getElementById('product3-tag').textContent = t.products.product3Tag;
+            document.getElementById('product3-title').textContent = t.products.product3Title;
+            document.getElementById('product3-desc').textContent = t.products.product3Desc;
+
+            // How We Work
+            document.getElementById('how-we-work-title').textContent = t.howWeWork.title;
+            document.getElementById('work-block1-title').textContent = t.howWeWork.block1Title;
+            document.getElementById('work-block1-desc').textContent = t.howWeWork.block1Desc;
+            document.getElementById('work-block2-title').textContent = t.howWeWork.block2Title;
+            document.getElementById('work-block2-desc').textContent = t.howWeWork.block2Desc;
+
+            // Example
+            document.getElementById('example-title').textContent = t.example.title;
+            document.getElementById('example-p1').textContent = t.example.p1;
+            document.getElementById('example-p2').textContent = t.example.p2;
+            document.querySelector('#example-btn span').textContent = t.example.button;
+
+            document.getElementById('cta-subtitle').textContent = t.cta.subtitle;
+            document.getElementById('cta-title').textContent = t.cta.title;
+            document.querySelector('#cta-btn span').textContent = t.cta.button;
+
+            document.querySelectorAll('.footer-links a').forEach((link, i) => {
+                const keys = ['terms', 'contact', 'support'];
+                link.textContent = t.footer[keys[i]];
+            });
+            document.getElementById('copyright').textContent = t.footer.copyright;
+        }
+
+        function scrollToSection(id) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .scale-in').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            updateContent();
+            initScrollAnimations();
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" style="text-decoration: none;">
+            <div class="logo">
+                <img src="img/logo.svg" alt="Spokspace Logo">
+            </div>
+        </a>
+        <nav>
+            <a onclick="scrollToSection('context')">Контекст и подход</a>
+            <a onclick="scrollToSection('products')">Наши продукты</a>
+            <a onclick="scrollToSection('example')">Пример интеграции</a>
+            <a onclick="scrollToSection('contact')">Контакты</a>
+            <button class="lang-btn" id="lang-btn" onclick="switchLanguage()">EN</button>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <a href="https://t.me/the_dokhova" target="_blank" style="text-decoration: none;">
+                <button class="btn fade-in" id="hero-btn">
+                    <span>Связаться</span>
+                    <img src="img/line.svg" alt="">
+                </button>
+            </a>
+            <h1 id="hero-title" class="fade-in">Помогаем компаниям улучшать взаимодействие человека и технологий, добавляя элементы цифрового комфорта прямо в существующие сценарии</h1>
+        </div>
+    </section>
+
+    <section class="section" id="context">
+        <div class="context-grid">
+            <div class="context-header fade-in">
+                <h2 id="context-title">Контекст и подход</h2>
+            </div>
+            
+            <div class="context-content">
+                <div class="context-block fade-in-left">
+                    <h3 id="context-block1-title"></h3>
+                    <p id="context-p1">Цифровая среда становится всё более насыщенной сигналами, что повышает напряжение и усложняет взаимодействие с продуктами. Компании, которые учитывают состояние пользователя, создают более плавный опыт и удерживают внимание аудитории дольше</p>
+                </div>
+                
+                <div class="context-block fade-in-right">
+                    <h3 id="context-block2-title"></h3>
+                    <p id="context-p2">Spokspace предлагает систему решений, помогающих снизить перегрузку и добавить спокойные точки восстановления прямо в существующие сценарии. Мы работаем на стыке контента, продуктовых интеграций и экспертного подхода к сенсорной среде, чтобы технологии воспринимались мягче и естественнее</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="products">
+        <h2 class="section-title fade-in" id="products-title">Наши продукты</h2>
+        
+        <div class="products-grid">
+            <div class="product-card fade-in">
+                <div class="product-card-inner">
+                    <div class="product-card-front">
+                        <img src="img/content.jpg" alt="Контент Spokspace">
+                        <div class="product-overlay">
+                            <button class="product-read-more" id="product1-read-more">Read More</button>
+                            <h3 id="product1-tag">Материалы и сообщество</h3>
+                        </div>
+                    </div>
+                    <div class="product-card-back">
+                        <h3 id="product1-title">Контент Spokspace</h3>
+                        <p id="product1-desc">Мы создаём видео и аудио материалы, которые помогают улучшить сон, снизить тревогу и вернуть внимание. Такой контент можно встроить в приложения, телевизоры в отелях, бортовые системы, гостевые экраны и другие цифровые точки контакта</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card fade-in">
+                <div class="product-card-inner">
+                    <div class="product-card-front">
+                        <img src="img/integrations.jpg" alt="Интеграции Spokspace">
+                        <div class="product-overlay">
+                            <button class="product-read-more" id="product2-read-more">Read More</button>
+                            <h3 id="product2-tag">Сервисы и подключения</h3>
+                        </div>
+                    </div>
+                    <div class="product-card-back">
+                        <h3 id="product2-title">Интеграции Spokspace</h3>
+                        <p id="product2-desc">Мы встраиваем практики восстановления в существующие цифровые продукты. Формат интеграции подстраивается под логику сервиса: это может быть библиотека спокойных звуков, игровой элемент для снижения тревожности или практики восстановления внутри приложения. Всё работает в привычном сценарии использования</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card fade-in">
+                <div class="product-card-inner">
+                    <div class="product-card-front">
+                        <img src="img/expertise.jpg" alt="Экспертиза Spokspace">
+                        <div class="product-overlay">
+                            <button class="product-read-more" id="product3-read-more">Read More</button>
+                            <h3 id="product3-tag">Знания и опыт</h3>
+                        </div>
+                    </div>
+                    <div class="product-card-back">
+                        <h3 id="product3-title">Экспертиза Spokspace</h3>
+                        <p id="product3-desc">Мы помогаем компаниям настраивать свет, звук и визуальные элементы так, чтобы физическое пространство снижало напряжение и помогало людям чувствовать себя спокойнее в повседневной обстановке в офисах, отелях, зонах отдыха и других помещениях</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="how-we-work">
+        <div class="how-we-work-header">
+            <h2 class="section-title fade-in" id="how-we-work-title">Как мы работаем</h2>
+            <div class="gradient-circle-animated scale-in"></div>
+        </div>
+        
+        <div class="separator-line"></div>
+        
+        <div class="how-we-work-content">
+            <div class="work-block fade-in-left">
+                <h3 id="work-block1-title">Анализ и диагностика</h3>
+                <p id="work-block1-desc">Spokspace изучает продукт и ключевые пользовательские сценарии, чтобы определить, где необходимы дополнительные инструменты для снижения перегрузки и улучшения восприятия сервиса. На основе этого мы предлагаем решение в нужном формате — контент, цифровую интеграцию или настройку физической среды</p>
+            </div>
+            
+            <div class="work-block fade-in-right">
+                <h3 id="work-block2-title">Интеграция и адаптация</h3>
+                <p id="work-block2-desc">Все элементы подстраиваются под техническую логику продукта, не меняют его основной функционал и работают в привычном пользовательском потоке. Такой подход повышает качество взаимодействия, удержание и удовлетворённость пользователей</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="example">
+        <div class="example-section">
+            <div class="example-visual fade-in-left">
+                <img src="img/telegram.jpg" alt="Telegram Integration" style="width: 100%; max-width: 480px; height: auto; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.08);">
+            </div>
+            <div class="example-text fade-in-right">
+                <h2 id="example-title">Пример интеграции</h2>
+                <p id="example-p1">Spokspace демонстрирует, как система цифрового благополучия может существовать в привычной среде, не изменяя пользовательский опыт</p>
+                <p id="example-p2">Как Telegram Mini App, Spokspace интегрируется непосредственно в мессенджер, делая доступ к восстановлению таким же простым, как открытие чата</p>
+                <a href="https://t.me/spokspacebot" target="_blank" style="text-decoration: none;">
+                    <button class="btn" id="example-btn">
+                        <span>Открыть в Telegram</span>
+                        <img src="img/line.svg" alt="">
+                    </button>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+        <div class="cta-content scale-in">
+            <div class="cta-text">
+                <p id="cta-subtitle">Хотите узнать больше о том, как Spokspace может трансформировать ваш продукт?</p>
+                <h2 id="cta-title">Свяжитесь с нашей командой сейчас</h2>
+            </div>
+            <div class="cta-button-wrapper">
+                <a href="https://t.me/the_dokhova" target="_blank" style="text-decoration: none;">
+                    <button class="btn" id="cta-btn">
+                        <span>Связаться</span>
+                        <img src="img/line.svg" alt="">
+                    </button>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="logo">
+                    <img src="img/logo.svg" alt="Spokspace Logo">
+                </div>
+                <span>Spokspace</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Условия использования</a>
+                <a href="https://t.me/the_dokhova" target="_blank">Связаться с нами</a>
+                <a href="https://t.me/spoksupport_bot" target="_blank">Поддержка</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span id="copyright">© 2025 Spokspace. Все права защищены.</span>
+            <div class="social-icons">
+                <a href="https://ge.linkedin.com/company/spokspace" target="_blank" style="text-decoration: none; color: white; font-size: 20px; font-weight: 700;">in</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
