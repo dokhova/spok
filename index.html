@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spokspace</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #000000;
+        }
+    </style>
+    <script>
+        // Мгновенное перенаправление БЕЗ ожидания загрузки страницы
+        (function() {
+            // Если есть данные Telegram - открываем приложение
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+                window.location.replace('/app.html');
+            } 
+            // Если обычный браузер - открываем инфо страницу
+            else {
+                window.location.replace('/info');
+            }
+        })();
+    </script>
+</head>
+<body></body>
+</html>
