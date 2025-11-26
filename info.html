@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spokspace - Digital Wellbeing Ecosystem</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            color: #E8E8E8;
+            overflow-x: hidden;
+            background: #212121;
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px 64px;
+            background: transparent;
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: auto;
+            max-width: 800px;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 50px;
+            padding: 10px 28px;
+            border: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-container .logo {
+            display: none;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            font-family: Inter;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-logo img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            cursor: pointer;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            color: #fff;
+            font-family: Inter;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .mobile-menu-btn:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .mobile-menu-btn span {
+            display: none;
+        }
+
+        .mobile-menu-btn::after {
+            content: attr(data-text);
+        }
+
+        .logo {
+            color: #fff;
+            font-family: Inter;
+            font-size: 24px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-tagline {
+            color: rgba(255, 255, 255, 0.6);
+            font-family: Inter;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .logo img {
+            display: block;
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        nav.mobile-active {
+            display: flex !important;
+            flex-direction: column;
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 48px);
+            max-width: 500px;
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 32px 160px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            gap: 24px;
+            z-index: 999;
+        }
+
+        nav a {
+            color: #B8B8B8;
+            font-family: Inter;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        nav.mobile-active a {
+            font-size: 16px;
+            text-align: center;
+        }
+
+        nav a:hover {
+            color: #a8d531;
+        }
+
+        .lang-btn {
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            color: #fff;
+            font-family: Inter;
+            font-size: 13px;
+            font-style: normal;
+            font-weight: 500;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .lang-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            position: relative;
+            padding: 80px 64px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: #212121;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            display: none;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 60px;
+        }
+
+        .hero-gradient-container {
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            border-radius: 40px;
+            padding: 80px 64px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-content {
+            margin-top: 0;
+            padding-top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .hero-content a {
+            align-self: flex-start;
+        }
+
+        .hero h1 {
+            color: #fff;
+            font-family: Inter;
+            font-size: 66px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 79.2px;
+            letter-spacing: -2%;
+            max-width: 1065px;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 968px) {
+            .hero-content {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            background: #1A1A1A;
+            color: #fff;
+            font-family: Inter;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: -0.312px;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn img {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            padding: 120px 64px;
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            color: #E8E8E8;
+            font-family: Inter;
+            font-size: 42px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 1.314;
+            margin-bottom: 24px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        
+        .example-text h2,
+        .cta-text h2 {
+            color: #E8E8E8;
+            font-family: Inter;
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+        }
+
+        .context-subtitle {
+            color: #E8E8E8;
+            font-family: Inter;
+            font-size: 42px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 1.314;
+            margin-bottom: 0;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .context-subtitle-accent {
+            color: #a8d531;
+        }
+
+        .section-title-accent {
+            color: #a8d531;
+        }
+
+        /* ===== MAIN TEXT STYLE ===== */
+        .context-left h2,
+        .example-text p {
+            color: #B8B8B8;
+            font-family: Inter;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1.6;
+            letter-spacing: 0;
+        }
+        
+        .how-we-work-content p {
+            color: #B8B8B8;
+            font-family: Inter;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1.6;
+            letter-spacing: 0;
+        }
+
+        .context-left h2 {
+            margin-bottom: 0;
+        }
+
+        .example-text p {
+            margin-bottom: 32px;
+        }
+
+        .example-text .btn {
+            margin-top: 8px;
+        }
+
+        /* ===== CONTEXT SECTION ===== */
+        .context-grid {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 120px;
+            align-items: start;
+        }
+
+        .context-left {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .context-features {
+            display: none;
+        }
+
+        .context-right h2 {
+            color: #B8B8B8;
+            font-family: Inter;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1.6;
+            letter-spacing: 0;
+            margin-bottom: 48px;
+        }
+        
+        .context-button {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-family: Inter;
+            font-size: 16px;
+            font-weight: 400;
+            padding: 12px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .context-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .context-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 0;
+        }
+
+        .context-icon {
+            display: none;
+        }
+
+        .context-feature-text {
+            flex: 1;
+        }
+
+        .context-feature-text p {
+            color: #B8B8B8;
+            font-family: Inter;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1.6;
+        }
+
+        /* ===== PRODUCTS SECTION ===== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .product-card {
+            height: 400px;
+            cursor: pointer;
+            perspective: 1000px;
+        }
+
+        .product-card:hover {
+            transform: none;
+        }
+
+        .product-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .product-card:hover .product-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .product-card-front,
+        .product-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 24px;
+            overflow: hidden;
+            top: 0;
+            left: 0;
+        }
+
+        .product-card-front {
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        .product-card-back {
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            transform: rotateY(180deg);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-top: 50px;
+        }
+
+        .product-card-back h3 {
+            color: #fff;
+            font-family: Inter;
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            min-height: 60px;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .product-card-back p {
+            color: #fff;
+            font-family: Inter;
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .product-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+        }
+
+        .product-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        .product-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5));
+        }
+
+        .product-title {
+            position: relative;
+            z-index: 1;
+            color: #fff;
+            font-family: Inter;
+            font-size: 28px;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-bottom: auto;
+        }
+
+        .product-btn {
+            position: relative;
+            z-index: 1;
+            align-self: flex-start;
+            padding: 12px 28px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            color: #fff;
+            font-family: Inter;
+            font-size: 16px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .product-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* ===== HOW WE WORK SECTION ===== */
+        .how-we-work-wrapper {
+            position: relative;
+        }
+
+        .how-we-work-grid {
+            display: grid;
+            grid-template-columns: 0.5fr 1.5fr;
+            gap: 200px;
+            align-items: start;
+        }
+
+        .how-we-work-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 0;
+            padding-top: 0;
+        }
+
+        .how-we-work-header h2 {
+            color: #E8E8E8;
+            font-family: Inter;
+            font-size: 42px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 1.314;
+            margin-bottom: 0;
+            text-transform: none;
+            letter-spacing: 0;
+            padding-right: 0;
+        }
+
+        .how-we-work-content {
+            max-width: 100%;
+            position: relative;
+            padding-top: 0;
+        }
+
+        .gradient-circle-animated {
+            display: none;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .separator-line {
+            display: none;
+        }
+
+        .how-we-work-content p {
+            color: #B8B8B8;
+            font-family: Inter;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1.6;
+            letter-spacing: 0;
+        }
+
+        /* ===== EXAMPLE SECTION ===== */
+        .example-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .example-text h2 {
+            margin-bottom: 24px;
+        }
+
+        /* ===== CTA SECTION ===== */
+        .cta-section {
+            padding: 140px 64px;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .cta-wrapper {
+            width: 100%;
+            background: linear-gradient(135deg, #a8d531, #6ab43e);
+            border-radius: 32px;
+            padding: 80px 64px;
+        }
+
+        .cta-content {
+            width: 100%;
+            max-width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .cta-text {
+            flex: 1;
+            text-align: left;
+        }
+
+        .cta-text p {
+            color: #fff;
+            font-family: Inter;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+
+        .cta-text h2 {
+            color: #fff;
+            font-family: Inter;
+            font-size: 56px;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 0;
+            text-transform: none;
+        }
+
+        .cta-button-wrapper {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .cta-button {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-family: Inter;
+            font-size: 14px;
+            font-weight: 400;
+            padding: 12px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .cta-button:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #000;
+            color: #fff;
+            padding: 64px 64px 32px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 48px;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-logo span {
+            font-family: Inter;
+            font-size: 20px;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .footer-links a {
+            color: #fff;
+            font-family: Inter;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-bottom span {
+            color: rgba(255,255,255,0.6);
+            font-family: Inter;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in,
+        .fade-in-left,
+        .fade-in-right,
+        .scale-in {
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+
+        .fade-in {
+            transform: translateY(30px);
+        }
+
+        .fade-in-left {
+            transform: translateX(-30px);
+        }
+
+        .fade-in-right {
+            transform: translateX(30px);
+        }
+
+        .scale-in {
+            transform: scale(0.9);
+        }
+
+        .fade-in.visible,
+        .fade-in-left.visible,
+        .fade-in-right.visible,
+        .scale-in.visible {
+            opacity: 1;
+            transform: translate(0) scale(1);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 968px) {
+            header {
+                padding: 12px 24px;
+                bottom: 20px;
+                max-width: calc(100% - 48px);
+            }
+
+            .header-container {
+                background: transparent;
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                position: static;
+                width: auto;
+            }
+
+            nav {
+                display: none;
+            }
+
+            .nav-logo {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .logo {
+                top: 24px;
+                left: 32px;
+                font-size: 20px;
+            }
+
+            .hero {
+                padding: 48px 32px;
+            }
+
+            .hero-header {
+                flex-direction: column;
+                align-items: flex-start;
+                margin-bottom: 40px;
+                gap: 8px;
+            }
+
+            .hero-gradient-container {
+                padding: 48px 32px;
+                border-radius: 32px;
+            }
+
+            .hero h1 {
+                font-size: 64px;
+                line-height: 70px;
+                font-weight: 500;
+                text-align: left;
+            }
+
+            .section {
+                padding: 80px 32px;
+            }
+
+            .context-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .context-subtitle {
+                font-size: 32px;
+            }
+
+            .context-feature {
+                flex-direction: row;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .context-feature-text {
+                padding-top: 0;
+            }
+
+            .context-left h2,
+            .context-right h2,
+            .example-text p {
+                font-size: 28px;
+                line-height: 34px;
+            }
+            
+            .how-we-work-content p {
+                font-size: 28px;
+                line-height: 34px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+                margin-top: 40px;
+            }
+
+            .product-card {
+                height: 360px;
+            }
+
+            .product-card-back {
+                padding: 24px;
+                padding-top: 40px;
+            }
+
+            .product-card-back h3 {
+                font-size: 20px;
+                margin-bottom: 12px;
+                min-height: 50px;
+            }
+
+            .product-card-back p {
+                font-size: 15px;
+                line-height: 1.5;
+            }
+
+            .how-we-work-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+
+            .how-we-work-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+            }
+
+            .how-we-work-header h2 {
+                font-size: 32px;
+                padding-right: 0;
+            }
+
+            .gradient-circle-animated {
+                display: none;
+            }
+
+            .example-section {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .cta-section {
+                padding: 60px 24px;
+                padding-bottom: 140px;
+            }
+            
+            .cta-wrapper {
+                padding: 48px 32px;
+                border-radius: 24px;
+            }
+
+            .cta-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 32px;
+                padding: 0;
+            }
+
+            .cta-text h2 {
+                font-size: 40px;
+            }
+
+            .cta-button-wrapper {
+                justify-content: flex-start;
+                width: 100%;
+            }
+
+            .cta-text h2 {
+                font-size: 36px;
+            }
+
+            footer {
+                padding: 48px 32px 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 32px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            nav {
+                gap: 20px;
+            }
+
+            nav a {
+                font-size: 12px;
+            }
+
+            .hero {
+                padding: 48px 24px 60px;
+            }
+
+            .hero h1 {
+                font-size: 48px;
+                line-height: 54px;
+                font-weight: 500;
+                text-align: left;
+            }
+
+            .section {
+                padding: 60px 24px;
+            }
+
+            .section-title,
+            .context-subtitle,
+            .how-we-work-header h2 {
+                font-size: 28px;
+                line-height: 1.314;
+            }
+            
+            .example-text h2 {
+                font-size: 28px;
+                line-height: 34px;
+            }
+            
+            .how-we-work-header h2 {
+                padding-right: 0;
+            }
+
+            .context-left h2,
+            .context-right h2,
+            .how-we-work-content p,
+            .example-text p {
+                font-size: 24px;
+                line-height: 30px;
+            }
+
+            .context-left {
+                gap: 24px;
+            }
+
+            .context-feature {
+                gap: 16px;
+            }
+
+            .context-icon {
+                width: 60px;
+                height: 60px;
+                min-width: 60px;
+            }
+
+            .context-feature-text p {
+                font-size: 14px;
+            }
+
+            .separator-line {
+                margin-bottom: 24px;
+            }
+
+            .products-grid {
+                margin-top: 32px;
+            }
+
+            .product-card {
+                height: 400px;
+            }
+
+            .product-overlay {
+                padding: 24px;
+            }
+
+            .product-overlay h3 {
+                font-size: 20px;
+            }
+
+            .product-read-more {
+                font-size: 13px;
+                padding: 7px 18px;
+            }
+
+            .cta-section {
+                padding: 60px 24px;
+            }
+            
+            .cta-wrapper {
+                padding: 40px 24px;
+                border-radius: 20px;
+            }
+
+            .cta-content {
+                padding: 0;
+                gap: 20px;
+            }
+
+            .cta-text h2 {
+                font-size: 28px;
+                line-height: 34px;
+            }
+
+            .cta-text p {
+                font-size: 16px;
+            }
+
+            .btn {
+                padding: 10px 24px;
+                font-size: 14px;
+            }
+
+            .footer-content {
+                gap: 24px;
+            }
+        }
+    </style>
+    <script>
+        let currentLang = 'ru';
+
+        const translations = {
+            ru: {
+                // Navigation
+                'nav-context': 'Контекст и подход',
+                'nav-products': 'Наши продукты',
+                'nav-example': 'Пример интеграции',
+                'nav-contact': 'Контакты',
+                'lang-btn': 'EN',
+                'mobile-menu': 'Меню',
+                'mobile-menu-close': 'Закрыть',
+
+                // Hero
+                'hero-title': 'Помогаем компаниям встраивать цифровой комфорт в привычные сценарии',
+                'hero-btn': 'Связаться',
+                'hero-tagline': 'Экосистема цифрового баланса',
+
+                // Context
+                'context-subtitle': 'Почему это',
+                'context-subtitle-accent': 'важно',
+                'context-title': 'Цифровая среда переполнена сигналами, что повышает напряжение и мешает фокусироваться. Многие решения для цифрового комфорта создают новые барьеры и требуют дополнительных усилий от пользователя. Spokspace помогает снизить нагрузку и добавляет спокойные точки восстановления прямо в существующие сценарии',
+                'context-feature1': 'Контент и короткие практики для снижения тревоги и восстановления внимания',
+                'context-feature2': 'Техническая интеграция инструментов цифрового комфорта',
+                'context-feature3': 'Рекомендации по свету, звуку и визуальным элементам для комфорта',
+
+                // Products
+                'products-title': 'Наши',
+                'products-title-accent': 'сервисы',
+                'product1-title': 'Материалы и сообщество',
+                'product1-title-back': 'Материалы и сообщество',
+                'product1-desc': 'Мы создаём видео и аудио материалы, которые помогают улучшить сон, снизить тревогу и вернуть внимание. Такой контент можно встроить в приложения, телевизоры в отелях, бортовые системы, гостевые экраны и другие цифровые точки контакта',
+                'product1-btn': 'Подробнее',
+                'product2-title': 'Техническая интеграция',
+                'product2-title-back': 'Техническая интеграция',
+                'product2-desc': 'Мы встраиваем практики восстановления в существующие цифровые продукты. Формат интеграции подстраивается под логику сервиса: это может быть библиотека спокойных звуков, игровой элемент для снижения тревожности или практики восстановления внутри приложения. Всё работает в привычном сценарии использования',
+                'product2-btn': 'Подробнее',
+                'product3-title': 'Знания и опыт',
+                'product3-title-back': 'Знания и опыт',
+                'product3-desc': 'Мы помогаем компаниям настраивать свет, звук и визуальные элементы так, чтобы физическое пространство снижало напряжение и помогало людям чувствовать себя спокойнее в повседневной обстановке в офисах, отелях, зонах отдыха и других помещениях',
+                'product3-btn': 'Подробнее',
+
+                // How we work
+                'how-we-work-title': 'Как мы',
+                'how-we-work-title-accent': 'работаем',
+                'how-we-work-text': 'Spokspace анализирует продукт и поведение пользователей, чтобы выявить точки перегрузки и определить, какие решения усилят качество восприятия. Такой анализ позволяет точечно улучшать взаимодействие и повышать пользовательское удержание',
+
+                // Example
+                'example-title': 'ПРИМЕР',
+                'example-title-accent': 'ИНТЕГРАЦИИ',
+                'example-p1': 'Spokspace демонстрирует, как инструменты цифрового баланса могут работать внутри продукта без изменения его логики. В формате Telegram Mini App функционал встроен в мессенджер и доступен пользователю так же просто, как открыть чат',
+                'example-btn': 'Открыть в Telegram',
+
+                // CTA
+                'cta-subtitle': 'Будем рады обсудить детали и варианты работы',
+                'cta-title': 'Хотите узнать больше?',
+                'cta-btn': 'Связаться с нами',
+
+                // Footer
+                'copyright': '© 2025 Spokspace. Все права защищены.'
+            },
+            en: {
+                // Navigation
+                'nav-context': 'Context & Approach',
+                'nav-products': 'Our Products',
+                'nav-example': 'Integration Example',
+                'nav-contact': 'Contact',
+                'lang-btn': 'RU',
+                'mobile-menu': 'Menu',
+                'mobile-menu-close': 'Close',
+
+                // Hero
+                'hero-title': 'We help companies integrate digital comfort into familiar scenarios',
+                'hero-btn': 'Contact Us',
+                'hero-tagline': 'Digital Wellbeing Ecosystem',
+
+                // Context
+                'context-subtitle': 'Why it',
+                'context-subtitle-accent': 'matters',
+                'context-title': 'The digital environment is saturated with signals, which increases tension and makes it difficult to focus. Many digital wellness solutions create new barriers and require additional effort from the user. Spokspace helps reduce the load and adds calm recovery points directly into existing scenarios',
+                'context-feature1': 'Content and short practices for reducing anxiety and restoring attention',
+                'context-feature2': 'Technical integration of digital comfort tools',
+                'context-feature3': 'Recommendations for light, sound and visual elements for comfort',
+
+                // Products
+                'products-title': 'Our',
+                'products-title-accent': 'services',
+                'product1-title': 'Materials & Community',
+                'product1-title-back': 'Materials & Community',
+                'product1-desc': 'We create video and audio materials that help improve sleep, reduce anxiety, and restore attention. Such content can be embedded in applications, hotel TVs, in-flight systems, guest screens, and other digital touchpoints',
+                'product1-btn': 'Learn More',
+                'product2-title': 'Technical Integration',
+                'product2-title-back': 'Technical Integration',
+                'product2-desc': 'We embed recovery practices into existing digital products. The integration format adapts to the service logic: it can be a library of calm sounds, a game element for anxiety reduction, or recovery practices within the application. Everything works in the familiar usage scenario',
+                'product2-btn': 'Learn More',
+                'product3-title': 'Knowledge & Experience',
+                'product3-title-back': 'Knowledge & Experience',
+                'product3-desc': 'We help companies adjust light, sound, and visual elements so that physical space reduces tension and helps people feel calmer in everyday settings in offices, hotels, relaxation areas, and other premises',
+                'product3-btn': 'Learn More',
+
+                // How we work
+                'how-we-work-title': 'How we',
+                'how-we-work-title-accent': 'work',
+                'how-we-work-text': 'Spokspace analyzes the product and user behavior to identify overload points and determine which solutions will enhance the quality of perception. This analysis allows for targeted improvements in interaction and increased user retention',
+
+                // Example
+                'example-title': 'INTEGRATION',
+                'example-title-accent': 'EXAMPLE',
+                'example-p1': 'Spokspace demonstrates how digital balance tools can work within a product without changing its logic. In the Telegram Mini App format, the functionality is built into the messenger and is as easily accessible to the user as opening a chat',
+                'example-btn': 'Open in Telegram',
+
+                // CTA
+                'cta-subtitle': 'We will be happy to discuss details and work options',
+                'cta-title': 'Want to know more?',
+                'cta-btn': 'Contact Us',
+
+                // Footer
+                'copyright': '© 2025 Spokspace. All rights reserved.'
+            }
+        };
+
+        function updateContent() {
+            const lang = currentLang;
+            
+            // Update logo tagline
+            const tagline = document.querySelector('.logo-tagline');
+            if (tagline && translations[lang]['hero-tagline']) {
+                tagline.textContent = translations[lang]['hero-tagline'];
+            }
+            
+            // Update context subtitle with accent
+            const contextSubtitle = document.querySelector('.context-subtitle');
+            if (contextSubtitle) {
+                const accentSpan = contextSubtitle.querySelector('.context-subtitle-accent');
+                if (accentSpan) {
+                    contextSubtitle.childNodes[0].textContent = translations[lang]['context-subtitle'] + ' ';
+                    accentSpan.textContent = translations[lang]['context-subtitle-accent'];
+                }
+            }
+            
+            Object.keys(translations[lang]).forEach(key => {
+                if (key === 'context-subtitle' || key === 'context-subtitle-accent' || key === 'hero-tagline') return;
+                
+                const element = document.getElementById(key);
+                if (element) {
+                    if (element.tagName === 'BUTTON' || element.tagName === 'A') {
+                        const span = element.querySelector('span');
+                        if (span) {
+                            span.textContent = translations[lang][key];
+                        } else {
+                            element.textContent = translations[lang][key];
+                        }
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+
+            // Update navigation onclick attributes
+            const navLinks = document.querySelectorAll('nav a');
+            if (navLinks.length >= 3) {
+                navLinks[0].textContent = translations[lang]['nav-context'];
+                navLinks[1].textContent = translations[lang]['nav-products'];
+                navLinks[2].textContent = translations[lang]['nav-contact'];
+            }
+            
+            // Update mobile menu button text
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            if (mobileBtn) {
+                const isActive = mobileBtn.classList.contains('active');
+                mobileBtn.setAttribute('data-text', isActive ? translations[lang]['mobile-menu-close'] : translations[lang]['mobile-menu']);
+            }
+        }
+
+        function switchLanguage() {
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            updateContent();
+        }
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const targetPosition = section.offsetTop - 100;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Закрываем мобильное меню после клика
+                const nav = document.querySelector('nav');
+                const mobileBtn = document.querySelector('.mobile-menu-btn');
+                if (nav.classList.contains('mobile-active')) {
+                    nav.classList.remove('mobile-active');
+                    mobileBtn.classList.remove('active');
+                }
+            }
+        }
+
+        function toggleMobileMenu() {
+            const nav = document.querySelector('nav');
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            
+            nav.classList.toggle('mobile-active');
+            mobileBtn.classList.toggle('active');
+            
+            // Update button text based on state
+            const isActive = mobileBtn.classList.contains('active');
+            const lang = currentLang;
+            mobileBtn.setAttribute('data-text', isActive ? translations[lang]['mobile-menu-close'] : translations[lang]['mobile-menu']);
+        }
+
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.15,
+                rootMargin: '0px 0px -80px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // Добавляем небольшую задержку для последовательной анимации
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, index * 100);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in, .fade-in-left, .fade-in-right, .scale-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Специальная обработка для карточек продуктов с задержкой
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach((card, index) => {
+                const cardObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                entry.target.style.opacity = '1';
+                                entry.target.style.transform = 'translateY(0)';
+                            }, index * 150);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+                cardObserver.observe(card);
+            });
+
+            // Специальная обработка для иконок в context-feature
+            const contextFeatures = document.querySelectorAll('.context-feature');
+            contextFeatures.forEach((feature, index) => {
+                const featureObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                entry.target.style.opacity = '1';
+                                entry.target.style.transform = 'translateX(0)';
+                            }, index * 200);
+                        }
+                    });
+                }, { threshold: 0.2 });
+                
+                feature.style.opacity = '0';
+                feature.style.transform = 'translateX(-20px)';
+                feature.style.transition = 'all 0.6s ease';
+                featureObserver.observe(feature);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            updateContent();
+            initScrollAnimations();
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <nav>
+                <a onclick="scrollToSection('context')">Контекст и подход</a>
+                <a onclick="scrollToSection('products')">Наши продукты</a>
+                <a onclick="scrollToSection('contact')">Контакты</a>
+                <button class="lang-btn" id="lang-btn" onclick="switchLanguage()">EN</button>
+            </nav>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" data-text="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-header">
+            <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" style="text-decoration: none;">
+                <div class="logo">
+                    <img src="img/logo.svg" alt="Spokspace Logo">
+                    Spokspace
+                </div>
+            </a>
+            <span class="logo-tagline">Экосистема цифрового баланса</span>
+        </div>
+        
+        <div class="hero-gradient-container">
+            <div class="hero-content">
+                <h1 id="hero-title" class="fade-in">Помогаем компаниям встраивать цифровой комфорт в привычные сценарии</h1>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="context">
+        <div class="context-grid">
+            <div class="context-left fade-in">
+                <h3 class="context-subtitle">Почему это <span class="context-subtitle-accent">важно</span></h3>
+            </div>
+            
+            <div class="context-right fade-in">
+                <h2 id="context-title">Цифровая среда переполнена сигналами, что повышает напряжение и мешает фокусироваться. Многие решения для цифрового комфорта создают новые барьеры и требуют дополнительных усилий от пользователя. Spokspace помогает снизить нагрузку и добавляет спокойные точки восстановления прямо в существующие сценарии</h2>
+                <a href="https://t.me/the_dokhova" target="_blank" class="context-button">
+                    <span>Связаться</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="products">
+        <h2 class="section-title fade-in"><span id="products-title">Наши</span> <span class="section-title-accent" id="products-title-accent">сервисы</span></h2>
+        
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-card-inner">
+                    <div class="product-card-front">
+                        <div class="product-content">
+                            <div class="product-bg">
+                                <img src="img/content.jpg" alt="Материалы и сообщество">
+                            </div>
+                            <h3 class="product-title" id="product1-title">Материалы и сообщество</h3>
+                            <button class="product-btn" id="product1-btn">Подробнее</button>
+                        </div>
+                    </div>
+                    <div class="product-card-back">
+                        <h3 id="product1-title-back">Материалы и сообщество</h3>
+                        <p id="product1-desc">Мы создаём видео и аудио материалы, которые помогают улучшить сон, снизить тревогу и вернуть внимание. Такой контент можно встроить в приложения, телевизоры в отелях, бортовые системы, гостевые экраны и другие цифровые точки контакта</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-card-inner">
+                    <div class="product-card-front">
+                        <div class="product-content">
+                            <div class="product-bg">
+                                <img src="img/integrations.jpg" alt="Техническая интеграция">
+                            </div>
+                            <h3 class="product-title" id="product2-title">Техническая интеграция</h3>
+                            <button class="product-btn" id="product2-btn">Подробнее</button>
+                        </div>
+                    </div>
+                    <div class="product-card-back">
+                        <h3 id="product2-title-back">Техническая интеграция</h3>
+                        <p id="product2-desc">Мы встраиваем практики восстановления в существующие цифровые продукты. Формат интеграции подстраивается под логику сервиса: это может быть библиотека спокойных звуков, игровой элемент для снижения тревожности или практики восстановления внутри приложения. Всё работает в привычном сценарии использования</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-card-inner">
+                    <div class="product-card-front">
+                        <div class="product-content">
+                            <div class="product-bg">
+                                <img src="img/expertise.jpg" alt="Знания и опыт">
+                            </div>
+                            <h3 class="product-title" id="product3-title">Знания и опыт</h3>
+                            <button class="product-btn" id="product3-btn">Подробнее</button>
+                        </div>
+                    </div>
+                    <div class="product-card-back">
+                        <h3 id="product3-title-back">Знания и опыт</h3>
+                        <p id="product3-desc">Мы помогаем компаниям настраивать свет, звук и визуальные элементы так, чтобы физическое пространство снижало напряжение и помогало людям чувствовать себя спокойнее в повседневной обстановке в офисах, отелях, зонах отдыха и других помещениях</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="how-we-work">
+        <div class="how-we-work-wrapper">
+            <div class="how-we-work-grid">
+                <div class="how-we-work-header">
+                    <h2 class="fade-in"><span id="how-we-work-title">Как мы</span> <span class="section-title-accent" id="how-we-work-title-accent">работаем</span></h2>
+                </div>
+                
+                <div class="how-we-work-content fade-in">
+                    <div class="gradient-circle-animated scale-in"></div>
+                    <p id="how-we-work-text">Spokspace анализирует продукт и поведение пользователей, чтобы выявить точки перегрузки и определить, какие решения усилят качество восприятия. Такой анализ позволяет точечно улучшать взаимодействие и повышать пользовательское удержание</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section" id="contact">
+        <div class="cta-wrapper">
+            <div class="cta-content scale-in">
+                <div class="cta-text">
+                    <p id="cta-subtitle">Будем рады обсудить детали и варианты работы</p>
+                    <h2 id="cta-title">ХОТИТЕ УЗНАТЬ БОЛЬШЕ?</h2>
+                </div>
+                <div class="cta-button-wrapper">
+                    <a href="https://t.me/the_dokhova" target="_blank" class="cta-button">
+                        <span id="cta-btn">Связаться с нами</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <span>Spokspace</span>
+            </div>
+            <div class="footer-links">
+                <a href="privacy.html">Условия использования</a>
+                <a href="https://t.me/the_dokhova" target="_blank">Связаться с нами</a>
+                <a href="https://t.me/spoksupport_bot" target="_blank">Поддержка</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span id="copyright">© 2025 Spokspace. Все права защищены.</span>
+            <div class="social-icons">
+                <a href="https://ge.linkedin.com/company/spokspace" target="_blank" style="text-decoration: none; color: white; font-size: 20px; font-weight: 700;">in</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
